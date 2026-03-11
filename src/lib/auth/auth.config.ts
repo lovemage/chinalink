@@ -14,6 +14,7 @@ const lineProvider = {
 }
 
 export const authConfig: NextAuthConfig = {
+  trustHost: true,
   providers: [lineProvider, Google],
   pages: {
     signIn: '/login',

@@ -15,9 +15,9 @@ export async function LatestPosts() {
   })
 
   return (
-    <section className="bg-white py-24 sm:py-32">
+    <section className="bg-background py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-16 gap-6">
+        <div className="mb-14 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="max-w-2xl">
             <div className="mb-4 inline-flex items-center gap-2 text-sm font-bold tracking-widest text-brand-primary uppercase">
               <span className="h-px w-8 bg-brand-primary"></span>
@@ -30,7 +30,7 @@ export async function LatestPosts() {
           {posts.length > 0 && (
             <Link
               href="/blog"
-              className="group inline-flex h-12 items-center justify-center rounded-full border border-brand-text/10 bg-white px-6 font-semibold text-brand-text shadow-sm transition-all hover:border-brand-primary hover:text-brand-primary hover:shadow-md"
+              className="group inline-flex h-12 items-center justify-center rounded-full border border-border/70 bg-card px-6 font-semibold text-brand-text shadow-sm transition-all hover:border-brand-primary hover:text-brand-primary hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background"
             >
               閱讀更多文章
             </Link>
@@ -59,7 +59,7 @@ export async function LatestPosts() {
                 <Link
                   key={post.id}
                   href={`/blog/${post.slug}`}
-                  className={`group relative flex flex-col overflow-hidden rounded-[2.5rem] bg-brand-bg/30 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-brand-primary/10 ${
+                  className={`group relative flex flex-col overflow-hidden rounded-[2.5rem] bg-brand-bg/30 transition-shadow duration-300 hover:shadow-xl hover:shadow-brand-primary/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background ${
                     isFeatured ? 'lg:col-span-7' : 'lg:col-span-5'
                   }`}
                 >
@@ -70,7 +70,7 @@ export async function LatestPosts() {
                         alt={cover.alt || post.title}
                         fill
                         sizes={isFeatured ? '(max-width: 1024px) 100vw, 58vw' : '(max-width: 1024px) 100vw, 42vw'}
-                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center bg-brand-primary/5">
@@ -82,7 +82,7 @@ export async function LatestPosts() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-60 transition-opacity group-hover:opacity-80"></div>
                     
                     {date && (
-                      <div className="absolute top-6 left-6 rounded-full bg-white/90 backdrop-blur-md px-4 py-1.5 text-xs font-bold text-brand-text shadow-sm">
+                      <div className="absolute top-6 left-6 rounded-full bg-card/95 px-4 py-1.5 text-xs font-bold text-brand-text shadow-sm">
                         {date}
                       </div>
                     )}

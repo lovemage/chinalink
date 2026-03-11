@@ -27,10 +27,10 @@ export function CategoryFilter({ categories }: CategoryFilterProps) {
       <button
         type="button"
         onClick={() => handleClick('')}
-        className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+        className={`rounded-full px-5 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background ${
           !currentCategory
-            ? 'bg-brand-primary text-white'
-            : 'bg-white text-brand-muted hover:bg-brand-primary/10 hover:text-brand-primary'
+            ? 'bg-brand-primary text-brand-text'
+            : 'bg-card text-brand-muted hover:bg-brand-primary/10 hover:text-brand-primary'
         }`}
       >
         全部
@@ -40,10 +40,10 @@ export function CategoryFilter({ categories }: CategoryFilterProps) {
           key={cat.id}
           type="button"
           onClick={() => handleClick(cat.slug)}
-          className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+          className={`rounded-full px-5 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background ${
             currentCategory === cat.slug
-              ? 'bg-brand-primary text-white'
-              : 'bg-white text-brand-muted hover:bg-brand-primary/10 hover:text-brand-primary'
+              ? 'bg-brand-primary text-brand-text'
+              : 'bg-card text-brand-muted hover:bg-brand-primary/10 hover:text-brand-primary'
           }`}
         >
           {cat.name}

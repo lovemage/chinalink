@@ -26,7 +26,7 @@ export function MobileNav({ navItems }: { navItems: NavItem[] }) {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
-        render={<Button variant="ghost" size="icon" aria-label="選單" />}
+        render={<Button variant="ghost" size="icon-lg" aria-label="選單" />}
       >
         <Menu className="size-5" />
       </SheetTrigger>
@@ -42,7 +42,7 @@ export function MobileNav({ navItems }: { navItems: NavItem[] }) {
               key={item.href}
               href={item.href}
               onClick={() => setOpen(false)}
-              className="rounded-lg px-3 py-2 text-sm font-medium text-brand-text transition-colors hover:bg-accent"
+              className="rounded-lg px-3 py-3 text-sm font-medium text-brand-text transition-colors hover:bg-accent"
             >
               {item.label}
             </Link>
@@ -58,7 +58,7 @@ export function MobileNav({ navItems }: { navItems: NavItem[] }) {
                   setOpen(false)
                   signOut({ callbackUrl: '/' })
                 }}
-                className="mt-2 inline-flex h-10 items-center justify-center rounded-lg border border-border px-4 text-sm font-medium text-brand-text transition-colors hover:bg-accent"
+                className="mt-2 inline-flex h-11 items-center justify-center rounded-lg border border-border px-4 text-sm font-medium text-brand-text transition-colors hover:bg-accent"
               >
                 登出
               </button>
@@ -67,7 +67,7 @@ export function MobileNav({ navItems }: { navItems: NavItem[] }) {
             <Link
               href="/login"
               onClick={() => setOpen(false)}
-              className="mt-4 inline-flex h-10 items-center justify-center rounded-lg bg-brand-cta px-4 text-sm font-medium text-white transition-colors hover:bg-brand-cta/90"
+              className="mt-4 inline-flex h-11 items-center justify-center rounded-lg bg-brand-cta px-4 text-white text-sm font-medium transition-colors hover:bg-brand-cta/90"
             >
               登入
             </Link>

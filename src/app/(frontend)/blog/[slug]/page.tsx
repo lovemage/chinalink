@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'

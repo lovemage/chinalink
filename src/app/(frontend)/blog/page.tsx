@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+export const revalidate = 3600
 
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
@@ -63,7 +63,7 @@ export default async function BlogPage({
   return (
     <section className="relative min-h-[50vh] pt-32 pb-24 overflow-hidden bg-brand-bg">
       {/* Background organic shape */}
-      <div className="absolute top-20 left-0 -ml-32 h-[500px] w-[500px] rounded-[40%_60%_70%_30%_/_40%_50%_60%_50%] bg-brand-cta/5 blur-3xl opacity-60 mix-blend-multiply pointer-events-none" />
+      <div className="pointer-events-none absolute top-20 left-0 -ml-24 h-[420px] w-[420px] rounded-[40%_60%_70%_30%_/_40%_50%_60%_50%] bg-brand-cta/5 blur-3xl opacity-40" />
 
       <div className="mx-auto max-w-7xl px-6 relative z-10">
         <div className="max-w-2xl">

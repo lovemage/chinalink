@@ -28,7 +28,7 @@ export function PostCard({ post }: PostCardProps) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-transparent bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand-primary/30 hover:shadow-lg"
+      className="group flex flex-col overflow-hidden rounded-[2rem] border border-border/70 bg-card shadow-sm transition-shadow duration-300 hover:shadow-md hover:shadow-brand-primary/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-brand-primary/10">
         {cover?.url ? (
@@ -36,7 +36,7 @@ export function PostCard({ post }: PostCardProps) {
             src={cover.sizes?.card?.url || cover.url}
             alt={cover.alt || post.title}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           />
         ) : (
           <div className="flex h-full items-center justify-center">
@@ -47,12 +47,12 @@ export function PostCard({ post }: PostCardProps) {
 
       <div className="flex flex-1 flex-col p-5">
         {category && (
-          <span className="mb-2 w-fit rounded-full bg-brand-primary/10 px-3 py-0.5 text-xs font-medium text-brand-primary">
+          <span className="mb-3 w-fit rounded-full bg-brand-primary/10 px-3 py-1 text-xs font-medium text-brand-primary">
             {category.name}
           </span>
         )}
 
-        <h3 className="text-lg font-bold text-brand-text group-hover:text-brand-primary">
+        <h3 className="text-lg font-bold text-brand-text transition-colors group-hover:text-brand-primary">
           {post.title}
         </h3>
 

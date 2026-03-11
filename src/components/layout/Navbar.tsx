@@ -31,7 +31,7 @@ export function Navbar() {
     <header className="fixed top-0 z-50 w-full border-b border-white/20 bg-brand-bg/80 backdrop-blur-xl transition-all duration-300">
       <div className="mx-auto flex h-24 max-w-7xl items-center justify-between px-6">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-4 transition-transform hover:scale-105">
+        <Link href="/" className="flex items-center gap-4 transition-colors hover:text-brand-primary">
           <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-brand-primary/20 bg-brand-bg shadow-sm">
             <Image
               src="/Chinalink_logo.png"
@@ -57,7 +57,7 @@ export function Navbar() {
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-medium text-brand-text/80 transition-all hover:text-brand-primary hover:scale-105"
+              className="text-sm font-medium text-brand-text/80 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-brand-bg"
             >
               {item.label}
             </Link>
@@ -69,7 +69,7 @@ export function Navbar() {
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
-                  <button className="flex items-center gap-2 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-brand-primary transition-transform hover:scale-105">
+                  <button className="flex items-center gap-2 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-brand-primary transition-colors">
                     <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
                       {session.user.image ? (
                         <AvatarImage src={session.user.image} alt={session.user.name || ''} />
@@ -98,7 +98,7 @@ export function Navbar() {
           ) : (
             <Link
               href="/login"
-              className="group relative inline-flex h-11 items-center justify-center overflow-hidden rounded-full bg-brand-primary px-8 text-sm font-semibold tracking-wider text-white shadow-md transition-all duration-300 hover:scale-105 hover:bg-brand-primary/90 hover:shadow-xl hover:shadow-brand-primary/20"
+              className="group relative inline-flex h-11 items-center justify-center overflow-hidden rounded-full bg-brand-primary px-8 text-sm font-semibold tracking-wider text-brand-text shadow-md transition-colors duration-300 hover:bg-brand-primary/90 hover:text-brand-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-text focus-visible:ring-offset-4 focus-visible:ring-offset-brand-bg"
             >
               <span className="relative">會員登入</span>
             </Link>

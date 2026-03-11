@@ -21,7 +21,7 @@ export function TrustSection() {
             </p>
             <a
               href="/contact"
-              className="group inline-flex h-14 items-center justify-center gap-3 rounded-full bg-brand-primary px-8 text-lg font-bold text-white transition-all hover:bg-brand-primary/90 hover:scale-105"
+              className="group inline-flex h-14 items-center justify-center gap-3 rounded-full bg-brand-primary px-8 text-lg font-bold text-brand-text transition-colors duration-300 hover:bg-brand-primary/90 hover:text-brand-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-4 focus-visible:ring-offset-brand-text"
             >
               立即預約諮詢
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -30,9 +30,9 @@ export function TrustSection() {
 
           <div className="grid w-full max-w-2xl gap-6 sm:grid-cols-2">
             {/* Line */}
-            <div className="flex items-center gap-6 rounded-3xl bg-white/5 border border-white/10 p-6 backdrop-blur-md transition-all hover:bg-white/10">
-              <div className="relative h-[80px] w-[80px] shrink-0 transition-transform duration-500 group-hover:scale-110">
-                <Image src="/icons/consulting.png" alt="Line" fill sizes="80px" className="object-contain" />
+            <div className="flex items-center gap-6 rounded-3xl bg-white/5 border border-white/10 p-6 transition-all hover:bg-white/10">
+              <div className="relative h-[80px] w-[80px] shrink-0 transition-transform duration-300 group-hover:scale-[1.02]">
+                <Image src="/icons/consulting.png" alt="" fill sizes="80px" className="object-contain" />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white mb-1">Line 官方客服</h3>
@@ -44,9 +44,9 @@ export function TrustSection() {
             </div>
 
             {/* WeChat */}
-            <div className="flex items-center gap-6 rounded-3xl bg-white/5 border border-white/10 p-6 backdrop-blur-md transition-all hover:bg-white/10">
-              <div className="relative h-[80px] w-[80px] shrink-0 transition-transform duration-500 group-hover:scale-110">
-                <Image src="/icons/account.png" alt="WeChat" fill sizes="80px" className="object-contain" />
+            <div className="flex items-center gap-6 rounded-3xl bg-white/5 border border-white/10 p-6 transition-all hover:bg-white/10">
+              <div className="relative h-[80px] w-[80px] shrink-0 transition-transform duration-300 group-hover:scale-[1.02]">
+                <Image src="/icons/account.png" alt="" fill sizes="80px" className="object-contain" />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white mb-1">微信官方客服</h3>
@@ -58,9 +58,9 @@ export function TrustSection() {
             </div>
 
             {/* YouTube */}
-            <div className="sm:col-span-2 flex items-center gap-6 rounded-3xl bg-white/5 border border-white/10 p-6 backdrop-blur-md transition-all hover:bg-white/10">
-              <div className="relative h-[80px] w-[80px] shrink-0 transition-transform duration-500 group-hover:scale-110">
-                <Image src="/icons/marketing.png" alt="YouTube" fill sizes="80px" className="object-contain" />
+            <div className="sm:col-span-2 flex items-center gap-6 rounded-3xl bg-white/5 border border-white/10 p-6 transition-all hover:bg-white/10">
+              <div className="relative h-[80px] w-[80px] shrink-0 transition-transform duration-300 group-hover:scale-[1.02]">
+                <Image src="/icons/marketing.png" alt="" fill sizes="80px" className="object-contain" />
               </div>
               <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
@@ -71,7 +71,7 @@ export function TrustSection() {
                   href="https://www.youtube.com/@TaiwanInChina"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center rounded-xl bg-white/10 px-6 py-3 text-sm font-medium text-white transition-all hover:bg-[#FF0000] hover:text-white"
+                  className="inline-flex items-center justify-center rounded-xl bg-white/10 px-6 py-3 text-sm font-medium text-white transition-all hover:bg-brand-cta hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-4 focus-visible:ring-offset-brand-text"
                 >
                   立即訂閱
                 </a>

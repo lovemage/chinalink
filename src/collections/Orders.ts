@@ -3,6 +3,10 @@ import { sendOrderEmail } from '@/hooks/sendOrderEmail'
 
 export const Orders: CollectionConfig = {
   slug: 'orders',
+  labels: {
+    singular: '訂單',
+    plural: '訂單',
+  },
   admin: {
     useAsTitle: 'orderNumber',
     defaultColumns: ['orderNumber', 'customer', 'service', 'amount', 'paymentStatus', 'createdAt'],
@@ -44,7 +48,7 @@ export const Orders: CollectionConfig = {
         { name: 'price', type: 'number', required: true, label: '價格' },
       ],
     },
-    { name: 'amount', type: 'number', required: true, label: '總金額（NTD）' },
+    { name: 'amount', type: 'number', required: true, label: '總金額（新台幣）' },
     {
       name: 'paymentMethod',
       type: 'select',
@@ -67,8 +71,8 @@ export const Orders: CollectionConfig = {
       ],
       label: '付款狀態',
     },
-    { name: 'ecpayTradeNo', type: 'text', label: 'ECPay 交易編號', admin: { readOnly: true } },
-    { name: 'note', type: 'textarea', label: 'Admin 備註' },
+    { name: 'ecpayTradeNo', type: 'text', label: '綠界交易編號', admin: { readOnly: true } },
+    { name: 'note', type: 'textarea', label: '管理員備註' },
   ],
   timestamps: true,
 }

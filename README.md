@@ -65,3 +65,20 @@ That's it! The Docker instance will help you get up and running quickly while al
 ## Questions
 
 If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+
+## Cloudinary Upload Setup
+
+This project supports uploading media to Cloudinary via Payload.
+
+1. Set the following variables in `.env`:
+  - `CLOUDINARY_ENABLED=true`
+  - `CLOUDINARY_CLOUD_NAME=...`
+  - `CLOUDINARY_API_KEY=...`
+  - `CLOUDINARY_API_SECRET=...`
+  - `CLOUDINARY_FOLDER=chinalink` (optional)
+2. Restart the dev server.
+
+Notes:
+- If `CLOUDINARY_ENABLED=true` but credentials are missing, the app will log a warning and fall back to local uploads.
+- Image URLs are generated with Cloudinary transformation `f_webp,q_auto`.
+- Video uploads are also supported (`video/*`).

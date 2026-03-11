@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 const quickLinks = [
   { label: '服務項目', href: '/services' },
@@ -45,14 +46,24 @@ export function Footer() {
             <h4 className="text-sm font-semibold uppercase tracking-wider text-white/90">
               聯絡方式
             </h4>
-            <ul className="mt-3 space-y-2 text-sm text-white/70">
-              <li>
-                <span className="font-medium text-white/90">Line ID：</span>
-                misstinachen
+            <ul className="mt-3 space-y-3 text-sm text-white/70">
+              <li className="flex items-center gap-3">
+                <div className="relative h-6 w-6 opacity-80 brightness-0 invert">
+                  <Image src="/icons/consulting.webp" alt="Line" fill sizes="24px" className="object-contain" />
+                </div>
+                <div>
+                  <span className="font-medium text-white/90">Line ID：</span>
+                  misstinachen
+                </div>
               </li>
-              <li>
-                <span className="font-medium text-white/90">微信 ID：</span>
-                tod324
+              <li className="flex items-center gap-3">
+                <div className="relative h-6 w-6 opacity-80 brightness-0 invert">
+                  <Image src="/icons/account.webp" alt="WeChat" fill sizes="24px" className="object-contain" />
+                </div>
+                <div>
+                  <span className="font-medium text-white/90">微信 ID：</span>
+                  tod324
+                </div>
               </li>
             </ul>
           </div>

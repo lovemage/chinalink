@@ -17,8 +17,8 @@ export const ImageGallery: Block = {
       type: 'select',
       defaultValue: 'grid',
       options: [
-        { label: 'Grid', value: 'grid' },
-        { label: 'Carousel', value: 'carousel' },
+        { label: '網格', value: 'grid' },
+        { label: '輪播', value: 'carousel' },
       ],
     },
   ],

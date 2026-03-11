@@ -5,12 +5,20 @@ import configPromise from '@payload-config'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
+import { headers } from 'next/headers'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import { PostCard } from '@/components/blog/PostCard'
 import type { Post, Category, Media } from '@/payload-types'
 import type { ComponentProps } from 'react'
 
 type BlockRendererBlocks = ComponentProps<typeof BlockRenderer>['blocks']
+
+async function canViewDraftPosts() {
+  if (process.env.NODE_ENV === 'development') return true
+
+  const host = (await headers()).get('host') || ''
+  return host.startsWith('localhost') || host.startsWith('127.0.0.1')
+}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -24,7 +32,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   })
 
   const post = result.docs[0] as Post | undefined
-  if (!post) return { title: '找不到文章' }
+  const allowDraft = await canViewDraftPosts()
+  if (!post || (!allowDraft && post.status !== 'published')) {
+    return { title: '找不到文章' }
+  }
 
   return {
     title: post.seo?.metaTitle || `${post.title} - 懂陸姐 ChinaLink`,
@@ -48,19 +59,17 @@ export default async function BlogArticlePage({
 }) {
   const { slug } = await params
   const payload = await getPayload({ config: configPromise })
+  const allowDraft = await canViewDraftPosts()
 
   const result = await payload.find({
     collection: 'posts',
-    where: {
-      slug: { equals: slug },
-      status: { equals: 'published' },
-    },
+    where: { slug: { equals: slug } },
     limit: 1,
     depth: 2,
   })
 
   const post = result.docs[0] as Post | undefined
-  if (!post) notFound()
+  if (!post || (!allowDraft && post.status !== 'published')) notFound()
 
   const cover =
     typeof post.coverImage === 'object' && post.coverImage
@@ -76,11 +85,16 @@ export default async function BlogArticlePage({
   if (category) {
     const relatedResult = await payload.find({
       collection: 'posts',
-      where: {
-        status: { equals: 'published' },
-        category: { equals: category.id },
-        id: { not_equals: post.id },
-      },
+      where: allowDraft
+        ? {
+            category: { equals: category.id },
+            id: { not_equals: post.id },
+          }
+        : {
+            status: { equals: 'published' },
+            category: { equals: category.id },
+            id: { not_equals: post.id },
+          },
       sort: '-publishedAt',
       limit: 3,
       depth: 1,

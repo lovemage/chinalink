@@ -26,34 +26,37 @@ export function ServiceCard({ service }: ServiceCardProps) {
   return (
     <Link
       href={`/services/${service.slug}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-transparent bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand-primary/30 hover:shadow-lg"
+      className="group flex flex-col overflow-hidden rounded-[2.5rem] border border-brand-primary/10 bg-white shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-brand-primary/10"
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-brand-primary/10">
+      <div className="relative aspect-[16/10] overflow-hidden bg-brand-bg m-2 rounded-[2rem]">
         {cover?.url ? (
           <Image
             src={cover.sizes?.card?.url || cover.url}
             alt={cover.alt || service.title}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 1024px) 100vw, 33vw"
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full items-center justify-center">
-            <span className="text-4xl text-brand-primary/30">&#128736;</span>
+          <div className="flex h-full items-center justify-center opacity-30">
+            <div className="relative h-16 w-16">
+              <Image src="/icons/consulting.webp" alt="Service" fill sizes="64px" className="object-contain" />
+            </div>
           </div>
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-6 sm:p-8">
         {category && (
-          <span className="mb-2 w-fit rounded-full bg-brand-primary/10 px-3 py-0.5 text-xs font-medium text-brand-primary">
+          <span className="mb-4 w-fit rounded-full border border-brand-primary/20 bg-white px-4 py-1 text-xs font-semibold tracking-wider text-brand-primary">
             {category.name}
           </span>
         )}
-        <h3 className="text-lg font-semibold text-brand-text group-hover:text-brand-primary">
+        <h3 className="font-serif text-2xl font-bold text-brand-text group-hover:text-brand-primary transition-colors">
           {service.title}
         </h3>
-        <div className="mt-auto pt-4">
-          <span className="text-lg font-bold text-brand-cta">{formatPrice(service)}</span>
+        <div className="mt-auto pt-6">
+          <span className="font-serif text-xl font-medium text-brand-primary">{formatPrice(service)}</span>
         </div>
       </div>
     </Link>

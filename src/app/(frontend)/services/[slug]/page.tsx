@@ -59,11 +59,13 @@ export default async function ServiceDetailPage({
   const category = typeof service.serviceCategory === 'object' && service.serviceCategory ? (service.serviceCategory as ServiceCategory) : null
 
   return (
-    <article className="py-12 sm:py-16">
-      <div className="mx-auto max-w-4xl px-4">
+    <article className="py-16 sm:py-24 bg-brand-bg min-h-screen relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-brand-primary/5 to-transparent pointer-events-none" />
+
+      <div className="mx-auto max-w-5xl px-6 relative z-10">
         {/* Cover image */}
         {cover?.url && (
-          <div className="relative mb-8 aspect-[2/1] overflow-hidden rounded-2xl">
+          <div className="relative mb-12 aspect-[2/1] overflow-hidden rounded-[2.5rem] shadow-2xl shadow-brand-text/5 border border-white/50">
             <Image
               src={cover.sizes?.hero?.url || cover.url}
               alt={cover.alt || service.title}
@@ -75,31 +77,39 @@ export default async function ServiceDetailPage({
         )}
 
         {/* Category badge */}
-        {category && (
-          <span className="mb-3 inline-block rounded-full bg-brand-primary/10 px-4 py-1 text-sm font-medium text-brand-primary">
-            {category.name}
-          </span>
-        )}
+        <div className="mb-4 text-center sm:text-left">
+          {category && (
+            <span className="inline-block rounded-full border border-brand-primary/20 bg-white/50 backdrop-blur-md px-5 py-1.5 text-xs font-semibold tracking-widest text-brand-primary uppercase shadow-sm">
+              {category.name}
+            </span>
+          )}
+        </div>
 
-        <h1 className="text-3xl font-bold text-brand-text sm:text-4xl">{service.title}</h1>
+        <h1 className="font-serif text-4xl font-medium text-brand-text sm:text-5xl lg:text-6xl text-center sm:text-left leading-tight">
+          {service.title}
+        </h1>
 
-        <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_320px]">
+        <div className="mt-16 grid gap-12 lg:grid-cols-[1fr_360px]">
           {/* Main content column */}
-          <div>
+          <div className="bg-white rounded-[2.5rem] p-8 sm:p-12 shadow-xl shadow-brand-primary/5 border border-brand-primary/10">
             {/* Block content */}
             {service.description && (
-              <BlockRenderer blocks={service.description as BlockRendererBlocks} />
+              <div className="prose prose-lg prose-stone max-w-none font-light text-brand-muted leading-relaxed prose-headings:font-serif prose-headings:font-medium prose-headings:text-brand-text prose-a:text-brand-primary">
+                <BlockRenderer blocks={service.description as BlockRendererBlocks} />
+              </div>
             )}
 
             {/* Features list */}
             {service.features && service.features.length > 0 && (
-              <div className="mt-10">
-                <h2 className="text-xl font-bold text-brand-text">服務特點</h2>
-                <ul className="mt-4 space-y-3">
+              <div className="mt-12 pt-12 border-t border-brand-primary/10">
+                <h2 className="font-serif text-2xl font-medium text-brand-text mb-6">服務特點</h2>
+                <ul className="space-y-4">
                   {service.features.map((feature) => (
-                    <li key={feature.id} className="flex items-start gap-3">
-                      <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-brand-primary" />
-                      <span className="text-brand-text">{feature.text}</span>
+                    <li key={feature.id} className="flex items-start gap-4">
+                      <div className="relative h-6 w-6 shrink-0 mt-1">
+                        <Image src="/icons/consulting.webp" alt="Check" fill className="object-contain" />
+                      </div>
+                      <span className="text-lg font-light text-brand-muted leading-relaxed">{feature.text}</span>
                     </li>
                   ))}
                 </ul>
@@ -108,14 +118,15 @@ export default async function ServiceDetailPage({
 
             {/* Inquiry form for custom pricing */}
             {service.pricingMode === 'custom' && (
-              <div className="mt-10">
+              <div className="mt-12 pt-12 border-t border-brand-primary/10">
+                <h2 className="font-serif text-2xl font-medium text-brand-text mb-6">專屬諮詢</h2>
                 <InquiryForm serviceId={service.id} serviceTitle={service.title} />
               </div>
             )}
           </div>
 
           {/* Sidebar pricing */}
-          <div className="lg:sticky lg:top-24 lg:self-start">
+          <div className="lg:sticky lg:top-32 lg:self-start">
             <PricingSection service={service} />
           </div>
         </div>

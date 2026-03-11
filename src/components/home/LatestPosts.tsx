@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import type { Media as MediaType } from '@/payload-types'
+import { ArrowRight } from 'lucide-react'
 
 export async function LatestPosts() {
   const payload = await getPayload({ config: configPromise })
@@ -14,17 +15,35 @@ export async function LatestPosts() {
   })
 
   return (
-    <section className="bg-white py-16 sm:py-24">
-      <div className="mx-auto max-w-6xl px-4">
-        <h2 className="text-center text-2xl font-bold text-brand-text sm:text-3xl">最新文章</h2>
+    <section className="bg-white py-24 sm:py-32">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-16 gap-6">
+          <div className="max-w-2xl">
+            <div className="mb-4 inline-flex items-center gap-2 text-sm font-bold tracking-widest text-brand-primary uppercase">
+              <span className="h-px w-8 bg-brand-primary"></span>
+              最新觀點
+            </div>
+            <h2 className="text-3xl font-extrabold text-brand-text sm:text-4xl md:text-5xl">
+              掌握兩岸最新<br/>商業趨勢與政策
+            </h2>
+          </div>
+          {posts.length > 0 && (
+            <Link
+              href="/blog"
+              className="group inline-flex h-12 items-center justify-center rounded-full border border-brand-text/10 bg-white px-6 font-semibold text-brand-text shadow-sm transition-all hover:border-brand-primary hover:text-brand-primary hover:shadow-md"
+            >
+              閱讀更多文章
+            </Link>
+          )}
+        </div>
 
         {posts.length === 0 ? (
-          <p className="mt-12 text-center text-brand-muted">
-            目前還沒有文章，敬請期待！
-          </p>
+          <div className="flex h-64 items-center justify-center rounded-[2.5rem] border-2 border-dashed border-brand-muted/20 bg-brand-bg/50">
+            <p className="text-lg text-brand-muted">目前還沒有文章，敬請期待！</p>
+          </div>
         ) : (
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => {
+          <div className="grid gap-6 lg:grid-cols-12">
+            {posts.map((post, index) => {
               const cover = post.coverImage as MediaType | null | undefined
               const date = post.publishedAt
                 ? new Date(post.publishedAt).toLocaleDateString('zh-TW', {
@@ -34,69 +53,58 @@ export async function LatestPosts() {
                   })
                 : null
 
+              const isFeatured = index === 0;
+
               return (
                 <Link
                   key={post.id}
                   href={`/blog/${post.slug}`}
-                  className="group overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  className={`group relative flex flex-col overflow-hidden rounded-[2.5rem] bg-brand-bg/30 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-brand-primary/10 ${
+                    isFeatured ? 'lg:col-span-7' : 'lg:col-span-5'
+                  }`}
                 >
-                  <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#FFEDD5]">
+                  <div className={`relative w-full overflow-hidden ${isFeatured ? 'aspect-[4/3] lg:aspect-[16/10]' : 'aspect-[4/3]'}`}>
                     {cover?.url ? (
                       <Image
                         src={cover.url}
                         alt={cover.alt || post.title}
                         fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        sizes={isFeatured ? '(max-width: 1024px) 100vw, 58vw' : '(max-width: 1024px) 100vw, 42vw'}
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center text-3xl text-brand-primary/40">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="48"
-                          height="48"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2" />
-                          <path d="M18 14h-8" />
-                          <path d="M15 18h-5" />
-                          <path d="M10 6h8v4h-8V6Z" />
-                        </svg>
+                      <div className="flex h-full items-center justify-center bg-brand-primary/5">
+                        <div className="relative h-16 w-16 opacity-30">
+                          <Image src="/icons/marketing.webp" alt="文章" fill sizes="64px" className="object-contain" />
+                        </div>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-60 transition-opacity group-hover:opacity-80"></div>
+                    
+                    {date && (
+                      <div className="absolute top-6 left-6 rounded-full bg-white/90 backdrop-blur-md px-4 py-1.5 text-xs font-bold text-brand-text shadow-sm">
+                        {date}
                       </div>
                     )}
                   </div>
 
-                  <div className="p-5">
-                    {date && (
-                      <time className="text-xs text-brand-muted">{date}</time>
-                    )}
-                    <h3 className="mt-1 text-lg font-semibold leading-snug text-brand-text group-hover:text-brand-primary">
+                  <div className={`absolute bottom-0 left-0 right-0 z-10 flex flex-col justify-end p-6 text-white sm:p-8 md:p-10`}>
+                    <h3 className={`font-bold leading-tight drop-shadow-md ${isFeatured ? 'text-2xl sm:text-3xl lg:text-4xl' : 'text-xl sm:text-2xl'}`}>
                       {post.title}
                     </h3>
                     {post.excerpt && (
-                      <p className="mt-2 line-clamp-2 text-sm text-brand-muted">
+                      <p className={`mt-3 line-clamp-2 text-white/80 drop-shadow-sm ${isFeatured ? 'text-base sm:text-lg' : 'text-sm'}`}>
                         {post.excerpt}
                       </p>
                     )}
+                    
+                    <div className="mt-6 flex items-center gap-2 text-sm font-bold text-brand-primary opacity-0 -translate-x-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-0">
+                      閱讀全文 <ArrowRight className="h-4 w-4" />
+                    </div>
                   </div>
                 </Link>
               )
             })}
-          </div>
-        )}
-
-        {posts.length > 0 && (
-          <div className="mt-10 text-center">
-            <Link
-              href="/blog"
-              className="inline-flex items-center gap-1 text-sm font-medium text-brand-primary hover:underline"
-            >
-              查看全部文章 &rarr;
-            </Link>
           </div>
         )}
       </div>

@@ -2,6 +2,10 @@ import type { CollectionConfig } from 'payload'
 
 export const Media: CollectionConfig = {
   slug: 'media',
+  labels: {
+    singular: '媒體',
+    plural: '媒體',
+  },
   access: {
     read: () => true,
   },
@@ -12,7 +16,7 @@ export const Media: CollectionConfig = {
       { name: 'hero', width: 1920, height: 1080 },
     ],
     adminThumbnail: 'thumbnail',
-    mimeTypes: ['image/*', 'application/pdf'],
+    mimeTypes: ['image/*', 'video/*', 'application/pdf'],
   },
   fields: [
     {

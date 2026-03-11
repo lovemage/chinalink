@@ -12,10 +12,14 @@
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
-    "start": "cross-env NODE_OPTIONS=--no-deprecation next start"
+    "seed": "cross-env NODE_OPTIONS=--no-deprecation node --env-file=.env --import tsx src/seed/run.ts",
+    "seed:posts": "cross-env NODE_OPTIONS=--no-deprecation node --env-file=.env --import tsx src/seed/run.ts posts",
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "test:seed": "node --import tsx --test src/seed/*.test.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",
+    "@jhb.software/payload-cloudinary-plugin": "^0.3.3",
     "@payloadcms/db-postgres": "^3.0.0",
     "@payloadcms/next": "^3.0.0",
     "@payloadcms/richtext-lexical": "^3.0.0",
@@ -46,6 +50,7 @@
     "@types/react-dom": "^19.0.0",
     "eslint": "^9.16.0",
     "eslint-config-next": "15.4.11",
+    "tsx": "^4.21.0",
     "typescript": "^5.7.0"
   },
   "engines": {

@@ -17,6 +17,10 @@ import {
 
 export const Posts: CollectionConfig = {
   slug: 'posts',
+  labels: {
+    singular: '文章',
+    plural: '文章',
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'category', 'status', 'publishedAt'],
@@ -95,11 +99,11 @@ export const Posts: CollectionConfig = {
     {
       name: 'seo',
       type: 'group',
-      label: 'SEO',
+      label: '搜尋優化',
       admin: { position: 'sidebar' },
       fields: [
-        { name: 'metaTitle', type: 'text', label: 'Meta 標題' },
-        { name: 'metaDescription', type: 'textarea', label: 'Meta 描述' },
+        { name: 'metaTitle', type: 'text', label: 'SEO 標題' },
+        { name: 'metaDescription', type: 'textarea', label: 'SEO 描述' },
       ],
     },
   ],

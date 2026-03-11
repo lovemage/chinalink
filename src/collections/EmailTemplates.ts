@@ -11,6 +11,10 @@ import {
 
 export const EmailTemplates: CollectionConfig = {
   slug: 'email-templates',
+  labels: {
+    singular: '信件模板',
+    plural: '信件模板',
+  },
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'slug', 'type', 'status'],
@@ -58,7 +62,7 @@ export const EmailTemplates: CollectionConfig = {
         description: '此模板可使用的變數',
       },
       fields: [
-        { name: 'key', type: 'text', required: true, label: '變數名（如 customerName）' },
+        { name: 'key', type: 'text', required: true, label: '變數名稱（例如 customerName）' },
         { name: 'description', type: 'text', required: true, label: '說明（如「會員姓名」）' },
       ],
     },

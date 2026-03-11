@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
 import { LogOut } from 'lucide-react'
 import { MobileNav } from './MobileNav'
@@ -15,10 +16,11 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 const navItems = [
+  { label: '首頁', href: '/' },
   { label: '服務項目', href: '/services' },
-  { label: 'Blog', href: '/blog' },
-  { label: '關於懂陸姐', href: '/about' },
-  { label: '聯繫我們', href: '/contact' },
+  { label: '專欄文章', href: '/blog' },
+  { label: '關於我們', href: '/about' },
+  { label: '聯絡諮詢', href: '/contact' },
 ]
 
 export function Navbar() {
@@ -26,60 +28,79 @@ export function Navbar() {
   const isLoggedIn = status === 'authenticated' && !!session?.user
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-white/80 backdrop-blur supports-backdrop-filter:bg-white/60">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="fixed top-0 z-50 w-full border-b border-white/20 bg-brand-bg/80 backdrop-blur-xl transition-all duration-300">
+      <div className="mx-auto flex h-24 max-w-7xl items-center justify-between px-6">
         {/* Logo */}
-        <Link href="/" className="text-xl font-bold text-brand-primary">
-          懂陸姐
+        <Link href="/" className="flex items-center gap-4 transition-transform hover:scale-105">
+          <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-brand-primary/20 bg-brand-bg shadow-sm">
+            <Image
+              src="/hero-illustration.png"
+              alt="懂陸姐 Logo"
+              fill
+              sizes="56px"
+              className="object-cover"
+            />
+          </div>
+          <div className="flex flex-col">
+            <span className="font-serif text-2xl font-bold tracking-tight text-brand-text leading-none">
+              懂陸姐
+            </span>
+            <span className="font-playfair text-[11px] font-bold uppercase tracking-widest text-brand-muted italic mt-0.5">
+              ChinaLink
+            </span>
+          </div>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="hidden items-center gap-10 md:flex">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-medium text-brand-text transition-colors hover:text-brand-primary"
+              className="text-sm font-medium text-brand-text/80 transition-all hover:text-brand-primary hover:scale-105"
             >
               {item.label}
             </Link>
           ))}
 
+          <div className="h-6 w-px bg-brand-muted/20"></div>
+
           {isLoggedIn && session?.user ? (
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
-                  <button className="flex items-center gap-2 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
-                    <Avatar>
+                  <button className="flex items-center gap-2 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-brand-primary transition-transform hover:scale-105">
+                    <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
                       {session.user.image ? (
                         <AvatarImage src={session.user.image} alt={session.user.name || ''} />
                       ) : null}
-                      <AvatarFallback>
+                      <AvatarFallback className="bg-brand-primary/10 text-brand-primary font-bold">
                         {session.user.name?.charAt(0) || '?'}
                       </AvatarFallback>
                     </Avatar>
                   </button>
                 }
               />
-              <DropdownMenuContent align="end" sideOffset={8}>
-                <DropdownMenuLabel>
+              <DropdownMenuContent align="end" sideOffset={8} className="w-48 rounded-2xl p-2">
+                <DropdownMenuLabel className="font-bold">
                   {session.user.name || session.user.email}
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="bg-brand-muted/10" />
                 <DropdownMenuItem
                   onClick={() => signOut({ callbackUrl: '/' })}
+                  className="rounded-xl text-brand-cta focus:bg-brand-cta/10 focus:text-brand-cta font-medium cursor-pointer"
                 >
                   <LogOut className="mr-2 size-4" />
-                  登出
+                  登出帳號
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <Link
               href="/login"
-              className="inline-flex h-9 items-center rounded-lg bg-brand-cta px-4 text-sm font-medium text-white transition-colors hover:bg-brand-cta/90"
+              className="group relative inline-flex h-11 items-center justify-center overflow-hidden rounded-full bg-brand-primary px-8 text-sm font-semibold tracking-wider text-white shadow-md transition-all duration-300 hover:scale-105 hover:bg-brand-primary/90 hover:shadow-xl hover:shadow-brand-primary/20"
             >
-              登入
+              <span className="relative">會員登入</span>
             </Link>
           )}
         </nav>

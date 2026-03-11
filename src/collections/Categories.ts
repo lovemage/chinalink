@@ -2,6 +2,10 @@ import type { CollectionConfig } from 'payload'
 
 export const Categories: CollectionConfig = {
   slug: 'categories',
+  labels: {
+    singular: '文章分類',
+    plural: '文章分類',
+  },
   admin: { useAsTitle: 'name' },
   access: { read: () => true },
   fields: [

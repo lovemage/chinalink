@@ -9,9 +9,9 @@ export const Callout: Block = {
       type: 'select',
       defaultValue: 'info',
       options: [
-        { label: 'Info', value: 'info' },
-        { label: 'Warning', value: 'warning' },
-        { label: 'Tip', value: 'tip' },
+        { label: '資訊', value: 'info' },
+        { label: '警告', value: 'warning' },
+        { label: '提示', value: 'tip' },
       ],
     },
     { name: 'content', type: 'richText', required: true },

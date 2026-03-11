@@ -17,6 +17,10 @@ import {
 
 export const Services: CollectionConfig = {
   slug: 'services',
+  labels: {
+    singular: '服務',
+    plural: '服務',
+  },
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'serviceCategory', 'pricingMode', 'status', 'visibility'],
@@ -110,7 +114,7 @@ export const Services: CollectionConfig = {
     {
       name: 'price',
       type: 'number',
-      label: '價格 (NTD)',
+      label: '價格（新台幣）',
       admin: {
         condition: (data) => data?.pricingMode === 'fixed',
       },
@@ -118,7 +122,7 @@ export const Services: CollectionConfig = {
     {
       name: 'basePrice',
       type: 'number',
-      label: '基本價格 (NTD)',
+      label: '基本價格（新台幣）',
       admin: {
         condition: (data) => data?.pricingMode === 'addons',
       },
@@ -132,7 +136,7 @@ export const Services: CollectionConfig = {
       },
       fields: [
         { name: 'name', type: 'text', required: true, label: '項目名稱' },
-        { name: 'price', type: 'number', required: true, label: '價格 (NTD)' },
+        { name: 'price', type: 'number', required: true, label: '價格（新台幣）' },
         { name: 'required', type: 'checkbox', defaultValue: false, label: '必選' },
       ],
     },
@@ -147,11 +151,11 @@ export const Services: CollectionConfig = {
     {
       name: 'seo',
       type: 'group',
-      label: 'SEO',
+      label: '搜尋優化',
       admin: { position: 'sidebar' },
       fields: [
-        { name: 'metaTitle', type: 'text', label: 'Meta 標題' },
-        { name: 'metaDescription', type: 'textarea', label: 'Meta 描述' },
+        { name: 'metaTitle', type: 'text', label: 'SEO 標題' },
+        { name: 'metaDescription', type: 'textarea', label: 'SEO 描述' },
       ],
     },
   ],

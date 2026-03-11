@@ -3,6 +3,10 @@ import { sendInquiryEmail } from '@/hooks/sendInquiryEmail'
 
 export const Inquiries: CollectionConfig = {
   slug: 'inquiries',
+  labels: {
+    singular: '諮詢單',
+    plural: '諮詢單',
+  },
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'customer', 'service', 'status', 'createdAt'],
@@ -15,7 +19,7 @@ export const Inquiries: CollectionConfig = {
     { name: 'customer', type: 'relationship', relationTo: 'customers', label: '會員' },
     { name: 'service', type: 'relationship', relationTo: 'services', label: '相關服務' },
     { name: 'name', type: 'text', required: true, label: '姓名' },
-    { name: 'contactMethod', type: 'text', required: true, label: '聯繫方式（Line ID / 微信）' },
+    { name: 'contactMethod', type: 'text', required: true, label: '聯絡方式（LINE ID / 微信）' },
     { name: 'message', type: 'textarea', required: true, label: '需求說明' },
     {
       name: 'attachments',

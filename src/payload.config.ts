@@ -21,6 +21,8 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 const disableDatabasePush = process.env.PAYLOAD_DISABLE_DB_PUSH === 'true'
 const isDevelopment = process.env.NODE_ENV === 'development'
+const payloadSecret = process.env.PAYLOAD_SECRET || process.env.PAYLOADCMS_SECRET || process.env.AUTH_SECRET || ''
+const databaseUri = process.env.DATABASE_URI || process.env.DATABASE_URL || ''
 const cloudinaryCloudName = process.env.CLOUDINARY_CLOUD_NAME || ''
 const cloudinaryApiKey = process.env.CLOUDINARY_API_KEY || ''
 const cloudinaryApiSecret = process.env.CLOUDINARY_API_SECRET || ''
@@ -134,14 +136,14 @@ export default buildConfig({
   },
   collections: [Users, Media, Categories, Posts, ServiceCategories, Services, Customers, Orders, Inquiries, EmailTemplates],
   editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: payloadSecret,
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   db: postgresAdapter({
     push: !disableDatabasePush,
     pool: {
-      connectionString: process.env.DATABASE_URI || '',
+      connectionString: databaseUri,
     },
   }),
   sharp,

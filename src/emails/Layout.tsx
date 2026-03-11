@@ -37,7 +37,7 @@ export function Layout({ preview, children }: LayoutProps) {
 
           {/* Footer */}
           <Section style={footerStyle}>
-            <Text style={footerTextStyle}>懂陸姐 chinalink.com.tw</Text>
+            <Text style={footerTextStyle}>懂陸姐 www.chinalink.tw</Text>
           </Section>
         </Container>
       </Body>

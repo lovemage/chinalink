@@ -35,15 +35,18 @@ const imageExtensions = new Set(['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'ti
 const videoExtensions = new Set(['mp4', 'mov', 'webm', 'm4v', 'avi', 'mkv'])
 
 function cloneMediaCollection() {
-  return {
-    ...Media,
-    upload: Media.upload
+  const uploadConfig =
+    Media.upload && typeof Media.upload === 'object'
       ? {
           ...Media.upload,
           imageSizes: Media.upload.imageSizes ? [...Media.upload.imageSizes] : Media.upload.imageSizes,
           mimeTypes: Media.upload.mimeTypes ? [...Media.upload.mimeTypes] : Media.upload.mimeTypes,
         }
-      : Media.upload,
+      : Media.upload
+
+  return {
+    ...Media,
+    upload: uploadConfig,
     fields: Media.fields ? [...Media.fields] : Media.fields,
   }
 }

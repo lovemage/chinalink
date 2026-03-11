@@ -20,13 +20,40 @@ async function canViewDraftPosts() {
   return host.startsWith('localhost') || host.startsWith('127.0.0.1')
 }
 
+function buildSlugCandidates(input: string) {
+  const candidates = new Set<string>()
+  const raw = input.trim()
+
+  if (raw) {
+    candidates.add(raw)
+    candidates.add(raw.normalize('NFC'))
+    candidates.add(raw.normalize('NFKC'))
+  }
+
+  try {
+    const decoded = decodeURIComponent(raw)
+    if (decoded) {
+      candidates.add(decoded)
+      candidates.add(decoded.normalize('NFC'))
+      candidates.add(decoded.normalize('NFKC'))
+    }
+  } catch {
+    // Keep raw candidates only if slug is not URI-encoded.
+  }
+
+  return [...candidates]
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const payload = await getPayload({ config: configPromise })
+  const slugCandidates = buildSlugCandidates(slug)
 
   const result = await payload.find({
     collection: 'posts',
-    where: { slug: { equals: slug } },
+    where: {
+      or: slugCandidates.map((value) => ({ slug: { equals: value } })),
+    },
     limit: 1,
     depth: 0,
   })
@@ -60,10 +87,13 @@ export default async function BlogArticlePage({
   const { slug } = await params
   const payload = await getPayload({ config: configPromise })
   const allowDraft = await canViewDraftPosts()
+  const slugCandidates = buildSlugCandidates(slug)
 
   const result = await payload.find({
     collection: 'posts',
-    where: { slug: { equals: slug } },
+    where: {
+      or: slugCandidates.map((value) => ({ slug: { equals: value } })),
+    },
     limit: 1,
     depth: 2,
   })

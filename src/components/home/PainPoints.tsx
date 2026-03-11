@@ -3,26 +3,26 @@ import Image from 'next/image'
 const painPoints = [
   {
     iconSrc: '/icons/account.png',
-    title: '沒有大陸手機號',
-    description: '無法註冊抖音、小紅書等平台帳號，導致許多服務受限',
+    title: '卡在沒有大陸門號',
+    description: '不是你不會，是一開始就少了能用的大陸門號。很多 App 想註冊、想收驗證碼，第一步就先被擋在外面。',
     className: "md:col-span-2 md:row-span-2 bg-gradient-to-br from-brand-bg to-card border-brand-primary/10",
   },
   {
     iconSrc: '/icons/payment.png',
-    title: '支付寶開不了',
-    description: '沒有大陸銀行卡，無法完成線上支付',
+    title: '付款這關一直過不了',
+    description: '不是商品不能買，是付款這一步就先卡住。沒有大陸卡、支付寶綁不上，很多事情看得到卻做不了。',
     className: "md:col-span-1 md:row-span-1 bg-card border-border/70",
   },
   {
     iconSrc: '/icons/company.png',
-    title: '想開淘寶店',
-    description: '沒有營業執照和大陸身份，開店受限',
+    title: '想開店，資料卻不齊',
+    description: '想上架、想營運、想開始賣，結果一碰到執照、身份和開戶需求，就發現每一關都比想像中麻煩。',
     className: "md:col-span-1 md:row-span-1 bg-card border-border/70",
   },
   {
     iconSrc: '/icons/marketing.png',
-    title: '抖音小紅書經營',
-    description: '不熟悉平台規則，帳號容易被限流',
+    title: '平台要做，但規則看不懂',
+    description: '抖音、小紅書不是發文就會有流量。規則、節奏、投流方式沒抓到，時間花了，成效卻不一定出得來。',
     className: "md:col-span-2 md:row-span-1 bg-brand-text text-white border-transparent",
   },
 ]
@@ -35,10 +35,10 @@ export function PainPoints() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="max-w-2xl">
           <h2 className="text-3xl font-extrabold tracking-tight text-brand-text sm:text-4xl md:text-5xl">
-            你是否也遇到這些 <span className="font-playfair italic text-brand-primary">痛點與困難？</span>
+            你是不是也常常卡在這些 <span className="font-playfair italic text-brand-primary">痛點與困難？</span>
           </h2>
           <p className="mt-4 text-lg text-brand-muted">
-            兩岸資訊落差與政策限制，讓許多台商在初期遇到重重阻礙。
+            明明想開始做，卻常常卡在帳號、付款、開店和平台規則。不是不想衝，而是很多門檻一開始就沒人幫你講清楚。
           </p>
         </div>
 

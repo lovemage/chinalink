@@ -49,23 +49,13 @@ export function Footer() {
               聯絡方式
             </h4>
             <ul className="mt-3 space-y-3 text-sm text-white/70">
-              <li className="flex items-center gap-3">
-                <div className="relative h-[105px] w-[105px] opacity-80 brightness-0 invert">
-                  <Image src="/icons/consulting.png" alt="Line" fill sizes="105px" className="object-contain" />
-                </div>
-                <div>
-                  <span className="font-medium text-white/90">Line ID：</span>
-                  misstinachen
-                </div>
+              <li>
+                <span className="font-medium text-white/90">Line ID：</span>
+                misstinachen
               </li>
-              <li className="flex items-center gap-3">
-                <div className="relative h-[105px] w-[105px] opacity-80 brightness-0 invert">
-                  <Image src="/icons/account.png" alt="WeChat" fill sizes="105px" className="object-contain" />
-                </div>
-                <div>
-                  <span className="font-medium text-white/90">微信 ID：</span>
-                  tod324
-                </div>
+              <li>
+                <span className="font-medium text-white/90">微信 ID：</span>
+                tod324
               </li>
             </ul>
           </div>

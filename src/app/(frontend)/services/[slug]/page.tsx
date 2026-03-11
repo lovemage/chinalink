@@ -106,8 +106,8 @@ export default async function ServiceDetailPage({
                 <ul className="space-y-4">
                   {service.features.map((feature) => (
                     <li key={feature.id} className="flex items-start gap-4">
-                      <div className="relative h-6 w-6 shrink-0 mt-1">
-                        <Image src="/icons/consulting.webp" alt="Check" fill className="object-contain" />
+                      <div className="relative h-[105px] w-[105px] shrink-0 mt-1">
+                        <Image src="/icons/consulting.png" alt="Check" fill sizes="105px" className="object-contain" />
                       </div>
                       <span className="text-lg font-light text-brand-muted leading-relaxed">{feature.text}</span>
                     </li>

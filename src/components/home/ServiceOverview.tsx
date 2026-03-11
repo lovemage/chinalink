@@ -4,28 +4,28 @@ import { ArrowRight } from 'lucide-react'
 
 const services = [
   {
-    iconSrc: '/icons/account.webp',
+    iconSrc: '/icons/account.png',
     title: '帳號代辦與租用',
     description: '微信、支付寶、淘寶、小紅書等各類大陸生活必備帳號一站搞定，免除繁瑣實名認證。',
     href: '/services/account-agent',
     color: 'from-[#FFF7ED] to-[#FFEDD5]'
   },
   {
-    iconSrc: '/icons/procurement.webp',
+    iconSrc: '/icons/procurement.png',
     title: '代購與驗貨',
     description: '提供淘寶、拼多多等平台商品代購，並在廣州專屬倉庫進行嚴格驗貨，確保商品品質。',
     href: '/services/procurement',
     color: 'from-white to-[#F5F5F4]'
   },
   {
-    iconSrc: '/icons/company.webp',
+    iconSrc: '/icons/company.png',
     title: '公司註冊與開戶',
     description: '全程代辦大陸企業營業執照、銀行企業帳戶，提供地址掛靠與稅務諮詢，助您快速落地。',
     href: '/services/company-registration',
     color: 'from-[#FFF7ED] to-[#FFEDD5]'
   },
   {
-    iconSrc: '/icons/marketing.webp',
+    iconSrc: '/icons/marketing.png',
     title: '新媒體運營',
     description: '專精小紅書、抖音帳號經營與投流策略，為品牌打造精準曝光，掌握大陸流量密碼。',
     href: '/services/marketing',
@@ -64,8 +64,8 @@ export function ServiceOverview() {
               className={`group relative flex flex-col justify-between overflow-hidden rounded-[2.5rem] bg-gradient-to-br ${service.color} p-8 sm:p-10 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-brand-primary/10 border border-white/50 min-h-[320px]`}
             >
               <div className="relative z-10 flex items-start justify-between">
-                <div className="relative h-16 w-16 transition-transform duration-500 group-hover:scale-110">
-                  <Image src={service.iconSrc} alt={service.title} fill sizes="64px" className="object-contain" />
+                <div className="relative h-[80px] w-[80px] transition-transform duration-500 group-hover:scale-110">
+                  <Image src={service.iconSrc} alt={service.title} fill sizes="80px" className="object-contain" />
                 </div>
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/50 backdrop-blur-md opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:bg-white">
                   <ArrowRight className="h-5 w-5 text-brand-text" />

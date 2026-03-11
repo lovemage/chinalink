@@ -15,7 +15,9 @@ export function Footer() {
         <div className="grid gap-8 md:grid-cols-3">
           {/* Brand info */}
           <div>
-            <h3 className="text-lg font-bold text-brand-primary">懂陸姐</h3>
+            <div className="relative h-[123px] w-[220px]">
+              <Image src="/chinalink_logo_916.webp" alt="懂陸姐 ChinaLink" fill sizes="220px" className="object-contain object-left" />
+            </div>
             <p className="mt-2 text-sm text-white/70">
               台灣人在大陸生活經商，找懂陸姐就對了。
               提供專業的台商顧問服務與實用資訊。
@@ -48,8 +50,8 @@ export function Footer() {
             </h4>
             <ul className="mt-3 space-y-3 text-sm text-white/70">
               <li className="flex items-center gap-3">
-                <div className="relative h-6 w-6 opacity-80 brightness-0 invert">
-                  <Image src="/icons/consulting.webp" alt="Line" fill sizes="24px" className="object-contain" />
+                <div className="relative h-[105px] w-[105px] opacity-80 brightness-0 invert">
+                  <Image src="/icons/consulting.png" alt="Line" fill sizes="105px" className="object-contain" />
                 </div>
                 <div>
                   <span className="font-medium text-white/90">Line ID：</span>
@@ -57,8 +59,8 @@ export function Footer() {
                 </div>
               </li>
               <li className="flex items-center gap-3">
-                <div className="relative h-6 w-6 opacity-80 brightness-0 invert">
-                  <Image src="/icons/account.webp" alt="WeChat" fill sizes="24px" className="object-contain" />
+                <div className="relative h-[105px] w-[105px] opacity-80 brightness-0 invert">
+                  <Image src="/icons/account.png" alt="WeChat" fill sizes="105px" className="object-contain" />
                 </div>
                 <div>
                   <span className="font-medium text-white/90">微信 ID：</span>

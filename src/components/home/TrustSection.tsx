@@ -31,8 +31,8 @@ export function TrustSection() {
           <div className="grid w-full max-w-2xl gap-6 sm:grid-cols-2">
             {/* Line */}
             <div className="flex items-center gap-6 rounded-3xl bg-white/5 border border-white/10 p-6 backdrop-blur-md transition-all hover:bg-white/10">
-              <div className="relative h-16 w-16 shrink-0 transition-transform duration-500 group-hover:scale-110">
-                <Image src="/icons/consulting.webp" alt="Line" fill sizes="64px" className="object-contain" />
+              <div className="relative h-[80px] w-[80px] shrink-0 transition-transform duration-500 group-hover:scale-110">
+                <Image src="/icons/consulting.png" alt="Line" fill sizes="80px" className="object-contain" />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white mb-1">Line 官方客服</h3>
@@ -45,8 +45,8 @@ export function TrustSection() {
 
             {/* WeChat */}
             <div className="flex items-center gap-6 rounded-3xl bg-white/5 border border-white/10 p-6 backdrop-blur-md transition-all hover:bg-white/10">
-              <div className="relative h-16 w-16 shrink-0 transition-transform duration-500 group-hover:scale-110">
-                <Image src="/icons/account.webp" alt="WeChat" fill sizes="64px" className="object-contain" />
+              <div className="relative h-[80px] w-[80px] shrink-0 transition-transform duration-500 group-hover:scale-110">
+                <Image src="/icons/account.png" alt="WeChat" fill sizes="80px" className="object-contain" />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-white mb-1">微信官方客服</h3>
@@ -59,8 +59,8 @@ export function TrustSection() {
 
             {/* YouTube */}
             <div className="sm:col-span-2 flex items-center gap-6 rounded-3xl bg-white/5 border border-white/10 p-6 backdrop-blur-md transition-all hover:bg-white/10">
-              <div className="relative h-16 w-16 shrink-0 transition-transform duration-500 group-hover:scale-110">
-                <Image src="/icons/marketing.webp" alt="YouTube" fill sizes="64px" className="object-contain" />
+              <div className="relative h-[80px] w-[80px] shrink-0 transition-transform duration-500 group-hover:scale-110">
+                <Image src="/icons/marketing.png" alt="YouTube" fill sizes="80px" className="object-contain" />
               </div>
               <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>

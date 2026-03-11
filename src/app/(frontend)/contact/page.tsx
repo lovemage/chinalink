@@ -38,8 +38,8 @@ export default function ContactPage() {
 
               {/* Line */}
               <div className="group flex items-start gap-6 rounded-[2rem] bg-brand-bg/50 border border-brand-primary/5 p-8 transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
-                <div className="relative h-14 w-14 shrink-0 transition-transform duration-500 group-hover:scale-110">
-                  <Image src="/icons/consulting.webp" alt="Line" fill sizes="56px" className="object-contain" />
+                <div className="relative h-[105px] w-[105px] shrink-0 transition-transform duration-500 group-hover:scale-110">
+                  <Image src="/icons/consulting.png" alt="Line" fill sizes="105px" className="object-contain" />
                 </div>
                 <div>
                   <h3 className="font-serif text-xl font-bold text-brand-text">Line 官方客服</h3>
@@ -52,8 +52,8 @@ export default function ContactPage() {
 
               {/* WeChat */}
               <div className="group flex items-start gap-6 rounded-[2rem] bg-brand-bg/50 border border-brand-primary/5 p-8 transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
-                <div className="relative h-14 w-14 shrink-0 transition-transform duration-500 group-hover:scale-110">
-                  <Image src="/icons/account.webp" alt="WeChat" fill sizes="56px" className="object-contain" />
+                <div className="relative h-[105px] w-[105px] shrink-0 transition-transform duration-500 group-hover:scale-110">
+                  <Image src="/icons/account.png" alt="WeChat" fill sizes="105px" className="object-contain" />
                 </div>
                 <div>
                   <h3 className="font-serif text-xl font-bold text-brand-text">微信官方客服</h3>
@@ -66,8 +66,8 @@ export default function ContactPage() {
 
               {/* YouTube */}
               <div className="group flex items-start gap-6 rounded-[2rem] bg-brand-bg/50 border border-brand-primary/5 p-8 transition-all duration-500 hover:shadow-xl hover:-translate-y-1">
-                <div className="relative h-14 w-14 shrink-0 transition-transform duration-500 group-hover:scale-110">
-                  <Image src="/icons/marketing.webp" alt="YouTube" fill sizes="56px" className="object-contain" />
+                <div className="relative h-[105px] w-[105px] shrink-0 transition-transform duration-500 group-hover:scale-110">
+                  <Image src="/icons/marketing.png" alt="YouTube" fill sizes="105px" className="object-contain" />
                 </div>
                 <div>
                   <h3 className="font-serif text-xl font-bold text-brand-text">YouTube 頻道</h3>

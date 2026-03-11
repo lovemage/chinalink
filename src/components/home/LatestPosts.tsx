@@ -74,8 +74,8 @@ export async function LatestPosts() {
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center bg-brand-primary/5">
-                        <div className="relative h-16 w-16 opacity-30">
-                          <Image src="/icons/marketing.webp" alt="文章" fill sizes="64px" className="object-contain" />
+                        <div className="relative h-[80px] w-[80px] opacity-30">
+                          <Image src="/icons/marketing.png" alt="文章" fill sizes="80px" className="object-contain" />
                         </div>
                       </div>
                     )}

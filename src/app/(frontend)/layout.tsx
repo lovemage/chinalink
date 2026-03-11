@@ -1,4 +1,5 @@
 import React from 'react'
+import type { Metadata } from 'next'
 import { Noto_Sans_TC, Noto_Serif_TC, Playfair_Display } from 'next/font/google'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
@@ -27,7 +28,13 @@ const playfairDisplay = Playfair_Display({
   variable: '--font-playfair',
 })
 
-export const metadata = {
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.chinalink.tw'
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  alternates: {
+    canonical: '/',
+  },
   description: '懂陸姐 - 台商大陸經營知識與顧問服務平台',
   title: '懂陸姐 ChinaLink',
 }

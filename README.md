@@ -82,3 +82,13 @@ Notes:
 - If `CLOUDINARY_ENABLED=true` but credentials are missing, the app will log a warning and fall back to local uploads.
 - Image URLs are generated with Cloudinary transformation `f_webp,q_auto`.
 - Video uploads are also supported (`video/*`).
+
+## Production Domain
+
+This project is standardized on `https://www.chinalink.tw` as the canonical production domain.
+
+- Point `https://chinalink.tw` to the app and redirect it to `https://www.chinalink.tw` with a permanent redirect.
+- Set `NEXT_PUBLIC_SITE_URL=https://www.chinalink.tw`.
+- Set `AUTH_URL=https://www.chinalink.tw`.
+- Set `NEXTAUTH_URL=https://www.chinalink.tw`.
+- Set `AUTH_TRUST_HOST=true`.

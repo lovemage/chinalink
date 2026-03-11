@@ -39,8 +39,8 @@ export function ServiceCard({ service }: ServiceCardProps) {
           />
         ) : (
           <div className="flex h-full items-center justify-center opacity-30">
-            <div className="relative h-16 w-16">
-              <Image src="/icons/consulting.webp" alt="Service" fill sizes="64px" className="object-contain" />
+            <div className="relative h-[105px] w-[105px]">
+              <Image src="/icons/consulting.png" alt="Service" fill sizes="105px" className="object-contain" />
             </div>
           </div>
         )}

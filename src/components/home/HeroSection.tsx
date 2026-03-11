@@ -44,7 +44,7 @@ export function HeroSection() {
         <div className="relative w-full max-w-lg lg:w-1/2 lg:max-w-none mt-8 lg:mt-0">
           <div className="relative mx-auto aspect-[3/4] w-full max-w-md overflow-hidden rounded-t-[200px] rounded-b-[40px] border border-white/40 bg-[#F9F8F4] shadow-2xl shadow-brand-text/5 transition-transform duration-700 hover:rotate-1">
             <Image
-              src="/hero-illustration.png"
+              src="/hero_image.webp"
               alt="懂陸姐兩岸商務顧問"
               fill
               sizes="(max-width: 1024px) 90vw, 40vw"
@@ -56,8 +56,8 @@ export function HeroSection() {
           {/* Floating Organic badge */}
           <div className="absolute bottom-10 -left-6 lg:left-0 rounded-[2rem] rounded-bl-none border border-brand-primary/10 bg-white/90 p-6 shadow-2xl shadow-brand-text/5 backdrop-blur-md transition-transform duration-700 hover:-translate-y-2">
             <div className="flex items-center gap-5">
-              <div className="relative h-12 w-12 shrink-0">
-                <Image src="/icons/consulting.webp" alt="成功案例" fill sizes="48px" className="object-contain" />
+              <div className="relative h-[80px] w-[80px] shrink-0">
+                <Image src="/icons/consulting.png" alt="成功案例" fill sizes="80px" className="object-contain" />
               </div>
               <div>
                 <p className="font-serif text-lg font-medium text-brand-text">100% 成功案例</p>

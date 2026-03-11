@@ -9,25 +9,25 @@ export const metadata: Metadata = {
 
 const services = [
   {
-    iconSrc: '/icons/account.webp',
+    iconSrc: '/icons/account.png',
     title: '帳號代辦與租用',
     description:
       '微信、支付寶、淘寶、小紅書等大陸常用帳號代辦與租用，讓你輕鬆融入大陸數位生活，不再因為帳號問題而卡關。',
   },
   {
-    iconSrc: '/icons/procurement.webp',
+    iconSrc: '/icons/procurement.png',
     title: '代購與驗貨',
     description:
       '淘寶、拼多多商品代購，廣州倉庫實地驗貨，確保商品品質與規格符合需求，為你的跨境採購保駕護航。',
   },
   {
-    iconSrc: '/icons/company.webp',
+    iconSrc: '/icons/company.png',
     title: '公司註冊與開戶',
     description:
       '大陸企業營業執照申請、銀行帳戶開設一條龍服務，從資料準備到核准取得，全程專人協助處理。',
   },
   {
-    iconSrc: '/icons/marketing.webp',
+    iconSrc: '/icons/marketing.png',
     title: '新媒體運營',
     description:
       '小紅書、抖音帳號經營與投流策略規劃，幫助你的品牌在大陸社群平台上建立影響力，精準觸達目標客群。',
@@ -36,17 +36,17 @@ const services = [
 
 const trustPoints = [
   {
-    iconSrc: '/icons/consulting.webp',
+    iconSrc: '/icons/consulting.png',
     title: '在地經驗',
     description: '多年大陸生活經商實戰經驗',
   },
   {
-    iconSrc: '/icons/legal.webp',
+    iconSrc: '/icons/legal.png',
     title: '專業可靠',
     description: '合法合規，保障客戶權益',
   },
   {
-    iconSrc: '/icons/account.webp',
+    iconSrc: '/icons/account.png',
     title: '一對一服務',
     description: 'Line／微信即時溝通，專人處理',
   },
@@ -118,8 +118,8 @@ export default function AboutPage() {
                 href="/services"
                 className="group flex flex-col rounded-[2.5rem] bg-white p-8 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-brand-primary/10 border border-brand-primary/5"
               >
-                <div className="mb-8 relative h-16 w-16 transition-transform duration-500 group-hover:scale-110">
-                  <Image src={service.iconSrc} alt={service.title} fill sizes="64px" className="object-contain" />
+                <div className="mb-8 relative h-[105px] w-[105px] transition-transform duration-500 group-hover:scale-110">
+                  <Image src={service.iconSrc} alt={service.title} fill sizes="105px" className="object-contain" />
                 </div>
                 <h3 className="font-serif text-xl font-bold text-brand-text mb-4">
                   {service.title}
@@ -144,8 +144,8 @@ export default function AboutPage() {
           <div className="grid gap-12 sm:grid-cols-3">
             {trustPoints.map((point) => (
               <div key={point.title} className="flex flex-col items-center text-center">
-                <div className="relative h-20 w-20 mb-6 transition-transform duration-500 hover:scale-110">
-                  <Image src={point.iconSrc} alt={point.title} fill sizes="80px" className="object-contain" />
+                <div className="relative h-[105px] w-[105px] mb-6 transition-transform duration-500 hover:scale-110">
+                  <Image src={point.iconSrc} alt={point.title} fill sizes="105px" className="object-contain" />
                 </div>
                 <h3 className="font-serif text-2xl font-bold text-brand-text mb-3">{point.title}</h3>
                 <p className="text-base font-light text-brand-muted">{point.description}</p>

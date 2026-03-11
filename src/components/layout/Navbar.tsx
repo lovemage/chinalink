@@ -34,11 +34,11 @@ export function Navbar() {
         <Link href="/" className="flex items-center gap-4 transition-transform hover:scale-105">
           <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-brand-primary/20 bg-brand-bg shadow-sm">
             <Image
-              src="/hero-illustration.png"
+              src="/Chinalink_logo.png"
               alt="懂陸姐 Logo"
               fill
               sizes="56px"
-              className="object-cover"
+              className="object-contain"
             />
           </div>
           <div className="flex flex-col">

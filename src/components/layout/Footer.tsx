@@ -1,0 +1,68 @@
+import Link from 'next/link'
+
+const quickLinks = [
+  { label: '服務項目', href: '/services' },
+  { label: 'Blog', href: '/blog' },
+  { label: '關於懂陸姐', href: '/about' },
+  { label: '聯繫我們', href: '/contact' },
+]
+
+export function Footer() {
+  return (
+    <footer className="bg-brand-text text-white">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid gap-8 md:grid-cols-3">
+          {/* Brand info */}
+          <div>
+            <h3 className="text-lg font-bold text-brand-primary">懂陸姐</h3>
+            <p className="mt-2 text-sm text-white/70">
+              台灣人在大陸生活經商，找懂陸姐就對了。
+              提供專業的台商顧問服務與實用資訊。
+            </p>
+          </div>
+
+          {/* Quick links */}
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white/90">
+              快速連結
+            </h4>
+            <ul className="mt-3 space-y-2">
+              {quickLinks.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="text-sm text-white/70 transition-colors hover:text-white"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact info */}
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white/90">
+              聯絡方式
+            </h4>
+            <ul className="mt-3 space-y-2 text-sm text-white/70">
+              <li>
+                <span className="font-medium text-white/90">Line ID：</span>
+                misstinachen
+              </li>
+              <li>
+                <span className="font-medium text-white/90">微信 ID：</span>
+                tod324
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Copyright */}
+        <div className="mt-10 border-t border-white/10 pt-6 text-center text-xs text-white/50">
+          &copy; {new Date().getFullYear()} 懂陸姐 ChinaLink. All rights reserved.
+        </div>
+      </div>
+    </footer>
+  )
+}

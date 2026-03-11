@@ -1,0 +1,7 @@
+export { EmailHeading } from './EmailHeading'
+export { EmailText } from './EmailText'
+export { EmailButton } from './EmailButton'
+export { EmailImage } from './EmailImage'
+export { EmailOrderSummary } from './EmailOrderSummary'
+export { EmailDivider } from './EmailDivider'
+export { EmailFooter } from './EmailFooter'

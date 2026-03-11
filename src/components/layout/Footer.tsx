@@ -6,6 +6,8 @@ const quickLinks = [
   { label: 'Blog', href: '/blog' },
   { label: '關於懂陸姐', href: '/about' },
   { label: '聯繫我們', href: '/contact' },
+  { label: '隱私權政策', href: '/privacy-policy' },
+  { label: '服務條款', href: '/terms-of-service' },
 ]
 
 export function Footer() {
@@ -63,7 +65,15 @@ export function Footer() {
 
         {/* Copyright */}
         <div className="mt-10 border-t border-white/10 pt-6 text-center text-xs text-white/50">
-          &copy; {new Date().getFullYear()} 懂陸姐 ChinaLink. All rights reserved.
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            <span>&copy; {new Date().getFullYear()} 懂陸姐 ChinaLink. All rights reserved.</span>
+            <Link href="/privacy-policy" className="transition-colors hover:text-white">
+              隱私權政策
+            </Link>
+            <Link href="/terms-of-service" className="transition-colors hover:text-white">
+              服務條款
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

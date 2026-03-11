@@ -178,12 +178,17 @@ export function buildRichTextDoc(markdown: string, heading?: string): LexicalRoo
   }
 }
 
-export function buildPostContentBlocks(parsed: ParsedArticle, source: ArticleSeedSource) {
+export function buildPostContentBlocks(
+  parsed: ParsedArticle,
+  source: ArticleSeedSource,
+  coverImageId: number | string,
+) {
   const blocks: Array<Record<string, unknown>> = [
     {
       blockType: 'hero-section',
       heading: parsed.title,
       subheading: parsed.heroSubheading,
+      backgroundImage: coverImageId,
     },
   ]
 

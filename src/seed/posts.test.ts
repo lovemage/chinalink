@@ -14,11 +14,12 @@ test('buildSeedPostData assembles the post payload shape', async () => {
 
   const articlePath = path.resolve(process.cwd(), sampleSourceFile)
   const parsed = await parseArticleMarkdownFile(articlePath)
-  const data = buildSeedPostData(parsed, source, 101)
+  const data = buildSeedPostData(parsed, source, 101, 202)
 
   assert.equal(data.title, parsed.title)
   assert.equal(data.slug, parsed.slug)
   assert.equal(data.category, 101)
+  assert.equal(data.coverImage, 202)
   assert.equal(data.author, '懂陸姐')
   assert.equal(data.status, 'draft')
   assert.equal(data.seo.metaTitle, source.seo.metaTitle)

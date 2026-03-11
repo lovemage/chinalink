@@ -19,8 +19,8 @@ import { EmailTemplates } from './collections/EmailTemplates'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-const disableDatabasePush = process.env.PAYLOAD_DISABLE_DB_PUSH === 'true'
 const isDevelopment = process.env.NODE_ENV === 'development'
+const disableDatabasePush = process.env.PAYLOAD_DISABLE_DB_PUSH === 'true' && !isDevelopment
 const payloadSecret = process.env.PAYLOAD_SECRET || process.env.PAYLOADCMS_SECRET || process.env.AUTH_SECRET || ''
 const databaseUri = process.env.DATABASE_URI || process.env.DATABASE_URL || ''
 const cloudinaryCloudName = process.env.CLOUDINARY_CLOUD_NAME || ''
@@ -33,6 +33,20 @@ const cloudinaryEnabled =
 
 const imageExtensions = new Set(['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'tif', 'webp', 'avif', 'heic', 'heif'])
 const videoExtensions = new Set(['mp4', 'mov', 'webm', 'm4v', 'avi', 'mkv'])
+
+function cloneMediaCollection() {
+  return {
+    ...Media,
+    upload: Media.upload
+      ? {
+          ...Media.upload,
+          imageSizes: Media.upload.imageSizes ? [...Media.upload.imageSizes] : Media.upload.imageSizes,
+          mimeTypes: Media.upload.mimeTypes ? [...Media.upload.mimeTypes] : Media.upload.mimeTypes,
+        }
+      : Media.upload,
+    fields: Media.fields ? [...Media.fields] : Media.fields,
+  }
+}
 
 function createCloudinaryURL(args: {
   cloudName: string
@@ -134,7 +148,18 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, Categories, Posts, ServiceCategories, Services, Customers, Orders, Inquiries, EmailTemplates],
+  collections: [
+    Users,
+    cloneMediaCollection(),
+    Categories,
+    Posts,
+    ServiceCategories,
+    Services,
+    Customers,
+    Orders,
+    Inquiries,
+    EmailTemplates,
+  ],
   editor: lexicalEditor(),
   secret: payloadSecret,
   typescript: {

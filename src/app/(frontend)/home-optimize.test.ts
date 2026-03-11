@@ -4,9 +4,9 @@ import { readFileSync } from 'node:fs'
 
 const read = (path: string) => readFileSync(new URL(`../../${path}`, import.meta.url), 'utf8')
 
-test('homepage uses timed revalidation instead of forced dynamic rendering', () => {
+test('homepage uses forced dynamic rendering for Payload-backed sections', () => {
   const page = read('app/(frontend)/page.tsx')
 
-  assert.doesNotMatch(page, /force-dynamic/)
-  assert.match(page, /export const revalidate = \d+/)
+  assert.match(page, /export const dynamic = 'force-dynamic'/)
+  assert.doesNotMatch(page, /export const revalidate = \d+/)
 })

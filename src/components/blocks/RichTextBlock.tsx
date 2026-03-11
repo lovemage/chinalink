@@ -1,7 +1,10 @@
 import { RichText } from '@payloadcms/richtext-lexical/react'
+import type { Post } from '@/payload-types'
+
+type RichTextBlockData = Extract<NonNullable<Post['content']>[number], { blockType: 'rich-text' }>
 
 interface RichTextBlockProps {
-  content: any
+  content: RichTextBlockData['content']
 }
 
 export function RichTextBlock({ content }: RichTextBlockProps) {

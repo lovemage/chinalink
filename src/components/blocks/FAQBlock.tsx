@@ -3,11 +3,15 @@
 import { useState } from 'react'
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { ChevronDown } from 'lucide-react'
+import type { Post } from '@/payload-types'
+
+type FAQBlockData = Extract<NonNullable<Post['content']>[number], { blockType: 'faq' }>
+type FAQEntry = NonNullable<FAQBlockData['items']>[number]
 
 interface FAQItem {
   question: string
-  answer: any
   id?: string | null
+  answer: FAQEntry['answer']
 }
 
 interface FAQBlockProps {

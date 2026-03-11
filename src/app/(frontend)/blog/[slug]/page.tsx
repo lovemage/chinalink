@@ -8,6 +8,9 @@ import Link from 'next/link'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import { PostCard } from '@/components/blog/PostCard'
 import type { Post, Category, Media } from '@/payload-types'
+import type { ComponentProps } from 'react'
+
+type BlockRendererBlocks = ComponentProps<typeof BlockRenderer>['blocks']
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -127,7 +130,7 @@ export default async function BlogArticlePage({
         {/* Content blocks */}
         <div className="mt-10">
           {post.content && (
-            <BlockRenderer blocks={post.content as unknown as any[]} />
+            <BlockRenderer blocks={post.content as BlockRendererBlocks} />
           )}
         </div>
 

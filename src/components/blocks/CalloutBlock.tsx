@@ -1,9 +1,12 @@
 import { RichText } from '@payloadcms/richtext-lexical/react'
 import { Info, AlertTriangle, Lightbulb } from 'lucide-react'
+import type { Post } from '@/payload-types'
+
+type CalloutData = Extract<NonNullable<Post['content']>[number], { blockType: 'callout' }>
 
 interface CalloutBlockProps {
-  type?: ('info' | 'warning' | 'tip') | null
-  content: any
+  type?: CalloutData['type']
+  content: CalloutData['content']
 }
 
 const calloutStyles: Record<string, { bg: string; border: string; icon: React.ElementType; iconColor: string }> = {

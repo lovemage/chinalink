@@ -1,12 +1,15 @@
 import Image from 'next/image'
 import { RichText } from '@payloadcms/richtext-lexical/react'
-import type { Media } from '@/payload-types'
+import type { Media, Post } from '@/payload-types'
+
+type StepGuideBlockData = Extract<NonNullable<Post['content']>[number], { blockType: 'step-guide' }>
+type StepEntry = NonNullable<StepGuideBlockData['steps']>[number]
 
 interface Step {
   title: string
-  description: any
   screenshot?: (number | null) | Media
   id?: string | null
+  description: StepEntry['description']
 }
 
 interface StepGuideBlockProps {

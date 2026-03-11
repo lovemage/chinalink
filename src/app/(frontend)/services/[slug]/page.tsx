@@ -9,6 +9,9 @@ import { PricingSection } from '@/components/services/PricingSection'
 import { InquiryForm } from '@/components/services/InquiryForm'
 import type { Service, ServiceCategory, Media } from '@/payload-types'
 import { CheckCircle2 } from 'lucide-react'
+import type { ComponentProps } from 'react'
+
+type BlockRendererBlocks = ComponentProps<typeof BlockRenderer>['blocks']
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
@@ -85,7 +88,7 @@ export default async function ServiceDetailPage({
           <div>
             {/* Block content */}
             {service.description && (
-              <BlockRenderer blocks={service.description as unknown as any[]} />
+              <BlockRenderer blocks={service.description as BlockRendererBlocks} />
             )}
 
             {/* Features list */}

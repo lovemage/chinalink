@@ -438,6 +438,7 @@ export interface Service {
   title: string;
   slug: string;
   serviceCategory?: (number | null) | ServiceCategory;
+  iconName: 'badge' | 'support_agent' | 'inventory_2' | 'storefront' | 'campaign' | 'checklist';
   coverImage?: (number | null) | Media;
   description?:
     | (
@@ -1402,6 +1403,7 @@ export interface ServicesSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
   serviceCategory?: T;
+  iconName?: T;
   coverImage?: T;
   description?:
     | T

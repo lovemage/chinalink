@@ -1,39 +1,27 @@
 import Link from 'next/link'
-import Image from 'next/image'
+import { getPayload } from 'payload'
+import configPromise from '@payload-config'
 import { ArrowRight } from 'lucide-react'
+import { MaterialSymbol } from '@/components/ui/MaterialSymbol'
+import { defaultServiceIconName } from '@/lib/services/serviceIcons'
+import type { Service } from '@/payload-types'
 
-const services = [
-  {
-    iconSrc: '/icons/account.png',
-    title: '帳號代辦與租用',
-    description: '微信、支付寶、淘寶、小紅書等各類大陸生活必備帳號一站搞定，免除繁瑣實名認證。',
-    href: '/services/account-agent',
-    color: 'from-brand-bg to-card'
-  },
-  {
-    iconSrc: '/icons/procurement.png',
-    title: '代購與驗貨',
-    description: '提供淘寶、拼多多等平台商品代購，並在廣州專屬倉庫進行嚴格驗貨，確保商品品質。',
-    href: '/services/procurement',
-    color: 'from-card to-muted'
-  },
-  {
-    iconSrc: '/icons/company.png',
-    title: '公司註冊與開戶',
-    description: '全程代辦大陸企業營業執照、銀行企業帳戶，提供地址掛靠與稅務諮詢，助您快速落地。',
-    href: '/services/company-registration',
-    color: 'from-brand-bg to-card'
-  },
-  {
-    iconSrc: '/icons/marketing.png',
-    title: '新媒體運營',
-    description: '專精小紅書、抖音帳號經營與投流策略，為品牌打造精準曝光，掌握大陸流量密碼。',
-    href: '/services/marketing',
-    color: 'from-card to-muted'
-  },
-]
+const cardColors = ['from-brand-bg to-card', 'from-card to-muted', 'from-brand-bg to-card', 'from-card to-muted'] as const
 
-export function ServiceOverview() {
+export async function ServiceOverview() {
+  const payload = await getPayload({ config: configPromise })
+  const result = await payload.find({
+    collection: 'services',
+    where: {
+      status: { equals: 'published' },
+      visibility: { equals: 'public' },
+    },
+    sort: 'createdAt',
+    limit: 4,
+    depth: 0,
+  })
+  const services = result.docs as Service[]
+
   return (
     <section className="bg-brand-bg py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6">
@@ -59,13 +47,13 @@ export function ServiceOverview() {
         <div className="grid gap-8 lg:grid-cols-2">
           {services.map((service, index) => (
             <Link
-              key={service.title}
-              href={service.href}
-              className={`group relative flex flex-col justify-between overflow-hidden rounded-[2.5rem] bg-gradient-to-br ${service.color} p-8 sm:p-10 transition-shadow duration-300 hover:shadow-xl hover:shadow-brand-primary/8 border border-border/70 min-h-[320px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-brand-bg`}
+              key={service.id}
+              href={`/services/${service.slug}`}
+              className={`group relative flex flex-col justify-between overflow-hidden rounded-[2.5rem] bg-gradient-to-br ${cardColors[index % cardColors.length]} p-8 sm:p-10 transition-shadow duration-300 hover:shadow-xl hover:shadow-brand-primary/8 border border-border/70 min-h-[320px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-brand-bg`}
             >
               <div className="relative z-10 flex items-start justify-between">
-                <div className="relative h-[80px] w-[80px] transition-transform duration-300 group-hover:scale-[1.02]">
-                  <Image src={service.iconSrc} alt="" fill sizes="80px" className="object-contain" />
+                <div className="flex h-[80px] w-[80px] items-center justify-center rounded-[1.75rem] bg-white/75 text-brand-text shadow-sm ring-1 ring-brand-primary/10 transition-transform duration-300 group-hover:scale-[1.02]">
+                  <MaterialSymbol name={service.iconName || defaultServiceIconName} className="text-[44px]" />
                 </div>
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-card/70 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:bg-card">
                   <ArrowRight className="h-5 w-5 text-brand-text" />
@@ -77,7 +65,7 @@ export function ServiceOverview() {
                   {service.title}
                 </h3>
                 <p className="mt-4 text-base leading-relaxed text-brand-muted max-w-md">
-                  {service.description}
+                  {service.seo?.metaDescription || '專業服務，協助你更順利展開大陸市場相關流程。'}
                 </p>
               </div>
               

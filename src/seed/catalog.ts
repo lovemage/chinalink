@@ -1,3 +1,5 @@
+import type { ServiceIconName } from '@/lib/services/serviceIcons'
+
 export interface SeedServiceCategory {
   name: string
   slug: string
@@ -7,6 +9,7 @@ export interface SeedService {
   title: string
   slug: string
   categorySlug: string
+  iconName: ServiceIconName
   pricingMode: 'fixed' | 'addons' | 'custom'
   price?: number
   basePrice?: number
@@ -59,6 +62,7 @@ export const serviceSeedSources: SeedService[] = [
     title: '大陸平台帳號代辦',
     slug: 'account-agent',
     categorySlug: 'account-identity',
+    iconName: 'badge',
     pricingMode: 'fixed',
     price: 3200,
     features: ['協助釐清平台註冊限制與身份要求', '代辦流程整理與材料清單', '降低支付與驗證卡關風險'],
@@ -68,6 +72,7 @@ export const serviceSeedSources: SeedService[] = [
     title: '代購與廣州驗貨服務',
     slug: 'procurement',
     categorySlug: 'procurement-inspection',
+    iconName: 'inventory_2',
     pricingMode: 'addons',
     basePrice: 2500,
     addons: [
@@ -82,6 +87,7 @@ export const serviceSeedSources: SeedService[] = [
     title: '大陸公司註冊顧問',
     slug: 'company-registration',
     categorySlug: 'company-setup',
+    iconName: 'storefront',
     pricingMode: 'custom',
     features: ['依產業與地區盤點設立條件', '協助準備設立文件與申請節點', '串接銀行開戶與後續營運需求'],
     seoDescription: '針對台灣人赴陸經營提供公司設立與流程顧問支援。',
@@ -90,6 +96,7 @@ export const serviceSeedSources: SeedService[] = [
     title: '小紅書與新媒體營運顧問',
     slug: 'marketing',
     categorySlug: 'content-growth',
+    iconName: 'campaign',
     pricingMode: 'fixed',
     price: 8800,
     features: ['帳號定位與內容策略梳理', '陪跑建立發文節奏', '降低限流與違規風險'],

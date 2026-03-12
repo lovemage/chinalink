@@ -14,7 +14,7 @@ test('buildPostContentBlocks creates hero rich-text faq and cta blocks', async (
 
   const articlePath = path.resolve(process.cwd(), sampleSourceFile)
   const parsed = await parseArticleMarkdownFile(articlePath)
-  const blocks = buildPostContentBlocks(parsed, source)
+  const blocks = buildPostContentBlocks(parsed, source, 1)
 
   assert.equal(blocks[0]?.blockType, 'hero-section')
   assert.equal(blocks[0]?.heading, parsed.title)

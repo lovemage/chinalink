@@ -7,8 +7,9 @@ import Image from 'next/image'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import { PricingSection } from '@/components/services/PricingSection'
 import { InquiryForm } from '@/components/services/InquiryForm'
+import { MaterialSymbol } from '@/components/ui/MaterialSymbol'
+import { defaultServiceIconName } from '@/lib/services/serviceIcons'
 import type { Service, ServiceCategory, Media } from '@/payload-types'
-import { CheckCircle2 } from 'lucide-react'
 import type { ComponentProps } from 'react'
 
 type BlockRendererBlocks = ComponentProps<typeof BlockRenderer>['blocks']
@@ -106,8 +107,8 @@ export default async function ServiceDetailPage({
                 <ul className="space-y-4">
                   {service.features.map((feature) => (
                     <li key={feature.id} className="flex items-start gap-4">
-                      <div className="relative h-[105px] w-[105px] shrink-0 mt-1">
-                        <Image src="/icons/consulting.png" alt="Check" fill sizes="105px" className="object-contain" />
+                      <div className="mt-1 flex h-[64px] w-[64px] shrink-0 items-center justify-center rounded-2xl bg-brand-primary/8 text-brand-primary ring-1 ring-brand-primary/12">
+                        <MaterialSymbol name={service.iconName || defaultServiceIconName} className="text-[34px]" />
                       </div>
                       <span className="text-lg font-light text-brand-muted leading-relaxed">{feature.text}</span>
                     </li>

@@ -61,3 +61,15 @@ test('seed runner includes catalog target in default flow', () => {
   assert.match(source, /target === 'catalog'/)
   assert.match(source, /seedCatalog\(\)/)
 })
+
+test('services collection exposes a fixed iconName select field for admin use', () => {
+  const servicesSource = fs.readFileSync(path.resolve(root, 'src/collections/Services.ts'), 'utf8')
+
+  assert.equal(servicesSource.includes("name: 'iconName'"), true)
+  assert.equal(servicesSource.includes("type: 'select'"), true)
+  assert.equal(servicesSource.includes('beforeInput'), true)
+  assert.equal(
+    servicesSource.includes("./components/payload/ServiceIconPreviewField.tsx#ServiceIconPreviewField"),
+    true,
+  )
+})

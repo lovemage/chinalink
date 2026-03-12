@@ -2,7 +2,7 @@ import { postgresAdapter } from '@payloadcms/db-postgres'
 import { payloadCloudinaryPlugin } from '@jhb.software/payload-cloudinary-plugin'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
-import { buildConfig } from 'payload'
+import { buildConfig, type Payload } from 'payload'
 import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
@@ -96,7 +96,7 @@ function normalizeDevAdminEmail(value: string) {
   return `${normalized}@local.dev`
 }
 
-async function ensureDevAdmin(payload: any) {
+async function ensureDevAdmin(payload: Payload) {
   if (!isDevelopment) return
 
   const devAdminEmail = normalizeDevAdminEmail(process.env.DEV_ADMIN_EMAIL || 'admin@local.dev')

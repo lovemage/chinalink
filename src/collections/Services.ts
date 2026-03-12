@@ -14,6 +14,7 @@ import {
   Embed,
   Divider,
 } from '../blocks'
+import { defaultServiceIconName, serviceIconOptions } from '@/lib/services/serviceIcons'
 
 export const Services: CollectionConfig = {
   slug: 'services',
@@ -55,6 +56,23 @@ export const Services: CollectionConfig = {
       relationTo: 'service-categories',
       admin: { position: 'sidebar' },
       label: '服務分類',
+    },
+    {
+      name: 'iconName',
+      type: 'select',
+      required: true,
+      defaultValue: defaultServiceIconName,
+      options: serviceIconOptions.map((option) => ({
+        label: option.label,
+        value: option.value,
+      })),
+      admin: {
+        position: 'sidebar',
+        components: {
+          beforeInput: ['./components/payload/ServiceIconPreviewField.tsx#ServiceIconPreviewField'],
+        },
+      },
+      label: '服務圖示',
     },
     { name: 'coverImage', type: 'upload', relationTo: 'media', label: '封面圖' },
     {

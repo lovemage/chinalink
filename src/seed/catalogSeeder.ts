@@ -9,6 +9,10 @@ import {
   serviceSeedSources,
 } from './catalog'
 
+function isDefined<T>(value: T | undefined): value is T {
+  return value !== undefined
+}
+
 export async function seedCatalog() {
   const payload = await getPayload({ config: configPromise })
 
@@ -46,6 +50,7 @@ export async function seedCatalog() {
       title: service.title,
       slug: service.slug,
       serviceCategory: serviceCategoryIds.get(service.categorySlug),
+      iconName: service.iconName,
       pricingMode: service.pricingMode,
       price: service.price,
       basePrice: service.basePrice,
@@ -133,7 +138,7 @@ export async function seedCatalog() {
       title: product.title,
       slug: product.slug,
       productCategory: productCategoryIds.get(product.categorySlug),
-      tags: product.tagSlugs.map((slug) => productTagIds.get(slug)).filter(Boolean),
+      tags: product.tagSlugs.map((slug) => productTagIds.get(slug)).filter(isDefined),
       summary: product.summary,
       status: 'published' as const,
       visibility: 'public' as const,

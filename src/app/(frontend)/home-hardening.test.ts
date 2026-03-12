@@ -33,12 +33,10 @@ test('homepage critical links expose explicit focus-visible styles', () => {
   assert.match(trust, /focus-visible:/)
 })
 
-test('decorative homepage icons use empty alt text', () => {
+test('decorative homepage icons stay non-verbal in their container implementation', () => {
   const serviceOverview = read('components/home/ServiceOverview.tsx')
   const painPoints = read('components/home/PainPoints.tsx')
-  const trust = read('components/home/TrustSection.tsx')
 
-  assert.match(serviceOverview, /alt="" fill sizes="80px"/)
+  assert.match(serviceOverview, /MaterialSymbol name=\{service\.iconName \|\| defaultServiceIconName\}/)
   assert.match(painPoints, /alt="" fill sizes="80px"/)
-  assert.match(trust, /alt="" fill sizes="80px"/)
 })

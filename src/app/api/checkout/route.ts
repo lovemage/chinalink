@@ -2,6 +2,18 @@ import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { createPaymentFormHtml, formatECPayDate } from '@/lib/ecpay/ecpay'
+import type { Order } from '@/payload-types'
+
+type CreateOrderData = Omit<Order, 'id' | 'createdAt' | 'updatedAt'>
+
+function parseRelationID(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isInteger(value) && value > 0) return value
+  if (typeof value === 'string') {
+    const parsed = Number(value)
+    if (Number.isInteger(parsed) && parsed > 0) return parsed
+  }
+  return null
+}
 
 export async function POST(req: Request) {
   try {
@@ -9,19 +21,29 @@ export async function POST(req: Request) {
     const { itemType = 'service', serviceId, productId, productVariantSKU, customerId, selectedAddons } = body
 
     const payload = await getPayload({ config: configPromise })
+    const normalizedItemType: Order['itemType'] = itemType === 'product' ? 'product' : 'service'
+    const customerRelationID = parseRelationID(customerId)
+    if (!customerRelationID) {
+      return NextResponse.json({ error: 'Customer is required' }, { status: 400 })
+    }
 
     let amount = 0
     let itemName = ''
-    let orderData: Record<string, unknown> = {
+    let orderData: CreateOrderData = {
       orderNumber: '',
-      customer: customerId,
+      customer: customerRelationID,
       amount: 0,
       paymentStatus: 'pending',
-      itemType,
+      itemType: normalizedItemType,
     }
 
-    if (itemType === 'product') {
-      const product = await payload.findByID({ collection: 'products', id: productId })
+    if (normalizedItemType === 'product') {
+      const productRelationID = parseRelationID(productId)
+      if (!productRelationID) {
+        return NextResponse.json({ error: 'Product is required' }, { status: 400 })
+      }
+
+      const product = await payload.findByID({ collection: 'products', id: productRelationID })
       if (!product) {
         return NextResponse.json({ error: 'Product not found' }, { status: 404 })
       }
@@ -41,13 +63,18 @@ export async function POST(req: Request) {
       orderData = {
         ...orderData,
         amount,
-        product: productId,
+        product: productRelationID,
         productVariantSKU: selectedVariant.sku,
         productVariantName: selectedVariant.name,
         selectedAddons: [],
       }
     } else {
-      const service = await payload.findByID({ collection: 'services', id: serviceId })
+      const serviceRelationID = parseRelationID(serviceId)
+      if (!serviceRelationID) {
+        return NextResponse.json({ error: 'Service is required' }, { status: 400 })
+      }
+
+      const service = await payload.findByID({ collection: 'services', id: serviceRelationID })
       if (!service) {
         return NextResponse.json({ error: 'Service not found' }, { status: 404 })
       }
@@ -70,7 +97,7 @@ export async function POST(req: Request) {
       orderData = {
         ...orderData,
         amount,
-        service: serviceId,
+        service: serviceRelationID,
         selectedAddons: selectedAddons || [],
       }
     }
@@ -93,7 +120,7 @@ export async function POST(req: Request) {
       MerchantTradeDate: formatECPayDate(now),
       PaymentType: 'aio',
       TotalAmount: Math.round(amount),
-      TradeDesc: encodeURIComponent(itemType === 'product' ? '懂陸姐商品' : '懂陸姐服務'),
+      TradeDesc: encodeURIComponent(normalizedItemType === 'product' ? '懂陸姐商品' : '懂陸姐服務'),
       ItemName: itemName,
       ReturnURL: process.env.ECPAY_RETURN_URL!,
       ClientBackURL: `${process.env.ECPAY_CLIENT_BACK_URL}?orderId=${order.id}`,

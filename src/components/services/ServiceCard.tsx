@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Service, ServiceCategory, Media } from '@/payload-types'
+import { MaterialSymbol } from '@/components/ui/MaterialSymbol'
+import { defaultServiceIconName } from '@/lib/services/serviceIcons'
 
 interface ServiceCardProps {
   service: Service
@@ -39,8 +41,8 @@ export function ServiceCard({ service }: ServiceCardProps) {
           />
         ) : (
           <div className="flex h-full items-center justify-center opacity-30">
-            <div className="relative h-[105px] w-[105px]">
-              <Image src="/icons/consulting.png" alt="Service" fill sizes="105px" className="object-contain" />
+            <div className="flex h-[105px] w-[105px] items-center justify-center rounded-[2rem] bg-white/80 text-brand-text shadow-sm ring-1 ring-brand-primary/10">
+              <MaterialSymbol name={service.iconName || defaultServiceIconName} className="text-[56px]" />
             </div>
           </div>
         )}

@@ -73,6 +73,9 @@ export interface Config {
     posts: Post;
     'service-categories': ServiceCategory;
     services: Service;
+    'product-categories': ProductCategory;
+    'product-tags': ProductTag;
+    products: Product;
     customers: Customer;
     orders: Order;
     inquiries: Inquiry;
@@ -90,6 +93,9 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     'service-categories': ServiceCategoriesSelect<false> | ServiceCategoriesSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
+    'product-categories': ProductCategoriesSelect<false> | ProductCategoriesSelect<true>;
+    'product-tags': ProductTagsSelect<false> | ProductTagsSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
     customers: CustomersSelect<false> | CustomersSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
     inquiries: InquiriesSelect<false> | InquiriesSelect<true>;
@@ -638,6 +644,249 @@ export interface Service {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-categories".
+ */
+export interface ProductCategory {
+  id: number;
+  name: string;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-tags".
+ */
+export interface ProductTag {
+  id: number;
+  name: string;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: number;
+  title: string;
+  slug: string;
+  productCategory?: (number | null) | ProductCategory;
+  tags?: (number | ProductTag)[] | null;
+  coverImage?: (number | null) | Media;
+  summary?: string | null;
+  description?:
+    | (
+        | {
+            heading: string;
+            subheading?: string | null;
+            backgroundImage?: (number | null) | Media;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'hero-section';
+          }
+        | {
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'rich-text';
+          }
+        | {
+            image: number | Media;
+            caption?: string | null;
+            alignment?: ('left' | 'center' | 'right' | 'full') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'image';
+          }
+        | {
+            images?:
+              | {
+                  image: number | Media;
+                  caption?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            layout?: ('grid' | 'carousel') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'image-gallery';
+          }
+        | {
+            type?: ('info' | 'warning' | 'tip') | null;
+            content: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            };
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callout';
+          }
+        | {
+            quoteText: string;
+            source?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'quote';
+          }
+        | {
+            steps?:
+              | {
+                  title: string;
+                  description: {
+                    root: {
+                      type: string;
+                      children: {
+                        type: any;
+                        version: number;
+                        [k: string]: unknown;
+                      }[];
+                      direction: ('ltr' | 'rtl') | null;
+                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                      indent: number;
+                      version: number;
+                    };
+                    [k: string]: unknown;
+                  };
+                  screenshot?: (number | null) | Media;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'step-guide';
+          }
+        | {
+            items?:
+              | {
+                  question: string;
+                  answer: {
+                    root: {
+                      type: string;
+                      children: {
+                        type: any;
+                        version: number;
+                        [k: string]: unknown;
+                      }[];
+                      direction: ('ltr' | 'rtl') | null;
+                      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                      indent: number;
+                      version: number;
+                    };
+                    [k: string]: unknown;
+                  };
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faq';
+          }
+        | {
+            heading: string;
+            description?: string | null;
+            buttonText: string;
+            buttonLink: string;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cta';
+          }
+        | {
+            headers?:
+              | {
+                  label: string;
+                  id?: string | null;
+                }[]
+              | null;
+            rows?:
+              | {
+                  cells?:
+                    | {
+                        value: string;
+                        id?: string | null;
+                      }[]
+                    | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'table';
+          }
+        | {
+            url: string;
+            caption?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'embed';
+          }
+        | {
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'divider';
+          }
+      )[]
+    | null;
+  status?: ('draft' | 'published') | null;
+  visibility?: ('public' | 'private' | 'unlisted') | null;
+  variants: {
+    sku: string;
+    name: string;
+    specs?:
+      | {
+          key: string;
+          value: string;
+          id?: string | null;
+        }[]
+      | null;
+    price: number;
+    compareAtPrice?: number | null;
+    stock: number;
+    isDefault?: boolean | null;
+    isActive?: boolean | null;
+    id?: string | null;
+  }[];
+  features?:
+    | {
+        text: string;
+        id?: string | null;
+      }[]
+    | null;
+  seo?: {
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "customers".
  */
 export interface Customer {
@@ -658,9 +907,13 @@ export interface Customer {
  */
 export interface Order {
   id: number;
+  itemType: 'service' | 'product';
   orderNumber: string;
   customer: number | Customer;
-  service: number | Service;
+  service?: (number | null) | Service;
+  product?: (number | null) | Product;
+  productVariantSKU?: string | null;
+  productVariantName?: string | null;
   selectedAddons?:
     | {
         name: string;
@@ -682,8 +935,10 @@ export interface Order {
  */
 export interface Inquiry {
   id: number;
+  itemType?: ('service' | 'product') | null;
   customer?: (number | null) | Customer;
   service?: (number | null) | Service;
+  product?: (number | null) | Product;
   name: string;
   contactMethod: string;
   message: string;
@@ -817,6 +1072,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'services';
         value: number | Service;
+      } | null)
+    | ({
+        relationTo: 'product-categories';
+        value: number | ProductCategory;
+      } | null)
+    | ({
+        relationTo: 'product-tags';
+        value: number | ProductTag;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: number | Product;
       } | null)
     | ({
         relationTo: 'customers';
@@ -1299,6 +1566,206 @@ export interface ServicesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-categories_select".
+ */
+export interface ProductCategoriesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-tags_select".
+ */
+export interface ProductTagsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  productCategory?: T;
+  tags?: T;
+  coverImage?: T;
+  summary?: T;
+  description?:
+    | T
+    | {
+        'hero-section'?:
+          | T
+          | {
+              heading?: T;
+              subheading?: T;
+              backgroundImage?: T;
+              id?: T;
+              blockName?: T;
+            };
+        'rich-text'?:
+          | T
+          | {
+              content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        image?:
+          | T
+          | {
+              image?: T;
+              caption?: T;
+              alignment?: T;
+              id?: T;
+              blockName?: T;
+            };
+        'image-gallery'?:
+          | T
+          | {
+              images?:
+                | T
+                | {
+                    image?: T;
+                    caption?: T;
+                    id?: T;
+                  };
+              layout?: T;
+              id?: T;
+              blockName?: T;
+            };
+        callout?:
+          | T
+          | {
+              type?: T;
+              content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        quote?:
+          | T
+          | {
+              quoteText?: T;
+              source?: T;
+              id?: T;
+              blockName?: T;
+            };
+        'step-guide'?:
+          | T
+          | {
+              steps?:
+                | T
+                | {
+                    title?: T;
+                    description?: T;
+                    screenshot?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        faq?:
+          | T
+          | {
+              items?:
+                | T
+                | {
+                    question?: T;
+                    answer?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        cta?:
+          | T
+          | {
+              heading?: T;
+              description?: T;
+              buttonText?: T;
+              buttonLink?: T;
+              id?: T;
+              blockName?: T;
+            };
+        table?:
+          | T
+          | {
+              headers?:
+                | T
+                | {
+                    label?: T;
+                    id?: T;
+                  };
+              rows?:
+                | T
+                | {
+                    cells?:
+                      | T
+                      | {
+                          value?: T;
+                          id?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        embed?:
+          | T
+          | {
+              url?: T;
+              caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        divider?:
+          | T
+          | {
+              id?: T;
+              blockName?: T;
+            };
+      };
+  status?: T;
+  visibility?: T;
+  variants?:
+    | T
+    | {
+        sku?: T;
+        name?: T;
+        specs?:
+          | T
+          | {
+              key?: T;
+              value?: T;
+              id?: T;
+            };
+        price?: T;
+        compareAtPrice?: T;
+        stock?: T;
+        isDefault?: T;
+        isActive?: T;
+        id?: T;
+      };
+  features?:
+    | T
+    | {
+        text?: T;
+        id?: T;
+      };
+  seo?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "customers_select".
  */
 export interface CustomersSelect<T extends boolean = true> {
@@ -1317,9 +1784,13 @@ export interface CustomersSelect<T extends boolean = true> {
  * via the `definition` "orders_select".
  */
 export interface OrdersSelect<T extends boolean = true> {
+  itemType?: T;
   orderNumber?: T;
   customer?: T;
   service?: T;
+  product?: T;
+  productVariantSKU?: T;
+  productVariantName?: T;
   selectedAddons?:
     | T
     | {
@@ -1340,8 +1811,10 @@ export interface OrdersSelect<T extends boolean = true> {
  * via the `definition` "inquiries_select".
  */
 export interface InquiriesSelect<T extends boolean = true> {
+  itemType?: T;
   customer?: T;
   service?: T;
+  product?: T;
   name?: T;
   contactMethod?: T;
   message?: T;

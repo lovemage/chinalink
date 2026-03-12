@@ -12,6 +12,9 @@ import { Categories } from './collections/Categories'
 import { Posts } from './collections/Posts'
 import { ServiceCategories } from './collections/ServiceCategories'
 import { Services } from './collections/Services'
+import { ProductCategories } from './collections/ProductCategories'
+import { ProductTags } from './collections/ProductTags'
+import { Products } from './collections/Products'
 import { Customers } from './collections/Customers'
 import { Orders } from './collections/Orders'
 import { Inquiries } from './collections/Inquiries'
@@ -158,6 +161,9 @@ export default buildConfig({
     Posts,
     ServiceCategories,
     Services,
+    ProductCategories,
+    ProductTags,
+    Products,
     Customers,
     Orders,
     Inquiries,

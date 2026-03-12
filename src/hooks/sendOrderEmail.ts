@@ -15,17 +15,27 @@ export const sendOrderEmail: CollectionAfterChangeHook = async ({
       id: customerId,
     })
 
-    // Resolve service relationship
-    const serviceId = typeof doc.service === 'object' ? doc.service.id : doc.service
-    const service = await req.payload.findByID({
-      collection: 'services',
-      id: serviceId,
-    })
+    let itemName = ''
+    if (doc.itemType === 'product' && doc.product) {
+      const productId = typeof doc.product === 'object' ? doc.product.id : doc.product
+      const product = await req.payload.findByID({
+        collection: 'products',
+        id: productId,
+      })
+      itemName = [product.title, doc.productVariantName].filter(Boolean).join(' - ')
+    } else if (doc.service) {
+      const serviceId = typeof doc.service === 'object' ? doc.service.id : doc.service
+      const service = await req.payload.findByID({
+        collection: 'services',
+        id: serviceId,
+      })
+      itemName = service.title as string
+    }
 
     const variables = {
       customerName: customer.name as string,
       orderNumber: doc.orderNumber as string,
-      serviceName: service.title as string,
+      serviceName: itemName,
       amount: String(doc.amount),
       paymentStatus: doc.paymentStatus as string,
       paymentMethod: (doc.paymentMethod as string) ?? '',

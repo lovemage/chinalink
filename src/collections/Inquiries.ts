@@ -16,8 +16,35 @@ export const Inquiries: CollectionConfig = {
     afterChange: [sendInquiryEmail],
   },
   fields: [
+    {
+      name: 'itemType',
+      type: 'select',
+      defaultValue: 'service',
+      options: [
+        { label: '服務', value: 'service' },
+        { label: '商品', value: 'product' },
+      ],
+      label: '項目類型',
+    },
     { name: 'customer', type: 'relationship', relationTo: 'customers', label: '會員' },
-    { name: 'service', type: 'relationship', relationTo: 'services', label: '相關服務' },
+    {
+      name: 'service',
+      type: 'relationship',
+      relationTo: 'services',
+      label: '相關服務',
+      admin: {
+        condition: (_, siblingData) => siblingData?.itemType !== 'product',
+      },
+    },
+    {
+      name: 'product',
+      type: 'relationship',
+      relationTo: 'products',
+      label: '相關商品',
+      admin: {
+        condition: (_, siblingData) => siblingData?.itemType === 'product',
+      },
+    },
     { name: 'name', type: 'text', required: true, label: '姓名' },
     { name: 'contactMethod', type: 'text', required: true, label: '聯絡方式（LINE ID / 微信）' },
     { name: 'message', type: 'textarea', required: true, label: '需求說明' },

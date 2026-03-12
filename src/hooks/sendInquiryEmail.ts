@@ -12,7 +12,14 @@ export const sendInquiryEmail: CollectionAfterChangeHook = async ({
 
   try {
     let serviceName = ''
-    if (doc.service) {
+    if (doc.itemType === 'product' && doc.product) {
+      const productId = typeof doc.product === 'object' ? doc.product.id : doc.product
+      const product = await req.payload.findByID({
+        collection: 'products',
+        id: productId,
+      })
+      serviceName = product.title as string
+    } else if (doc.service) {
       const serviceId = typeof doc.service === 'object' ? doc.service.id : doc.service
       const service = await req.payload.findByID({
         collection: 'services',

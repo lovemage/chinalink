@@ -17,6 +17,17 @@ export const Orders: CollectionConfig = {
   },
   fields: [
     {
+      name: 'itemType',
+      type: 'select',
+      required: true,
+      defaultValue: 'service',
+      options: [
+        { label: '服務', value: 'service' },
+        { label: '商品', value: 'product' },
+      ],
+      label: '項目類型',
+    },
+    {
       name: 'orderNumber',
       type: 'text',
       required: true,
@@ -38,7 +49,41 @@ export const Orders: CollectionConfig = {
       },
     },
     { name: 'customer', type: 'relationship', relationTo: 'customers', required: true, label: '會員' },
-    { name: 'service', type: 'relationship', relationTo: 'services', required: true, label: '服務' },
+    {
+      name: 'service',
+      type: 'relationship',
+      relationTo: 'services',
+      required: true,
+      label: '服務',
+      admin: {
+        condition: (_, siblingData) => siblingData?.itemType !== 'product',
+      },
+    },
+    {
+      name: 'product',
+      type: 'relationship',
+      relationTo: 'products',
+      label: '商品',
+      admin: {
+        condition: (_, siblingData) => siblingData?.itemType === 'product',
+      },
+    },
+    {
+      name: 'productVariantSKU',
+      type: 'text',
+      label: '商品規格 SKU',
+      admin: {
+        condition: (_, siblingData) => siblingData?.itemType === 'product',
+      },
+    },
+    {
+      name: 'productVariantName',
+      type: 'text',
+      label: '商品規格名稱',
+      admin: {
+        condition: (_, siblingData) => siblingData?.itemType === 'product',
+      },
+    },
     {
       name: 'selectedAddons',
       type: 'array',

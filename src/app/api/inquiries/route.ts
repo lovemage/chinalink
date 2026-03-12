@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server'
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const { name, contactMethod, message, serviceId } = body
+    const { name, contactMethod, message, serviceId, productId, itemType = 'service' } = body
 
     if (!name || !contactMethod || !message) {
       return NextResponse.json(
@@ -22,7 +22,9 @@ export async function POST(req: Request) {
         name,
         contactMethod,
         message,
+        itemType,
         service: serviceId || undefined,
+        product: productId || undefined,
         status: 'new',
       },
     })

@@ -18,8 +18,8 @@ import {
 export const Products: CollectionConfig = {
   slug: 'products',
   labels: {
-    singular: '商品',
-    plural: '商品',
+    singular: '商品管理',
+    plural: '商品管理',
   },
   admin: {
     useAsTitle: 'title',

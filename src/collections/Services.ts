@@ -19,8 +19,8 @@ import { defaultServiceIconName, serviceIconOptions } from '@/lib/services/servi
 export const Services: CollectionConfig = {
   slug: 'services',
   labels: {
-    singular: '服務',
-    plural: '服務',
+    singular: '服務管理',
+    plural: '服務管理',
   },
   admin: {
     useAsTitle: 'title',

@@ -18,8 +18,8 @@ import {
 export const Posts: CollectionConfig = {
   slug: 'posts',
   labels: {
-    singular: '文章',
-    plural: '文章',
+    singular: '文章管理',
+    plural: '文章管理',
   },
   admin: {
     useAsTitle: 'title',

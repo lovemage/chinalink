@@ -4,8 +4,8 @@ import { sendOrderEmail } from '@/hooks/sendOrderEmail'
 export const Orders: CollectionConfig = {
   slug: 'orders',
   labels: {
-    singular: '訂單',
-    plural: '訂單',
+    singular: '訂單管理',
+    plural: '訂單管理',
   },
   admin: {
     useAsTitle: 'orderNumber',

@@ -4,8 +4,8 @@ import { sendWelcomeEmail } from '@/hooks/sendWelcomeEmail'
 export const Customers: CollectionConfig = {
   slug: 'customers',
   labels: {
-    singular: '會員',
-    plural: '會員',
+    singular: '會員管理',
+    plural: '會員管理',
   },
   admin: {
     useAsTitle: 'name',

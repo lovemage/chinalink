@@ -4,8 +4,8 @@ import { sendInquiryEmail } from '@/hooks/sendInquiryEmail'
 export const Inquiries: CollectionConfig = {
   slug: 'inquiries',
   labels: {
-    singular: '諮詢單',
-    plural: '諮詢單',
+    singular: '諮詢管理',
+    plural: '諮詢管理',
   },
   admin: {
     useAsTitle: 'name',

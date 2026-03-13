@@ -3,8 +3,8 @@ import type { CollectionConfig } from 'payload'
 export const VerificationCodes: CollectionConfig = {
   slug: 'verification-codes',
   labels: {
-    singular: '驗證碼',
-    plural: '驗證碼',
+    singular: '驗證紀錄',
+    plural: '驗證紀錄',
   },
   admin: {
     hidden: true,

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -12,10 +12,23 @@ export function LoginButtons() {
   const [step, setStep] = useState<'email' | 'code'>('email')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [cooldownSeconds, setCooldownSeconds] = useState(0)
+  const [remainingDailyAttempts, setRemainingDailyAttempts] = useState<number | null>(null)
 
-  const handleSendCode = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!email) return
+  useEffect(() => {
+    if (cooldownSeconds <= 0) return
+
+    const timeoutId = window.setTimeout(() => {
+      setCooldownSeconds((previous) => Math.max(0, previous - 1))
+    }, 1000)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [cooldownSeconds])
+
+  const requestOtp = async (rawEmail: string) => {
+    const normalizedEmail = rawEmail.trim().toLowerCase()
+
+    if (!normalizedEmail) return
 
     setIsLoading(true)
     setError('')
@@ -24,20 +37,39 @@ export function LoginButtons() {
       const res = await fetch('/api/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email: normalizedEmail }),
       })
 
+      const data = await res.json().catch(() => null)
+
+      if (typeof data?.retryAfter === 'number') {
+        setCooldownSeconds(data.retryAfter)
+      }
+
+      if (typeof data?.remainingDailyAttempts === 'number') {
+        setRemainingDailyAttempts(data.remainingDailyAttempts)
+      }
+
       if (!res.ok) {
-        const data = await res.json().catch(() => null)
         throw new Error(data?.details || data?.error || '發送失敗，請稍後再試')
       }
 
+      setEmail(normalizedEmail)
       setStep('code')
     } catch (err) {
       setError(err instanceof Error ? err.message : '發生錯誤')
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleSendCode = async (e: React.FormEvent) => {
+    e.preventDefault()
+    await requestOtp(email)
+  }
+
+  const handleResendCode = async () => {
+    await requestOtp(email)
   }
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -130,6 +162,19 @@ export function LoginButtons() {
                 修改
               </button>
             </p>
+            <div className="text-center text-sm text-muted-foreground">
+              <button
+                type="button"
+                className="text-brand-primary hover:underline font-medium disabled:text-muted-foreground disabled:no-underline"
+                onClick={handleResendCode}
+                disabled={isLoading || cooldownSeconds > 0 || remainingDailyAttempts === 0}
+              >
+                {cooldownSeconds > 0 ? `${cooldownSeconds}s 後可重新發送` : '重新發送驗證碼'}
+              </button>
+              {remainingDailyAttempts !== null && (
+                <p className="pt-1">今日剩餘發送次數：{remainingDailyAttempts}</p>
+              )}
+            </div>
           </div>
           <Button
             type="submit"

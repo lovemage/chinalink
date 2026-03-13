@@ -3,18 +3,80 @@ import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { Resend } from 'resend'
 import { getSendOtpMailerConfig } from '@/lib/auth/sendOtpMailerConfig'
+import { evaluateSendOtpEligibility, getTaipeiDayRange } from '@/lib/auth/otpPolicy'
+
+function normalizeEmail(email: string) {
+  return email.trim().toLowerCase()
+}
+
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
 
 export async function POST(req: Request) {
   try {
-    const { email } = await req.json()
+    const body = await req.json()
+    const email = typeof body?.email === 'string' ? normalizeEmail(body.email) : ''
 
     if (!email) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 })
     }
 
-    const payload = await getPayload({ config: configPromise })
+    if (!isValidEmail(email)) {
+      return NextResponse.json({ error: 'Email is invalid' }, { status: 400 })
+    }
 
-    // Check if customer exists? Not strictly necessary since we allow signup via OTP
+    const payload = await getPayload({ config: configPromise })
+    const now = new Date()
+
+    const latestResult = await payload.find({
+      collection: 'verification-codes',
+      where: {
+        email: { equals: email },
+      },
+      sort: '-createdAt',
+      limit: 1,
+    })
+
+    const { startIso, endIso } = getTaipeiDayRange(now)
+    const sentTodayResult = await payload.find({
+      collection: 'verification-codes',
+      where: {
+        and: [
+          { email: { equals: email } },
+          { createdAt: { greater_than_equal: startIso } },
+          { createdAt: { less_than: endIso } },
+        ],
+      },
+      limit: 1,
+    })
+
+    const eligibility = evaluateSendOtpEligibility({
+      now,
+      lastSentAt: latestResult.docs[0]?.createdAt,
+      sentToday: sentTodayResult.totalDocs,
+    })
+
+    if (!eligibility.allowed) {
+      if (eligibility.reason === 'cooldown') {
+        return NextResponse.json(
+          {
+            error: `請在 ${eligibility.retryAfter} 秒後再試`,
+            retryAfter: eligibility.retryAfter,
+          },
+          { status: 429 },
+        )
+      }
+
+      return NextResponse.json(
+        {
+          error: '今日驗證碼發送次數已達上限（3 次）',
+          remainingDailyAttempts: 0,
+        },
+        { status: 429 },
+      )
+    }
+
     // Generate 6 digit code
     const code = Math.floor(100000 + Math.random() * 900000).toString()
 
@@ -54,7 +116,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: '發送郵件失敗', details: res.error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({
+      success: true,
+      retryAfter: eligibility.retryAfter,
+      remainingDailyAttempts: eligibility.remainingDailyAttempts,
+    })
   } catch (error) {
     console.error('Error sending OTP:', error)
     return NextResponse.json(

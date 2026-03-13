@@ -18,31 +18,38 @@ export const authConfig: NextAuthConfig = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.code) return null
 
-        const email = credentials.email as string
-        const code = credentials.code as string
+        const email = String(credentials.email).trim().toLowerCase()
+        const code = String(credentials.code).trim()
 
         const payload = await getPayload({ config: configPromise })
 
-        // 1. Verify code
-        const codes = await payload.find({
+        // 1. Verify latest code only
+        const latestCodes = await payload.find({
           collection: 'verification-codes',
           where: {
             email: { equals: email },
-            code: { equals: code },
-            expiresAt: { greater_than: new Date().toISOString() },
           },
           sort: '-createdAt',
           limit: 1,
         })
 
-        if (codes.docs.length === 0) {
+        const latestCode = latestCodes.docs[0]
+        const isCodeValid =
+          !!latestCode &&
+          latestCode.code === code &&
+          new Date(latestCode.expiresAt).getTime() > Date.now()
+
+        if (!isCodeValid) {
           throw new Error('Invalid or expired verification code')
         }
 
-        // Delete the used code
-        await payload.delete({
+        // Mark used code as expired to keep daily send history and prevent reuse.
+        await payload.update({
           collection: 'verification-codes',
-          id: codes.docs[0].id,
+          id: latestCode.id,
+          data: {
+            expiresAt: new Date().toISOString(),
+          },
         })
 
         // 2. Find or create user

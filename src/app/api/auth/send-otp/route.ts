@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     const resend = new Resend(process.env.RESEND_API_KEY!)
     const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@chinalink.com'
 
-    await resend.emails.send({
+    const res = await resend.emails.send({
       from: `懂陸姐 <${fromEmail}>`,
       to: email,
       subject: '您的登入驗證碼',
@@ -48,9 +48,20 @@ export async function POST(req: Request) {
       `,
     })
 
+    if (res.error) {
+      console.error('Resend API error:', res.error)
+      return NextResponse.json({ error: '發送郵件失敗', details: res.error.message }, { status: 500 })
+    }
+
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Error sending OTP:', error)
-    return NextResponse.json({ error: 'Failed to send OTP' }, { status: 500 })
+    return NextResponse.json(
+      { 
+        error: 'Failed to send OTP', 
+        details: error instanceof Error ? error.message : String(error) 
+      }, 
+      { status: 500 }
+    )
   }
 }

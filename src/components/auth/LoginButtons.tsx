@@ -28,7 +28,8 @@ export function LoginButtons() {
       })
 
       if (!res.ok) {
-        throw new Error('發送失敗，請稍後再試')
+        const data = await res.json().catch(() => null)
+        throw new Error(data?.details || data?.error || '發送失敗，請稍後再試')
       }
 
       setStep('code')

@@ -18,6 +18,7 @@ import {
 const navItems = [
   { label: '首頁', href: '/' },
   { label: '服務項目', href: '/services' },
+  { label: '商品專區', href: '/products' },
   { label: '專欄文章', href: '/blog' },
   { label: '關於我們', href: '/about' },
   { label: '聯絡諮詢', href: '/contact' },

@@ -80,6 +80,7 @@ export interface Config {
     orders: Order;
     inquiries: Inquiry;
     'email-templates': EmailTemplate;
+    'verification-codes': VerificationCode;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -100,6 +101,7 @@ export interface Config {
     orders: OrdersSelect<false> | OrdersSelect<true>;
     inquiries: InquiriesSelect<false> | InquiriesSelect<true>;
     'email-templates': EmailTemplatesSelect<false> | EmailTemplatesSelect<true>;
+    'verification-codes': VerificationCodesSelect<false> | VerificationCodesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -896,7 +898,7 @@ export interface Customer {
   email: string;
   phone?: string | null;
   avatar?: string | null;
-  authProvider: 'line' | 'google';
+  authProvider: 'email' | 'google';
   providerId: string;
   lastLoginAt?: string | null;
   updatedAt: string;
@@ -1028,6 +1030,18 @@ export interface EmailTemplate {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "verification-codes".
+ */
+export interface VerificationCode {
+  id: number;
+  email: string;
+  code: string;
+  expiresAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -1101,6 +1115,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'email-templates';
         value: number | EmailTemplate;
+      } | null)
+    | ({
+        relationTo: 'verification-codes';
+        value: number | VerificationCode;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1902,6 +1920,17 @@ export interface EmailTemplatesSelect<T extends boolean = true> {
               blockName?: T;
             };
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "verification-codes_select".
+ */
+export interface VerificationCodesSelect<T extends boolean = true> {
+  email?: T;
+  code?: T;
+  expiresAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }

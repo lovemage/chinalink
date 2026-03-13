@@ -1,21 +1,78 @@
 import type { NextAuthConfig } from 'next-auth'
 import Google from 'next-auth/providers/google'
+import Credentials from 'next-auth/providers/credentials'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 
-const lineProvider = {
-  id: 'line',
-  name: 'LINE',
-  type: 'oidc' as const,
-  issuer: 'https://access.line.me',
-  clientId: process.env.AUTH_LINE_ID!,
-  clientSecret: process.env.AUTH_LINE_SECRET!,
-  authorization: { params: { scope: 'openid profile email' } },
-}
-
 export const authConfig: NextAuthConfig = {
   trustHost: true,
-  providers: [lineProvider, Google],
+  providers: [
+    Google,
+    Credentials({
+      id: 'email-otp',
+      name: 'Email OTP',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        code: { label: 'Code', type: 'text' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.code) return null
+
+        const email = credentials.email as string
+        const code = credentials.code as string
+
+        const payload = await getPayload({ config: configPromise })
+
+        // 1. Verify code
+        const codes = await payload.find({
+          collection: 'verification-codes',
+          where: {
+            email: { equals: email },
+            code: { equals: code },
+            expiresAt: { greater_than: new Date().toISOString() },
+          },
+          sort: '-createdAt',
+          limit: 1,
+        })
+
+        if (codes.docs.length === 0) {
+          throw new Error('Invalid or expired verification code')
+        }
+
+        // Delete the used code
+        await payload.delete({
+          collection: 'verification-codes',
+          id: codes.docs[0].id,
+        })
+
+        // 2. Find or create user
+        const customers = await payload.find({
+          collection: 'customers',
+          where: {
+            email: { equals: email },
+            authProvider: { equals: 'email' },
+          },
+          limit: 1,
+        })
+
+        if (customers.docs.length > 0) {
+          const user = customers.docs[0]
+          return {
+            id: user.id.toString(),
+            email: user.email,
+            name: user.name,
+          }
+        }
+
+        // Return user to be created in signIn callback
+        return {
+          id: email, // Temporary ID, NextAuth callback will handle it
+          email,
+          name: email.split('@')[0],
+        }
+      },
+    }),
+  ],
   pages: {
     signIn: '/login',
   },
@@ -23,24 +80,23 @@ export const authConfig: NextAuthConfig = {
     async signIn({ user, account }) {
       if (!account || !user) return false
 
-      const provider = account.provider as 'line' | 'google'
-      const providerId = account.providerAccountId
+      const provider = account.provider as 'email-otp' | 'google'
+      const providerId = provider === 'email-otp' ? user.email! : account.providerAccountId
+      const actualProvider = provider === 'email-otp' ? 'email' : provider
 
       try {
         const payload = await getPayload({ config: configPromise })
 
-        // Check if customer exists by providerId and authProvider
         const existing = await payload.find({
           collection: 'customers',
           where: {
             providerId: { equals: providerId },
-            authProvider: { equals: provider },
+            authProvider: { equals: actualProvider },
           },
           limit: 1,
         })
 
         if (existing.docs.length > 0) {
-          // Update lastLoginAt
           await payload.update({
             collection: 'customers',
             id: existing.docs[0].id,
@@ -48,32 +104,35 @@ export const authConfig: NextAuthConfig = {
               lastLoginAt: new Date().toISOString(),
             },
           })
+          user.id = existing.docs[0].id.toString()
         } else {
-          // Create new customer
-          await payload.create({
+          const newUser = await payload.create({
             collection: 'customers',
             data: {
               name: user.name || '未命名用戶',
-              email: user.email || `${providerId}@${provider}.oauth`,
+              email: user.email || `${providerId}@${actualProvider}.oauth`,
               avatar: user.image || undefined,
-              authProvider: provider,
+              authProvider: actualProvider,
               providerId,
               lastLoginAt: new Date().toISOString(),
             },
           })
+          user.id = newUser.id.toString()
         }
       } catch (error) {
         console.error('Error in signIn callback:', error)
-        // Still allow sign in even if Payload operation fails
       }
 
       return true
     },
 
-    async jwt({ token, account }) {
-      if (account) {
-        const provider = account.provider as 'line' | 'google'
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.customerId = user.id
+      } else if (account) {
+        const provider = account.provider as 'email-otp' | 'google'
         const providerId = account.providerAccountId
+        const actualProvider = provider === 'email-otp' ? 'email' : provider
 
         try {
           const payload = await getPayload({ config: configPromise })
@@ -81,7 +140,7 @@ export const authConfig: NextAuthConfig = {
             collection: 'customers',
             where: {
               providerId: { equals: providerId },
-              authProvider: { equals: provider },
+              authProvider: { equals: actualProvider },
             },
             limit: 1,
           })

@@ -25,7 +25,7 @@ export const Customers: CollectionConfig = {
       type: 'select',
       required: true,
       options: [
-        { label: 'LINE', value: 'line' },
+        { label: 'Email', value: 'email' },
         { label: 'Google', value: 'google' },
       ],
       label: '登入方式',

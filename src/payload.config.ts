@@ -19,6 +19,7 @@ import { Customers } from './collections/Customers'
 import { Orders } from './collections/Orders'
 import { Inquiries } from './collections/Inquiries'
 import { EmailTemplates } from './collections/EmailTemplates'
+import { VerificationCodes } from './collections/VerificationCodes'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -168,6 +169,7 @@ export default buildConfig({
     Orders,
     Inquiries,
     EmailTemplates,
+    VerificationCodes,
   ],
   editor: lexicalEditor(),
   secret: payloadSecret,

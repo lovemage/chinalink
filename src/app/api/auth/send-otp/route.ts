@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 import { Resend } from 'resend'
+import { getSendOtpMailerConfig } from '@/lib/auth/sendOtpMailerConfig'
 
 export async function POST(req: Request) {
   try {
@@ -32,8 +33,8 @@ export async function POST(req: Request) {
     })
 
     // Send email using Resend
-    const resend = new Resend(process.env.RESEND_API_KEY!)
-    const fromEmail = process.env.RESEND_FROM_EMAIL || 'noreply@chinalink.com'
+    const { apiKey, fromEmail } = getSendOtpMailerConfig()
+    const resend = new Resend(apiKey)
 
     const res = await resend.emails.send({
       from: `懂陸姐 <${fromEmail}>`,

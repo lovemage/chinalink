@@ -167,6 +167,16 @@ export const Services: CollectionConfig = {
       ],
     },
     {
+      name: 'cartEnabled',
+      type: 'checkbox',
+      defaultValue: true,
+      label: '開啟購物車',
+      admin: {
+        position: 'sidebar',
+        description: '關閉後，會員將直接透過官方 LINE 聯繫下單',
+      },
+    },
+    {
       name: 'seo',
       type: 'group',
       label: '搜尋優化',

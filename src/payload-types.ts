@@ -642,6 +642,10 @@ export interface Service {
         id?: string | null;
       }[]
     | null;
+  /**
+   * 關閉後，會員將直接透過官方 LINE 聯繫下單
+   */
+  cartEnabled?: boolean | null;
   seo?: {
     metaTitle?: string | null;
     metaDescription?: string | null;
@@ -1596,6 +1600,7 @@ export interface ServicesSelect<T extends boolean = true> {
         text?: T;
         id?: T;
       };
+  cartEnabled?: T;
   seo?:
     | T
     | {

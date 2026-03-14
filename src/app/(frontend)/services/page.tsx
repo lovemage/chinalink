@@ -46,6 +46,9 @@ export default async function ServicesPage({
     depth: 1,
   })
 
+  const siteSettings = await payload.findGlobal({ slug: 'site-settings' }).catch(() => null)
+  const lineUrl = (siteSettings as { lineOfficialUrl?: string } | null)?.lineOfficialUrl || ''
+
   const categories = categoriesResult.docs as ServiceCategory[]
   const services = servicesResult.docs as Service[]
 
@@ -75,7 +78,7 @@ export default async function ServicesPage({
         {services.length > 0 ? (
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => (
-              <ServiceCard key={service.id} service={service} />
+              <ServiceCard key={service.id} service={service} lineUrl={lineUrl} />
             ))}
           </div>
         ) : (

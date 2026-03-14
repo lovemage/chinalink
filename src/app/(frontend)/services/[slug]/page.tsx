@@ -56,6 +56,9 @@ export default async function ServiceDetailPage({
   const service = result.docs[0] as Service | undefined
   if (!service) notFound()
 
+  const siteSettings = await payload.findGlobal({ slug: 'site-settings' }).catch(() => null)
+  const lineUrl = (siteSettings as { lineOfficialUrl?: string } | null)?.lineOfficialUrl || ''
+
   const cover = typeof service.coverImage === 'object' && service.coverImage ? (service.coverImage as Media) : null
   const category = typeof service.serviceCategory === 'object' && service.serviceCategory ? (service.serviceCategory as ServiceCategory) : null
 
@@ -128,7 +131,7 @@ export default async function ServiceDetailPage({
 
           {/* Sidebar pricing */}
           <div className="lg:sticky lg:top-32 lg:self-start">
-            <PricingSection service={service} />
+            <PricingSection service={service} lineUrl={lineUrl} />
           </div>
         </div>
       </div>

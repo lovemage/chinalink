@@ -10,7 +10,12 @@ export const metadata = {
   description: '選擇您需要的服務項目，輕鬆加入購物車並完成預約。',
 }
 
-export default async function ServiceCartPage() {
+export default async function ServiceCartPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ add?: string }>
+}) {
+  const { add } = await searchParams
   const payload = await getPayload({ config: configPromise })
 
   const categoriesResult = await payload.find({
@@ -32,5 +37,14 @@ export default async function ServiceCartPage() {
   const categories = categoriesResult.docs as ServiceCategory[]
   const services = servicesResult.docs as Service[]
 
-  return <ServiceCartClient services={services} categories={categories} />
+  // Parse the service ID to auto-add from query param
+  const initialAddId = add ? parseInt(add, 10) : undefined
+
+  return (
+    <ServiceCartClient
+      services={services}
+      categories={categories}
+      initialAddServiceId={initialAddId && !isNaN(initialAddId) ? initialAddId : undefined}
+    />
+  )
 }

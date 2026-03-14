@@ -17,6 +17,7 @@ interface CartItem {
 interface ServiceCartClientProps {
   services: Service[]
   categories: ServiceCategory[]
+  initialAddServiceId?: number
 }
 
 interface OrderResult {
@@ -57,7 +58,7 @@ function getServiceCategory(service: Service): ServiceCategory | null {
 
 /* ────────────────────────────── Main Component ────────────────────────────── */
 
-export function ServiceCartClient({ services, categories }: ServiceCartClientProps) {
+export function ServiceCartClient({ services, categories, initialAddServiceId }: ServiceCartClientProps) {
   const { data: session } = useSession()
   const [cart, setCart] = useState<CartItem[]>([])
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
@@ -141,6 +142,18 @@ export function ServiceCartClient({ services, categories }: ServiceCartClientPro
     (serviceId: number) => cart.find((item) => item.service.id === serviceId)?.quantity ?? 0,
     [cart],
   )
+
+  // Auto-add service from URL query param
+  const hasAutoAdded = useRef(false)
+  useEffect(() => {
+    if (initialAddServiceId && !hasAutoAdded.current) {
+      hasAutoAdded.current = true
+      const service = services.find((s) => s.id === initialAddServiceId)
+      if (service && service.pricingMode !== 'custom') {
+        addToCart(service)
+      }
+    }
+  }, [initialAddServiceId, services, addToCart])
 
   // Panel open/close
   const openPanel = () => {

@@ -3,9 +3,11 @@ import Image from 'next/image'
 import type { Service, ServiceCategory, Media } from '@/payload-types'
 import { MaterialSymbol } from '@/components/ui/MaterialSymbol'
 import { defaultServiceIconName } from '@/lib/services/serviceIcons'
+import { ServiceActionButton } from './ServiceActionButton'
 
 interface ServiceCardProps {
   service: Service
+  lineUrl: string
 }
 
 function formatPrice(service: Service): string {
@@ -21,9 +23,10 @@ function formatPrice(service: Service): string {
   }
 }
 
-export function ServiceCard({ service }: ServiceCardProps) {
+export function ServiceCard({ service, lineUrl }: ServiceCardProps) {
   const cover = typeof service.coverImage === 'object' && service.coverImage ? service.coverImage as Media : null
   const category = typeof service.serviceCategory === 'object' && service.serviceCategory ? service.serviceCategory as ServiceCategory : null
+  const cartEnabled = service.cartEnabled !== false
 
   return (
     <Link
@@ -57,8 +60,16 @@ export function ServiceCard({ service }: ServiceCardProps) {
         <h3 className="font-serif text-2xl font-bold text-brand-text group-hover:text-brand-primary transition-colors">
           {service.title}
         </h3>
-        <div className="mt-auto pt-6">
+        <div className="mt-auto pt-6 flex items-end justify-between gap-4">
           <span className="font-serif text-xl font-medium text-brand-primary">{formatPrice(service)}</span>
+          {service.pricingMode !== 'custom' && (
+            <ServiceActionButton
+              serviceId={service.id}
+              cartEnabled={cartEnabled}
+              lineUrl={lineUrl}
+              variant="card"
+            />
+          )}
         </div>
       </div>
     </Link>

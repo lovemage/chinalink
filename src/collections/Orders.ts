@@ -9,7 +9,7 @@ export const Orders: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'orderNumber',
-    defaultColumns: ['orderNumber', 'customer', 'service', 'amount', 'paymentStatus', 'createdAt'],
+    defaultColumns: ['orderNumber', 'customer', 'orderStatus', 'amount', 'paymentStatus', 'createdAt'],
   },
   access: { read: () => true },
   hooks: {
@@ -53,7 +53,6 @@ export const Orders: CollectionConfig = {
       name: 'service',
       type: 'relationship',
       relationTo: 'services',
-      required: true,
       label: '服務',
       admin: {
         condition: (_, siblingData) => siblingData?.itemType !== 'product',
@@ -115,6 +114,36 @@ export const Orders: CollectionConfig = {
         { label: '已過期', value: 'expired' },
       ],
       label: '付款狀態',
+    },
+    {
+      name: 'orderStatus',
+      type: 'select',
+      defaultValue: 'pending',
+      options: [
+        { label: '待處理', value: 'pending' },
+        { label: '已付款', value: 'paid' },
+        { label: '已完成', value: 'completed' },
+      ],
+      label: '訂單狀態',
+      admin: {
+        position: 'sidebar',
+        description: '客服手動切換訂單處理進度',
+      },
+    },
+    {
+      name: 'items',
+      type: 'array',
+      label: '訂購項目',
+      admin: {
+        description: '購物車多項服務訂單使用',
+      },
+      fields: [
+        { name: 'serviceId', type: 'relationship', relationTo: 'services', required: true, label: '服務' },
+        { name: 'serviceName', type: 'text', required: true, label: '服務名稱' },
+        { name: 'unitPrice', type: 'number', required: true, label: '單價' },
+        { name: 'quantity', type: 'number', required: true, label: '數量', min: 1 },
+        { name: 'subtotal', type: 'number', required: true, label: '小計' },
+      ],
     },
     { name: 'ecpayTradeNo', type: 'text', label: '綠界交易編號', admin: { readOnly: true } },
     { name: 'note', type: 'textarea', label: '管理員備註' },

@@ -18,6 +18,7 @@ import { Products } from './collections/Products'
 import { Customers } from './collections/Customers'
 import { Orders } from './collections/Orders'
 import { Inquiries } from './collections/Inquiries'
+import { SiteSettings } from './globals/SiteSettings'
 import { EmailTemplates } from './collections/EmailTemplates'
 import { VerificationCodes } from './collections/VerificationCodes'
 
@@ -171,6 +172,7 @@ export default buildConfig({
     EmailTemplates,
     VerificationCodes,
   ],
+  globals: [SiteSettings],
   editor: lexicalEditor(),
   secret: payloadSecret,
   typescript: {

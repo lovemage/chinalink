@@ -111,8 +111,12 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    'site-settings': SiteSetting;
+  };
+  globalsSelect: {
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -927,6 +931,23 @@ export interface Order {
   amount: number;
   paymentMethod?: ('credit_card' | 'atm' | 'cvs') | null;
   paymentStatus?: ('pending' | 'paid' | 'failed' | 'expired') | null;
+  /**
+   * 客服手動切換訂單處理進度
+   */
+  orderStatus?: ('pending' | 'paid' | 'completed') | null;
+  /**
+   * 購物車多項服務訂單使用
+   */
+  items?:
+    | {
+        serviceId: number | Service;
+        serviceName: string;
+        unitPrice: number;
+        quantity: number;
+        subtotal: number;
+        id?: string | null;
+      }[]
+    | null;
   ecpayTradeNo?: string | null;
   note?: string | null;
   updatedAt: string;
@@ -1821,6 +1842,17 @@ export interface OrdersSelect<T extends boolean = true> {
   amount?: T;
   paymentMethod?: T;
   paymentStatus?: T;
+  orderStatus?: T;
+  items?:
+    | T
+    | {
+        serviceId?: T;
+        serviceName?: T;
+        unitPrice?: T;
+        quantity?: T;
+        subtotal?: T;
+        id?: T;
+      };
   ecpayTradeNo?: T;
   note?: T;
   updatedAt?: T;
@@ -1973,6 +2005,34 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  /**
+   * 官方 LINE 帳號連結，用於訂單完成後引導會員聯繫客服
+   */
+  lineOfficialUrl: string;
+  /**
+   * 例如 @chinalink，顯示在前台供會員辨識
+   */
+  lineOfficialId?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  lineOfficialUrl?: T;
+  lineOfficialId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

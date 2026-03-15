@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { LoginButtons } from '@/components/auth/LoginButtons'
 
@@ -15,7 +16,9 @@ export default function LoginPage() {
           <CardDescription>使用以下方式快速登入</CardDescription>
         </CardHeader>
         <CardContent>
-          <LoginButtons />
+          <Suspense>
+            <LoginButtons />
+          </Suspense>
         </CardContent>
       </Card>
     </div>

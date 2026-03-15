@@ -50,13 +50,13 @@ export default async function ProductsPage({
   const products = productsResult.docs as Product[]
 
   return (
-    <section className="relative min-h-[50vh] overflow-hidden bg-brand-bg pt-32 pb-24">
-      <div className="pointer-events-none absolute top-0 left-0 h-[560px] w-[560px] rounded-[60%_40%_70%_30%_/_40%_40%_60%_60%] bg-brand-cta/5 blur-3xl" />
+    <section className="relative min-h-screen overflow-hidden bg-brand-bg pt-32 pb-24">
+      <div className="pointer-events-none absolute -top-20 left-0 h-[600px] w-[600px] rounded-[60%_40%_70%_30%_/_40%_40%_60%_60%] bg-brand-cta/5 blur-3xl opacity-60" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6">
         <div className="max-w-2xl">
           <div className="mb-6 inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-brand-cta uppercase">
-            <span className="h-px w-8 bg-brand-cta"></span>
+            <span className="h-px w-8 bg-brand-cta" />
             Product Center
           </div>
           <h1 className="font-serif text-5xl font-medium tracking-tight text-brand-text sm:text-6xl">
@@ -71,10 +71,10 @@ export default async function ProductsPage({
           <div className="mt-12 flex flex-wrap gap-3">
             <Link
               href="/products"
-              className={`rounded-full border px-4 py-2 text-sm transition-colors ${
+              className={`rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
                 !category
-                  ? 'border-brand-cta bg-brand-cta text-white'
-                  : 'border-brand-primary/20 bg-white/70 text-brand-text hover:border-brand-cta/40'
+                  ? 'border-brand-cta bg-brand-cta text-white shadow-lg shadow-brand-cta/20'
+                  : 'border-brand-primary/15 bg-white/80 text-brand-text hover:border-brand-cta/40 hover:bg-white'
               }`}
             >
               全部商品
@@ -83,10 +83,10 @@ export default async function ProductsPage({
               <Link
                 key={item.id}
                 href={`/products?category=${encodeURIComponent(item.slug)}`}
-                className={`rounded-full border px-4 py-2 text-sm transition-colors ${
+                className={`rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
                   category === item.slug
-                    ? 'border-brand-cta bg-brand-cta text-white'
-                    : 'border-brand-primary/20 bg-white/70 text-brand-text hover:border-brand-cta/40'
+                    ? 'border-brand-cta bg-brand-cta text-white shadow-lg shadow-brand-cta/20'
+                    : 'border-brand-primary/15 bg-white/80 text-brand-text hover:border-brand-cta/40 hover:bg-white'
                 }`}
               >
                 {item.name}

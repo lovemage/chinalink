@@ -23,14 +23,14 @@ export function ServiceFilters({ categories }: ServiceFiltersProps) {
   }
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-3">
       <button
         type="button"
         onClick={() => handleClick('')}
-        className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+        className={`rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
           !currentCategory
-            ? 'bg-brand-primary text-white'
-            : 'bg-white text-brand-muted hover:bg-brand-primary/10 hover:text-brand-primary'
+            ? 'border-brand-primary bg-brand-primary text-white shadow-lg shadow-brand-primary/20'
+            : 'border-brand-primary/15 bg-white/80 text-brand-text hover:border-brand-primary/40 hover:bg-white'
         }`}
       >
         全部
@@ -40,10 +40,10 @@ export function ServiceFilters({ categories }: ServiceFiltersProps) {
           key={cat.id}
           type="button"
           onClick={() => handleClick(cat.slug)}
-          className={`rounded-full px-5 py-2 text-sm font-medium transition-colors ${
+          className={`rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
             currentCategory === cat.slug
-              ? 'bg-brand-primary text-white'
-              : 'bg-white text-brand-muted hover:bg-brand-primary/10 hover:text-brand-primary'
+              ? 'border-brand-primary bg-brand-primary text-white shadow-lg shadow-brand-primary/20'
+              : 'border-brand-primary/15 bg-white/80 text-brand-text hover:border-brand-primary/40 hover:bg-white'
           }`}
         >
           {cat.name}

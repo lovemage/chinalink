@@ -31,7 +31,7 @@ export function ServiceCard({ service, lineUrl }: ServiceCardProps) {
   return (
     <Link
       href={`/services/${service.slug}`}
-      className="group flex flex-col overflow-hidden rounded-[2.5rem] border border-brand-primary/10 bg-white shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-brand-primary/10"
+      className="group flex h-full flex-col overflow-hidden rounded-[2.5rem] border border-brand-primary/10 bg-white shadow-xl shadow-brand-primary/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-brand-bg m-2 rounded-[2rem]">
         {cover?.url ? (
@@ -39,8 +39,8 @@ export function ServiceCard({ service, lineUrl }: ServiceCardProps) {
             src={cover.sizes?.card?.url || cover.url}
             alt={cover.alt || service.title}
             fill
-            sizes="(max-width: 1024px) 100vw, 33vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="flex h-full items-center justify-center opacity-30">
@@ -57,10 +57,10 @@ export function ServiceCard({ service, lineUrl }: ServiceCardProps) {
             {category.name}
           </span>
         )}
-        <h3 className="font-serif text-2xl font-bold text-brand-text group-hover:text-brand-primary transition-colors">
+        <h3 className="font-serif text-2xl font-medium text-brand-text transition-colors group-hover:text-brand-primary">
           {service.title}
         </h3>
-        <div className="mt-auto pt-6 flex items-end justify-between gap-4">
+        <div className="mt-auto flex items-end justify-between gap-4 pt-6">
           <span className="font-serif text-xl font-medium text-brand-primary">{formatPrice(service)}</span>
           {service.pricingMode !== 'custom' && (
             <ServiceActionButton

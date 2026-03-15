@@ -53,30 +53,30 @@ export default async function ServicesPage({
   const services = servicesResult.docs as Service[]
 
   return (
-    <section className="relative min-h-[50vh] pt-32 pb-24 overflow-hidden bg-brand-bg">
+    <section className="relative min-h-screen overflow-hidden bg-brand-bg pt-32 pb-24">
       {/* Background organic shape */}
-      <div className="absolute top-0 right-0 h-[600px] w-[600px] rounded-[60%_40%_30%_70%_/_60%_30%_70%_40%] bg-brand-primary/5 blur-3xl opacity-60 mix-blend-multiply pointer-events-none" />
-      
-      <div className="mx-auto max-w-7xl px-6 relative z-10">
+      <div className="pointer-events-none absolute -top-20 right-0 h-[600px] w-[600px] rounded-[60%_40%_30%_70%_/_60%_30%_70%_40%] bg-brand-primary/5 blur-3xl opacity-60" />
+
+      <div className="relative z-10 mx-auto max-w-7xl px-6">
         <div className="max-w-2xl">
           <div className="mb-6 inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-brand-primary uppercase">
-            <span className="h-px w-8 bg-brand-primary"></span>
+            <span className="h-px w-8 bg-brand-primary" />
             Our Services
           </div>
           <h1 className="font-serif text-5xl font-medium tracking-tight text-brand-text sm:text-6xl">
             專業服務 <span className="font-playfair italic text-brand-primary">Solutions</span>
           </h1>
-          <p className="mt-6 text-lg font-light leading-relaxed text-brand-muted max-w-xl">
+          <p className="mt-6 max-w-xl text-lg font-light leading-relaxed text-brand-muted">
             從帳號辦理到公司註冊，懂陸姐幫你搞定大陸經營的大小事，讓您的兩岸商務之旅暢通無阻。
           </p>
         </div>
 
-        <div className="mt-16">
+        <div className="mt-12">
           <ServiceFilters categories={categories} />
         </div>
 
         {services.length > 0 ? (
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => (
               <ServiceCard key={service.id} service={service} lineUrl={lineUrl} />
             ))}

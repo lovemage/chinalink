@@ -6,6 +6,15 @@ import type { Service, ServiceCategory, Media } from '@/payload-types'
 import Image from 'next/image'
 import { MaterialSymbol } from '@/components/ui/MaterialSymbol'
 import { defaultServiceIconName } from '@/lib/services/serviceIcons'
+import {
+  ShoppingBag,
+  ArrowRight,
+  X,
+  Plus,
+  Minus,
+  Trash2,
+  CheckCircle,
+} from 'lucide-react'
 
 /* ────────────────────────────── Types ────────────────────────────── */
 
@@ -312,7 +321,7 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
               : 'translate-y-4 scale-95 opacity-0'
           }`}
         >
-          <span className="material-symbols-outlined text-[22px]">shopping_bag</span>
+          <ShoppingBag className="h-[22px] w-[22px]" />
           <span className="text-sm font-semibold">{totalItems} 件</span>
           <span className="h-4 w-px bg-white/30" />
           <span className="text-sm font-semibold">{formatPrice(totalPrice)}</span>
@@ -330,13 +339,13 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
           }`}
         >
           <span className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[22px]">shopping_bag</span>
+            <ShoppingBag className="h-[22px] w-[22px]" />
             <span className="font-semibold">{totalItems} 件</span>
           </span>
           <span className="font-semibold">{formatPrice(totalPrice)}</span>
           <span className="flex items-center gap-1 text-sm font-medium">
             查看
-            <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+            <ArrowRight className="h-[18px] w-[18px]" />
           </span>
         </button>
       )}
@@ -365,7 +374,7 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
             onClick={closePanel}
             className="flex h-9 w-9 items-center justify-center rounded-xl text-brand-muted transition-colors hover:bg-brand-primary/5 hover:text-brand-text"
           >
-            <span className="material-symbols-outlined text-[22px]">close</span>
+            <X className="h-[22px] w-[22px]" />
           </button>
         </div>
 
@@ -373,9 +382,7 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
         <div className="flex-1 overflow-y-auto px-6 py-4">
           {cart.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
-              <span className="material-symbols-outlined mb-4 text-[48px] text-brand-primary/20">
-                shopping_bag
-              </span>
+              <ShoppingBag className="mb-4 h-[48px] w-[48px] text-brand-primary/20" />
               <p className="text-sm text-brand-muted">尚未選擇任何服務</p>
             </div>
           ) : (
@@ -399,7 +406,7 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
                         onClick={() => updateQuantity(item.service.id, -1)}
                         className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
                       >
-                        <span className="material-symbols-outlined text-[18px]">remove</span>
+                        <Minus className="h-[18px] w-[18px]" />
                       </button>
                       <span className="w-8 text-center text-sm font-semibold text-brand-text">
                         {item.quantity}
@@ -408,7 +415,7 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
                         onClick={() => updateQuantity(item.service.id, 1)}
                         className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
                       >
-                        <span className="material-symbols-outlined text-[18px]">add</span>
+                        <Plus className="h-[18px] w-[18px]" />
                       </button>
                     </div>
 
@@ -416,7 +423,7 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
                       onClick={() => removeFromCart(item.service.id)}
                       className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-brand-muted/60 transition-colors hover:bg-brand-cta/10 hover:text-brand-cta"
                     >
-                      <span className="material-symbols-outlined text-[18px]">delete</span>
+                      <Trash2 className="h-[18px] w-[18px]" />
                     </button>
                   </li>
                 )
@@ -459,9 +466,7 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
             <div className="pointer-events-auto w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl">
               {/* Success icon */}
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50">
-                <span className="material-symbols-outlined text-[32px] text-emerald-500">
-                  check_circle
-                </span>
+                <CheckCircle className="h-[32px] w-[32px] text-emerald-500" />
               </div>
 
               <h3 className="mt-5 text-center font-serif text-2xl font-medium text-brand-text">
@@ -592,7 +597,7 @@ function ServiceItemCard({ service, inCart, quantity, onAdd, onUpdateQuantity }:
                     onClick={() => onUpdateQuantity(-1)}
                     className="flex h-9 w-9 items-center justify-center rounded-xl border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
                   >
-                    <span className="material-symbols-outlined text-[18px]">remove</span>
+                    <Minus className="h-[18px] w-[18px]" />
                   </button>
                   <span className="w-8 text-center text-sm font-semibold text-brand-text">
                     {quantity}
@@ -601,7 +606,7 @@ function ServiceItemCard({ service, inCart, quantity, onAdd, onUpdateQuantity }:
                     onClick={() => onUpdateQuantity(1)}
                     className="flex h-9 w-9 items-center justify-center rounded-xl border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
                   >
-                    <span className="material-symbols-outlined text-[18px]">add</span>
+                    <Plus className="h-[18px] w-[18px]" />
                   </button>
                 </div>
               ) : (
@@ -609,7 +614,7 @@ function ServiceItemCard({ service, inCart, quantity, onAdd, onUpdateQuantity }:
                   onClick={onAdd}
                   className="inline-flex items-center gap-1.5 rounded-xl bg-brand-primary/10 px-4 py-2.5 text-sm font-medium text-brand-primary transition-all duration-200 hover:bg-brand-primary hover:text-white active:scale-95"
                 >
-                  <span className="material-symbols-outlined text-[18px]">add</span>
+                  <Plus className="h-[18px] w-[18px]" />
                   加入
                 </button>
               )}
@@ -620,7 +625,7 @@ function ServiceItemCard({ service, inCart, quantity, onAdd, onUpdateQuantity }:
         {/* In-cart indicator */}
         {inCart && (
           <div className="mt-3 flex items-center gap-1.5 text-xs font-medium text-emerald-600">
-            <span className="material-symbols-outlined text-[16px]">check_circle</span>
+            <CheckCircle className="h-[16px] w-[16px]" />
             已加入
           </div>
         )}

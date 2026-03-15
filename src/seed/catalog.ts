@@ -116,6 +116,7 @@ export const productTags: SeedProductTag[] = [
   { name: '帳號代辦', slug: 'account-setup' },
   { name: '公司註冊', slug: 'company-registration' },
   { name: '內容營運', slug: 'content-ops' },
+  { name: '簡訊認證', slug: 'sms-verification' },
 ]
 
 export const productSeedSources: SeedProduct[] = [
@@ -238,6 +239,49 @@ export const productSeedSources: SeedProduct[] = [
         specs: [{ key: '服務週期', value: '8 週' }],
         price: 28800,
         stock: 10,
+        isActive: true,
+      },
+    ],
+  },
+  {
+    title: '中國軟件簡訊認證服務',
+    slug: 'china-sms-verification',
+    categorySlug: 'starter-kits',
+    tagSlugs: ['taiwan-friendly', 'direct-checkout', 'sms-verification'],
+    summary:
+      '使用中國實體 SIM 卡與實體 IP 完成軟件簡訊認證，涵蓋抖音、Seed Dance、百度、微信、支付寶等主流平台，非虛擬卡片，通過率高、帳號穩定不易被風控。',
+    features: [
+      '涵蓋抖音 / Seed Dance / 百度 / 微信 / 支付寶等主流平台',
+      '使用中國實體 SIM 卡 + 實體 IP 認證，非虛擬號碼或接碼平台',
+      '實體卡片優勢：通過率高、帳號不易被標記為異常或風控',
+      '虛擬卡片風險：號碼重複使用率高，容易觸發平台安全機制導致封號',
+      '適合需要大陸手機驗證碼完成註冊或綁定的台灣用戶',
+    ],
+    seoDescription:
+      '提供中國實體 SIM 卡簡訊認證服務，涵蓋抖音、百度、微信等平台，實體卡片認證通過率高、帳號穩定。',
+    variants: [
+      {
+        sku: 'CLK-SMS-SINGLE',
+        name: '單次認證',
+        specs: [
+          { key: '認證次數', value: '1 次' },
+          { key: '認證方式', value: '中國實體 SIM 卡' },
+        ],
+        price: 200,
+        stock: 999,
+        isDefault: true,
+        isActive: true,
+      },
+      {
+        sku: 'CLK-SMS-5PACK',
+        name: '5 次認證包',
+        specs: [
+          { key: '認證次數', value: '5 次' },
+          { key: '認證方式', value: '中國實體 SIM 卡' },
+        ],
+        price: 900,
+        compareAtPrice: 1000,
+        stock: 200,
         isActive: true,
       },
     ],

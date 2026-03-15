@@ -159,13 +159,13 @@ export default async function ProductDetailPage({
               </div>
             )}
 
-            <a
-              href="/contact"
+            <Link
+              href={`/service-cart?addProduct=${product.slug}`}
               className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-cta px-6 py-3 font-semibold text-white transition-colors hover:bg-brand-cta/90 active:scale-[0.98]"
             >
               <ShoppingCart className="h-5 w-5" />
               加入購物車
-            </a>
+            </Link>
           </aside>
         </div>
       </div>

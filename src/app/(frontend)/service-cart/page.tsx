@@ -2,40 +2,58 @@ export const dynamic = 'force-dynamic'
 
 import { getPayload } from 'payload'
 import configPromise from '@payload-config'
-import type { Service, ServiceCategory } from '@/payload-types'
+import type { Service, ServiceCategory, Product, ProductCategory } from '@/payload-types'
 import { ServiceCartClient } from '@/components/service-cart/ServiceCartClient'
 
 export const metadata = {
   title: '服務選購 - 懂陸姐 ChinaLink',
-  description: '選擇您需要的服務項目，輕鬆加入購物車並完成預約。',
+  description: '選擇您需要的服務與商品，輕鬆加入購物車並完成預約。',
 }
 
 export default async function ServiceCartPage({
   searchParams,
 }: {
-  searchParams: Promise<{ add?: string }>
+  searchParams: Promise<{ add?: string; addProduct?: string }>
 }) {
-  const { add } = await searchParams
+  const { add, addProduct } = await searchParams
   const payload = await getPayload({ config: configPromise })
 
-  const categoriesResult = await payload.find({
-    collection: 'service-categories',
-    limit: 100,
-  })
-
-  const servicesResult = await payload.find({
-    collection: 'services',
-    where: {
-      status: { equals: 'published' },
-      visibility: { equals: 'public' },
-    },
-    limit: 100,
-    depth: 1,
-    sort: '-createdAt',
-  })
+  const [categoriesResult, servicesResult, productCategoriesResult, productsResult] =
+    await Promise.all([
+      payload.find({
+        collection: 'service-categories',
+        limit: 100,
+      }),
+      payload.find({
+        collection: 'services',
+        where: {
+          status: { equals: 'published' },
+          visibility: { equals: 'public' },
+        },
+        limit: 100,
+        depth: 1,
+        sort: '-createdAt',
+      }),
+      payload.find({
+        collection: 'product-categories',
+        limit: 100,
+      }),
+      payload.find({
+        collection: 'products',
+        where: {
+          status: { equals: 'published' },
+          visibility: { in: ['public', 'unlisted'] },
+        },
+        limit: 100,
+        depth: 1,
+        sort: '-createdAt',
+      }),
+    ])
 
   const categories = categoriesResult.docs as ServiceCategory[]
   const services = servicesResult.docs as Service[]
+  const productCategories = productCategoriesResult.docs as ProductCategory[]
+  const products = productsResult.docs as Product[]
 
   // Parse the service ID to auto-add from query param
   const initialAddId = add ? parseInt(add, 10) : undefined
@@ -44,7 +62,10 @@ export default async function ServiceCartPage({
     <ServiceCartClient
       services={services}
       categories={categories}
+      products={products}
+      productCategories={productCategories}
       initialAddServiceId={initialAddId && !isNaN(initialAddId) ? initialAddId : undefined}
+      initialAddProductSlug={addProduct || undefined}
     />
   )
 }

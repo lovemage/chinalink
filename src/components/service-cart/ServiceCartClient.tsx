@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
-import type { Service, ServiceCategory, Media } from '@/payload-types'
+import type { Service, ServiceCategory, Product, ProductCategory, Media } from '@/payload-types'
 import Image from 'next/image'
 import { MaterialSymbol } from '@/components/ui/MaterialSymbol'
 import { defaultServiceIconName } from '@/lib/services/serviceIcons'
@@ -14,19 +14,27 @@ import {
   Minus,
   Trash2,
   CheckCircle,
+  Package,
 } from 'lucide-react'
 
 /* ────────────────────────────── Types ────────────────────────────── */
 
 interface CartItem {
-  service: Service
+  type: 'service' | 'product'
+  service?: Service
+  product?: Product
+  variantSKU?: string
+  variantName?: string
   quantity: number
 }
 
 interface ServiceCartClientProps {
   services: Service[]
+  products: Product[]
   categories: ServiceCategory[]
+  productCategories: ProductCategory[]
   initialAddServiceId?: number
+  initialAddProductSlug?: string
 }
 
 interface OrderResult {
@@ -49,6 +57,16 @@ function getServicePrice(service: Service): number | null {
   }
 }
 
+function getProductVariantPrice(product: Product, variantSKU?: string): number | null {
+  const variants = (product.variants || []).filter((v) => v.isActive !== false)
+  if (variantSKU) {
+    const variant = variants.find((v) => v.sku === variantSKU)
+    return variant?.price ?? null
+  }
+  const defaultVariant = variants.find((v) => v.isDefault) || variants[0]
+  return defaultVariant?.price ?? null
+}
+
 function formatPrice(price: number): string {
   return `NT$ ${price.toLocaleString()}`
 }
@@ -65,11 +83,48 @@ function getServiceCategory(service: Service): ServiceCategory | null {
     : null
 }
 
+function getProductCover(product: Product): Media | null {
+  return typeof product.coverImage === 'object' && product.coverImage
+    ? (product.coverImage as Media)
+    : null
+}
+
+function getCartItemKey(item: CartItem): string {
+  if (item.type === 'service' && item.service) return `service-${item.service.id}`
+  if (item.type === 'product' && item.product && item.variantSKU)
+    return `product-${item.product.id}-${item.variantSKU}`
+  return `unknown-${Math.random()}`
+}
+
+function getCartItemPrice(item: CartItem): number | null {
+  if (item.type === 'service' && item.service) return getServicePrice(item.service)
+  if (item.type === 'product' && item.product) return getProductVariantPrice(item.product, item.variantSKU)
+  return null
+}
+
+function getCartItemTitle(item: CartItem): string {
+  if (item.type === 'service' && item.service) return item.service.title
+  if (item.type === 'product' && item.product) {
+    return item.variantName
+      ? `${item.product.title} - ${item.variantName}`
+      : item.product.title
+  }
+  return ''
+}
+
 /* ────────────────────────────── Main Component ────────────────────────────── */
 
-export function ServiceCartClient({ services, categories, initialAddServiceId }: ServiceCartClientProps) {
+export function ServiceCartClient({
+  services,
+  products,
+  categories,
+  productCategories,
+  initialAddServiceId,
+  initialAddProductSlug,
+}: ServiceCartClientProps) {
   const { data: session } = useSession()
   const [cart, setCart] = useState<CartItem[]>([])
+  const [activeTab, setActiveTab] = useState<'services' | 'products'>('services')
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [isPanelOpen, setIsPanelOpen] = useState(false)
   const [fabVisible, setFabVisible] = useState(false)
@@ -78,6 +133,16 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
   const [orderResult, setOrderResult] = useState<OrderResult | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const prevCartLength = useRef(0)
+
+  // Auto-switch to products tab if initialAddProductSlug is set
+  useEffect(() => {
+    if (initialAddProductSlug) setActiveTab('products')
+  }, [initialAddProductSlug])
+
+  // Reset category filter when switching tabs
+  useEffect(() => {
+    setActiveCategory(null)
+  }, [activeTab])
 
   // Filter services by category
   const filteredServices = useMemo(() => {
@@ -88,10 +153,22 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
     })
   }, [services, activeCategory])
 
+  // Filter products by category
+  const filteredProducts = useMemo(() => {
+    if (!activeCategory) return products
+    return products.filter((p) => {
+      const cat =
+        typeof p.productCategory === 'object' && p.productCategory
+          ? (p.productCategory as ProductCategory)
+          : null
+      return cat?.slug === activeCategory
+    })
+  }, [products, activeCategory])
+
   // Cart calculations
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0)
   const totalPrice = cart.reduce((sum, item) => {
-    const price = getServicePrice(item.service)
+    const price = getCartItemPrice(item)
     return sum + (price ?? 0) * item.quantity
   }, 0)
 
@@ -113,24 +190,43 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
     prevCartLength.current = cart.length
   }, [cart.length])
 
-  // Cart actions
-  const addToCart = useCallback((service: Service) => {
+  // Cart actions — services
+  const addServiceToCart = useCallback((service: Service) => {
     setCart((prev) => {
-      const existing = prev.find((item) => item.service.id === service.id)
+      const existing = prev.find((item) => item.type === 'service' && item.service?.id === service.id)
       if (existing) {
         return prev.map((item) =>
-          item.service.id === service.id ? { ...item, quantity: item.quantity + 1 } : item,
+          item.type === 'service' && item.service?.id === service.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item,
         )
       }
-      return [...prev, { service, quantity: 1 }]
+      return [...prev, { type: 'service' as const, service, quantity: 1 }]
     })
   }, [])
 
-  const updateQuantity = useCallback((serviceId: number, delta: number) => {
+  // Cart actions — products
+  const addProductToCart = useCallback((product: Product, variantSKU: string, variantName: string) => {
+    setCart((prev) => {
+      const existing = prev.find(
+        (item) => item.type === 'product' && item.product?.id === product.id && item.variantSKU === variantSKU,
+      )
+      if (existing) {
+        return prev.map((item) =>
+          item.type === 'product' && item.product?.id === product.id && item.variantSKU === variantSKU
+            ? { ...item, quantity: item.quantity + 1 }
+            : item,
+        )
+      }
+      return [...prev, { type: 'product' as const, product, variantSKU, variantName, quantity: 1 }]
+    })
+  }, [])
+
+  const updateQuantity = useCallback((key: string, delta: number) => {
     setCart((prev) => {
       return prev
         .map((item) => {
-          if (item.service.id !== serviceId) return item
+          if (getCartItemKey(item) !== key) return item
           const newQty = item.quantity + delta
           return newQty <= 0 ? null : { ...item, quantity: newQty }
         })
@@ -138,31 +234,60 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
     })
   }, [])
 
-  const removeFromCart = useCallback((serviceId: number) => {
-    setCart((prev) => prev.filter((item) => item.service.id !== serviceId))
+  const removeFromCart = useCallback((key: string) => {
+    setCart((prev) => prev.filter((item) => getCartItemKey(item) !== key))
   }, [])
 
-  const isInCart = useCallback(
-    (serviceId: number) => cart.some((item) => item.service.id === serviceId),
+  const isServiceInCart = useCallback(
+    (serviceId: number) => cart.some((item) => item.type === 'service' && item.service?.id === serviceId),
     [cart],
   )
 
-  const getCartQuantity = useCallback(
-    (serviceId: number) => cart.find((item) => item.service.id === serviceId)?.quantity ?? 0,
+  const getServiceCartQuantity = useCallback(
+    (serviceId: number) =>
+      cart.find((item) => item.type === 'service' && item.service?.id === serviceId)?.quantity ?? 0,
+    [cart],
+  )
+
+  const isProductVariantInCart = useCallback(
+    (productId: number, variantSKU: string) =>
+      cart.some(
+        (item) => item.type === 'product' && item.product?.id === productId && item.variantSKU === variantSKU,
+      ),
+    [cart],
+  )
+
+  const getProductVariantCartQuantity = useCallback(
+    (productId: number, variantSKU: string) =>
+      cart.find(
+        (item) => item.type === 'product' && item.product?.id === productId && item.variantSKU === variantSKU,
+      )?.quantity ?? 0,
     [cart],
   )
 
   // Auto-add service from URL query param
   const hasAutoAdded = useRef(false)
   useEffect(() => {
-    if (initialAddServiceId && !hasAutoAdded.current) {
+    if (hasAutoAdded.current) return
+    if (initialAddServiceId) {
       hasAutoAdded.current = true
       const service = services.find((s) => s.id === initialAddServiceId)
       if (service && service.pricingMode !== 'custom') {
-        addToCart(service)
+        addServiceToCart(service)
       }
     }
-  }, [initialAddServiceId, services, addToCart])
+    if (initialAddProductSlug) {
+      hasAutoAdded.current = true
+      const product = products.find((p) => p.slug === initialAddProductSlug)
+      if (product) {
+        const variants = (product.variants || []).filter((v) => v.isActive !== false)
+        const defaultVariant = variants.find((v) => v.isDefault) || variants[0]
+        if (defaultVariant) {
+          addProductToCart(product, defaultVariant.sku, defaultVariant.name)
+        }
+      }
+    }
+  }, [initialAddServiceId, initialAddProductSlug, services, products, addServiceToCart, addProductToCart])
 
   // Panel open/close
   const openPanel = () => {
@@ -191,7 +316,8 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
   const handleSubmitOrder = async () => {
     const customerId = (session?.user as { customerId?: number } | undefined)?.customerId
     if (!customerId) {
-      setSubmitError('請先登入會員帳號')
+      const currentUrl = window.location.pathname + window.location.search
+      window.location.href = `/login?callbackUrl=${encodeURIComponent(currentUrl)}`
       return
     }
 
@@ -204,10 +330,21 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           customerId,
-          items: cart.map((item) => ({
-            serviceId: item.service.id,
-            quantity: item.quantity,
-          })),
+          items: cart.map((item) => {
+            if (item.type === 'product' && item.product) {
+              return {
+                type: 'product',
+                productId: item.product.id,
+                variantSKU: item.variantSKU,
+                quantity: item.quantity,
+              }
+            }
+            return {
+              type: 'service',
+              serviceId: item.service?.id,
+              quantity: item.quantity,
+            }
+          }),
         }),
       })
 
@@ -240,6 +377,8 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
     setOrderResult(null)
   }
 
+  const currentCategories = activeTab === 'services' ? categories : productCategories
+
   return (
     <section className="relative min-h-screen overflow-hidden bg-brand-bg pt-32 pb-24">
       {/* Background decoration */}
@@ -251,19 +390,43 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
         <div className="max-w-2xl">
           <div className="mb-6 inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-brand-primary uppercase">
             <span className="h-px w-8 bg-brand-primary" />
-            Service Booking
+            Shopping Cart
           </div>
           <h1 className="font-serif text-5xl font-medium tracking-tight text-brand-text sm:text-6xl">
-            服務選購 <span className="font-playfair italic text-brand-primary">Select</span>
+            選購專區 <span className="font-playfair italic text-brand-primary">Select</span>
           </h1>
           <p className="mt-6 max-w-xl text-lg font-light leading-relaxed text-brand-muted">
-            挑選您需要的服務項目，加入購物車後一次完成預約。
+            挑選您需要的服務與商品，加入購物車後一次完成預約。
           </p>
         </div>
 
+        {/* Tab Switch: Services / Products */}
+        <div className="mt-10 flex gap-2">
+          <button
+            onClick={() => setActiveTab('services')}
+            className={`rounded-full border px-6 py-2.5 text-sm font-semibold transition-all duration-200 ${
+              activeTab === 'services'
+                ? 'border-brand-text bg-brand-text text-white shadow-lg'
+                : 'border-brand-primary/15 bg-white/80 text-brand-text hover:border-brand-text/40 hover:bg-white'
+            }`}
+          >
+            服務項目
+          </button>
+          <button
+            onClick={() => setActiveTab('products')}
+            className={`rounded-full border px-6 py-2.5 text-sm font-semibold transition-all duration-200 ${
+              activeTab === 'products'
+                ? 'border-brand-text bg-brand-text text-white shadow-lg'
+                : 'border-brand-primary/15 bg-white/80 text-brand-text hover:border-brand-text/40 hover:bg-white'
+            }`}
+          >
+            商品專區
+          </button>
+        </div>
+
         {/* Category Tabs */}
-        {categories.length > 0 && (
-          <div className="mt-12 flex flex-wrap gap-3">
+        {currentCategories.length > 0 && (
+          <div className="mt-6 flex flex-wrap gap-3">
             <button
               onClick={() => setActiveCategory(null)}
               className={`rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
@@ -274,7 +437,7 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
             >
               全部
             </button>
-            {categories.map((cat) => (
+            {currentCategories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.slug)}
@@ -291,23 +454,55 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
         )}
 
         {/* Services Grid */}
-        {filteredServices.length > 0 ? (
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredServices.map((service) => (
-              <ServiceItemCard
-                key={service.id}
-                service={service}
-                inCart={isInCart(service.id)}
-                quantity={getCartQuantity(service.id)}
-                onAdd={() => addToCart(service)}
-                onUpdateQuantity={(delta) => updateQuantity(service.id, delta)}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="mt-24 text-center">
-            <p className="font-serif text-xl text-brand-muted">目前沒有符合條件的服務</p>
-          </div>
+        {activeTab === 'services' && (
+          <>
+            {filteredServices.length > 0 ? (
+              <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredServices.map((service) => (
+                  <ServiceItemCard
+                    key={service.id}
+                    service={service}
+                    inCart={isServiceInCart(service.id)}
+                    quantity={getServiceCartQuantity(service.id)}
+                    onAdd={() => addServiceToCart(service)}
+                    onUpdateQuantity={(delta) =>
+                      updateQuantity(`service-${service.id}`, delta)
+                    }
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="mt-24 text-center">
+                <p className="font-serif text-xl text-brand-muted">目前沒有符合條件的服務</p>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Products Grid */}
+        {activeTab === 'products' && (
+          <>
+            {filteredProducts.length > 0 ? (
+              <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredProducts.map((product) => (
+                  <ProductItemCard
+                    key={product.id}
+                    product={product}
+                    isVariantInCart={isProductVariantInCart}
+                    getVariantCartQuantity={getProductVariantCartQuantity}
+                    onAddVariant={(sku, name) => addProductToCart(product, sku, name)}
+                    onUpdateVariantQuantity={(sku, delta) =>
+                      updateQuantity(`product-${product.id}-${sku}`, delta)
+                    }
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="mt-24 text-center">
+                <p className="font-serif text-xl text-brand-muted">目前沒有符合條件的商品</p>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -367,7 +562,7 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
         {/* Panel Header */}
         <div className="flex items-center justify-between border-b border-brand-primary/10 px-6 py-5">
           <div>
-            <h2 className="font-serif text-xl font-medium text-brand-text">已選服務</h2>
+            <h2 className="font-serif text-xl font-medium text-brand-text">購物車</h2>
             <p className="mt-0.5 text-sm text-brand-muted">{totalItems} 個項目</p>
           </div>
           <button
@@ -383,19 +578,26 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
           {cart.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
               <ShoppingBag className="mb-4 h-[48px] w-[48px] text-brand-primary/20" />
-              <p className="text-sm text-brand-muted">尚未選擇任何服務</p>
+              <p className="text-sm text-brand-muted">尚未選擇任何項目</p>
             </div>
           ) : (
             <ul className="space-y-4">
               {cart.map((item) => {
-                const price = getServicePrice(item.service)
+                const key = getCartItemKey(item)
+                const price = getCartItemPrice(item)
+                const title = getCartItemTitle(item)
                 return (
                   <li
-                    key={item.service.id}
+                    key={key}
                     className="flex items-start gap-4 rounded-2xl border border-brand-primary/8 bg-brand-bg/50 p-4"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-brand-text truncate">{item.service.title}</p>
+                      <div className="flex items-center gap-2">
+                        {item.type === 'product' && (
+                          <Package className="h-3.5 w-3.5 shrink-0 text-brand-primary/60" />
+                        )}
+                        <p className="font-medium text-brand-text truncate">{title}</p>
+                      </div>
                       <p className="mt-1 text-sm font-medium text-brand-primary">
                         {price !== null ? formatPrice(price) : '諮詢報價'}
                       </p>
@@ -403,7 +605,7 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
 
                     <div className="flex items-center gap-1 shrink-0">
                       <button
-                        onClick={() => updateQuantity(item.service.id, -1)}
+                        onClick={() => updateQuantity(key, -1)}
                         className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
                       >
                         <Minus className="h-[18px] w-[18px]" />
@@ -412,7 +614,7 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
                         {item.quantity}
                       </span>
                       <button
-                        onClick={() => updateQuantity(item.service.id, 1)}
+                        onClick={() => updateQuantity(key, 1)}
                         className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
                       >
                         <Plus className="h-[18px] w-[18px]" />
@@ -420,7 +622,7 @@ export function ServiceCartClient({ services, categories, initialAddServiceId }:
                     </div>
 
                     <button
-                      onClick={() => removeFromCart(item.service.id)}
+                      onClick={() => removeFromCart(key)}
                       className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-brand-muted/60 transition-colors hover:bg-brand-cta/10 hover:text-brand-cta"
                     >
                       <Trash2 className="h-[18px] w-[18px]" />
@@ -627,6 +829,138 @@ function ServiceItemCard({ service, inCart, quantity, onAdd, onUpdateQuantity }:
           <div className="mt-3 flex items-center gap-1.5 text-xs font-medium text-emerald-600">
             <CheckCircle className="h-[16px] w-[16px]" />
             已加入
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/* ────────────────────────────── Product Item Card ────────────────────────────── */
+
+interface ProductItemCardProps {
+  product: Product
+  isVariantInCart: (productId: number, variantSKU: string) => boolean
+  getVariantCartQuantity: (productId: number, variantSKU: string) => number
+  onAddVariant: (variantSKU: string, variantName: string) => void
+  onUpdateVariantQuantity: (variantSKU: string, delta: number) => void
+}
+
+function ProductItemCard({
+  product,
+  isVariantInCart,
+  getVariantCartQuantity,
+  onAddVariant,
+  onUpdateVariantQuantity,
+}: ProductItemCardProps) {
+  const cover = getProductCover(product)
+  const variants = (product.variants || []).filter((v) => v.isActive !== false)
+  const category =
+    typeof product.productCategory === 'object' && product.productCategory
+      ? (product.productCategory as ProductCategory)
+      : null
+
+  return (
+    <div className="group flex flex-col overflow-hidden rounded-[2rem] border border-brand-primary/8 bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-brand-primary/8">
+      {/* Image */}
+      <div className="relative aspect-[16/10] overflow-hidden bg-brand-bg m-2 rounded-[1.5rem]">
+        {cover?.url ? (
+          <Image
+            src={cover.sizes?.card?.url || cover.url}
+            alt={cover.alt || product.title}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="flex h-full items-center justify-center">
+            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white/80 text-brand-primary/40 shadow-sm ring-1 ring-brand-primary/8">
+              <Package className="h-10 w-10" />
+            </div>
+          </div>
+        )}
+        {category && (
+          <span className="absolute top-3 left-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-brand-text backdrop-blur-sm">
+            {category.name}
+          </span>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-1 flex-col px-6 pt-4 pb-6">
+        <h3 className="font-serif text-xl font-medium text-brand-text line-clamp-2">
+          {product.title}
+        </h3>
+        {product.summary && (
+          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-brand-muted">
+            {product.summary}
+          </p>
+        )}
+
+        {/* Variants */}
+        <div className="mt-auto space-y-3 pt-5">
+          {variants.map((variant) => {
+            const inCart = isVariantInCart(product.id, variant.sku)
+            const qty = getVariantCartQuantity(product.id, variant.sku)
+
+            return (
+              <div
+                key={variant.sku}
+                className="flex items-center justify-between gap-3 rounded-xl border border-brand-primary/8 px-4 py-3"
+              >
+                <div className="min-w-0">
+                  <p className="text-sm font-medium text-brand-text truncate">{variant.name}</p>
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-sm font-semibold text-brand-primary">
+                      {formatPrice(variant.price)}
+                    </p>
+                    {variant.compareAtPrice && (
+                      <p className="text-xs text-brand-muted line-through">
+                        {formatPrice(variant.compareAtPrice)}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="shrink-0">
+                  {inCart ? (
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => onUpdateVariantQuantity(variant.sku, -1)}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
+                      >
+                        <Minus className="h-4 w-4" />
+                      </button>
+                      <span className="w-7 text-center text-sm font-semibold text-brand-text">
+                        {qty}
+                      </span>
+                      <button
+                        onClick={() => onUpdateVariantQuantity(variant.sku, 1)}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => onAddVariant(variant.sku, variant.name)}
+                      className="inline-flex items-center gap-1 rounded-lg bg-brand-primary/10 px-3 py-2 text-xs font-medium text-brand-primary transition-all duration-200 hover:bg-brand-primary hover:text-white active:scale-95"
+                    >
+                      <Plus className="h-4 w-4" />
+                      加入
+                    </button>
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* In-cart indicator */}
+        {variants.some((v) => isVariantInCart(product.id, v.sku)) && (
+          <div className="mt-3 flex items-center gap-1.5 text-xs font-medium text-emerald-600">
+            <CheckCircle className="h-[16px] w-[16px]" />
+            已加入購物車
           </div>
         )}
       </div>

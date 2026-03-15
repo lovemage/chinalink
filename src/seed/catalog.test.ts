@@ -18,7 +18,7 @@ test('catalog seed sources include service and product entries from the project 
   assert.ok(serviceSeedSources.length >= 4)
   assert.ok(productCategories.length >= 2)
   assert.ok(productTags.length >= 4)
-  assert.ok(productSeedSources.length >= 4)
+  assert.ok(productSeedSources.length >= 5)
 
   const procurementKit = productSeedSources.find((entry) => entry.slug === 'cross-border-procurement-kit')
   assert.ok(procurementKit)
@@ -60,6 +60,14 @@ test('seed runner includes catalog target in default flow', () => {
 
   assert.match(source, /target === 'catalog'/)
   assert.match(source, /seedCatalog\(\)/)
+})
+
+test('SMS verification product has correct structure', () => {
+  const sms = productSeedSources.find((e) => e.slug === 'china-sms-verification')
+  assert.ok(sms)
+  assert.equal(sms.variants.length >= 2, true)
+  assert.match(sms.summary, /實體.*SIM/)
+  assert.equal(sms.variants[0].price, 200)
 })
 
 test('services collection exposes a fixed iconName select field for admin use', () => {

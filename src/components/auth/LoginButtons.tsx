@@ -1,12 +1,15 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { signIn } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Loader2 } from 'lucide-react'
 
 export function LoginButtons() {
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get('callbackUrl') || '/'
   const [email, setEmail] = useState('')
   const [code, setCode] = useState('')
   const [step, setStep] = useState<'email' | 'code'>('email')
@@ -91,7 +94,7 @@ export function LoginButtons() {
       }
 
       if (res?.ok) {
-        window.location.href = '/'
+        window.location.href = callbackUrl
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : '登入失敗')
@@ -200,7 +203,7 @@ export function LoginButtons() {
 
       <Button
         type="button"
-        onClick={() => signIn('google', { callbackUrl: '/' })}
+        onClick={() => signIn('google', { callbackUrl })}
         variant="outline"
         className="rounded-2xl h-12 w-full"
         disabled={isLoading}

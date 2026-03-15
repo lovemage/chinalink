@@ -3,8 +3,24 @@ import { getPayload } from 'payload'
 import configPromise from '@payload-config'
 
 interface CartItemInput {
-  serviceId: number
+  type: 'service' | 'product'
+  serviceId?: number
+  productId?: number
+  variantSKU?: string
   quantity: number
+}
+
+interface OrderItem {
+  itemType: 'service' | 'product'
+  serviceId?: number
+  serviceName?: string
+  productId?: number
+  productName?: string
+  variantSKU?: string
+  variantName?: string
+  unitPrice: number
+  quantity: number
+  subtotal: number
 }
 
 export async function POST(req: Request) {
@@ -24,52 +40,88 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: '會員不存在' }, { status: 404 })
     }
 
-    // Resolve services and calculate totals
-    const orderItems: {
-      serviceId: number
-      serviceName: string
-      unitPrice: number
-      quantity: number
-      subtotal: number
-    }[] = []
+    const orderItems: OrderItem[] = []
+    let hasServices = false
+    let hasProducts = false
 
     for (const item of items) {
-      const service = await payload.findByID({ collection: 'services', id: item.serviceId }).catch(() => null)
-      if (!service) {
-        return NextResponse.json({ error: `服務 ID ${item.serviceId} 不存在` }, { status: 404 })
-      }
+      if (item.type === 'product' && item.productId) {
+        // Handle product item
+        const product = await payload
+          .findByID({ collection: 'products', id: item.productId })
+          .catch(() => null)
+        if (!product) {
+          return NextResponse.json({ error: `商品 ID ${item.productId} 不存在` }, { status: 404 })
+        }
 
-      let unitPrice = 0
-      if (service.pricingMode === 'fixed') {
-        unitPrice = service.price ?? 0
-      } else if (service.pricingMode === 'addons') {
-        unitPrice = service.basePrice ?? 0
-      }
+        const variant = (product.variants || []).find(
+          (v) => v.sku === item.variantSKU && v.isActive !== false,
+        )
+        if (!variant) {
+          return NextResponse.json(
+            { error: `商品「${product.title}」的規格 ${item.variantSKU} 不存在或已停用` },
+            { status: 404 },
+          )
+        }
 
-      orderItems.push({
-        serviceId: item.serviceId,
-        serviceName: service.title,
-        unitPrice,
-        quantity: item.quantity,
-        subtotal: unitPrice * item.quantity,
-      })
+        orderItems.push({
+          itemType: 'product',
+          productId: item.productId,
+          productName: product.title,
+          variantSKU: variant.sku,
+          variantName: variant.name,
+          unitPrice: variant.price,
+          quantity: item.quantity,
+          subtotal: variant.price * item.quantity,
+        })
+        hasProducts = true
+      } else if (item.serviceId) {
+        // Handle service item
+        const service = await payload
+          .findByID({ collection: 'services', id: item.serviceId })
+          .catch(() => null)
+        if (!service) {
+          return NextResponse.json({ error: `服務 ID ${item.serviceId} 不存在` }, { status: 404 })
+        }
+
+        let unitPrice = 0
+        if (service.pricingMode === 'fixed') {
+          unitPrice = service.price ?? 0
+        } else if (service.pricingMode === 'addons') {
+          unitPrice = service.basePrice ?? 0
+        }
+
+        orderItems.push({
+          itemType: 'service',
+          serviceId: item.serviceId,
+          serviceName: service.title,
+          unitPrice,
+          quantity: item.quantity,
+          subtotal: unitPrice * item.quantity,
+        })
+        hasServices = true
+      }
     }
 
     const totalAmount = orderItems.reduce((sum, i) => sum + i.subtotal, 0)
 
+    // Determine order itemType based on contents
+    const orderItemType = hasProducts && !hasServices ? 'product' : 'service'
+
     // Create order
-    const order = await payload.create({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const order: any = await payload.create({
       collection: 'orders',
       draft: false,
       data: {
-        itemType: 'service',
+        itemType: orderItemType,
         orderNumber: '',
         customer: customerId,
         amount: totalAmount,
         orderStatus: 'pending',
         paymentStatus: 'pending',
         items: orderItems,
-      },
+      } as any,
     })
 
     // Fetch LINE URL from site settings

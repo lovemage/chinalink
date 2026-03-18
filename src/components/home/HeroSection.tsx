@@ -13,7 +13,7 @@ export function HeroSection() {
         {/* Text Content */}
         <div className="relative z-10 flex max-w-2xl flex-col justify-center text-center lg:w-1/2 lg:text-left lg:pr-10">
           <div className="mb-8 inline-flex self-center rounded-full border border-brand-primary/20 bg-card/70 px-5 py-2 text-xs font-semibold tracking-widest text-brand-primary uppercase lg:self-start">
-            Exclusive Cross-Strait Consultant
+            超過千位台商信賴的顧問品牌
           </div>
           
           <h1 className="font-serif text-5xl font-medium tracking-tight text-brand-text sm:text-6xl md:text-7xl lg:leading-[1.15]">
@@ -25,12 +25,15 @@ export function HeroSection() {
           </p>
 
           <div className="mt-12 flex flex-col gap-6 sm:flex-row sm:justify-center lg:justify-start">
-            <Link
-              href="/contact"
-              className="group relative inline-flex h-14 w-full items-center justify-center overflow-hidden rounded-full bg-brand-primary px-10 text-sm font-semibold tracking-widest text-brand-text shadow-md transition-colors duration-300 hover:bg-brand-primary/90 hover:text-brand-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-text focus-visible:ring-offset-4 focus-visible:ring-offset-brand-bg sm:w-auto"
+            <a
+              href="https://lin.ee/S2VgXpn"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative inline-flex h-14 w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#06C755] px-10 text-sm font-semibold tracking-widest text-white shadow-md transition-colors duration-300 hover:bg-[#05b04d] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-4 focus-visible:ring-offset-brand-bg sm:w-auto"
             >
-              <span className="relative">免費預約諮詢</span>
-            </Link>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5" aria-hidden="true"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386a.63.63 0 0 1-.63-.629V8.108a.63.63 0 0 1 .63-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 1.261V8.108a.631.631 0 0 0-1.261 0v3.016zm-1.783-3.646a.63.63 0 0 0-1.179.319v1.89l-2.063-2.46a.63.63 0 0 0-.483-.25h-.058a.63.63 0 0 0-.63.63v3.647a.63.63 0 0 0 1.261 0V9.274l2.071 2.47a.63.63 0 0 0 .484.248h.057a.63.63 0 0 0 .63-.63V8.108a.63.63 0 0 0-.09-.63zM8.87 11.124H7.115V8.108a.63.63 0 0 0-1.26 0v3.646a.63.63 0 0 0 .63.63H8.87c.349 0 .63-.286.63-.63 0-.345-.281-.63-.63-.63zM24 10.304C24 4.615 18.617.305 12 .305S0 4.615 0 10.304c0 4.942 4.383 9.08 10.305 9.862.402.087.948.265 1.086.608.124.31.081.795.04 1.11l-.175 1.048c-.054.313-.249 1.226 1.074.668 1.323-.558 7.148-4.21 9.753-7.209C23.395 14.905 24 12.726 24 10.304"/></svg>
+              <span className="relative">加入官方 LINE</span>
+            </a>
             <Link
               href="/services"
               className="inline-flex h-14 w-full items-center justify-center rounded-full border border-brand-primary/30 bg-transparent px-10 text-sm font-semibold tracking-widest text-brand-primary transition-colors duration-300 hover:border-brand-primary hover:bg-brand-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-brand-bg sm:w-auto"

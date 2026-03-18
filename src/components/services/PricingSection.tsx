@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Headset } from 'lucide-react'
 import type { Service } from '@/payload-types'
 
 interface PricingSectionProps {
@@ -47,19 +46,24 @@ export function PricingSection({ service, lineUrl }: PricingSectionProps) {
     return total
   }
 
-  // Custom pricing — inquiry form only
+  // Custom pricing — LINE CTA only
   if (service.pricingMode === 'custom') {
     return (
       <div className="rounded-[2.5rem] border border-brand-primary/20 bg-brand-primary/5 p-6">
         <p className="text-lg font-semibold text-brand-text">此服務需先諮詢報價</p>
         <p className="mt-2 text-sm text-brand-muted">
-          請填寫下方詢價表單，我們會盡快與您聯繫。
+          歡迎加入官方 LINE，我們會為您提供專屬報價。
         </p>
         <a
-          href="#inquiry-form"
-          className="mt-4 inline-block rounded-full bg-brand-primary px-6 py-2.5 font-semibold text-white transition-colors hover:bg-brand-primary/90"
+          href="https://lin.ee/S2VgXpn"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#06C755] px-6 py-2.5 font-semibold text-white transition-colors hover:bg-[#05b04d]"
         >
-          填寫詢價表單
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5" aria-hidden="true">
+            <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386a.63.63 0 0 1-.63-.629V8.108a.63.63 0 0 1 .63-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 1.261V8.108a.631.631 0 0 0-1.261 0v3.016zm-1.783-3.646a.63.63 0 0 0-1.179.319v1.89l-2.063-2.46a.63.63 0 0 0-.483-.25h-.058a.63.63 0 0 0-.63.63v3.647a.63.63 0 0 0 1.261 0V9.274l2.071 2.47a.63.63 0 0 0 .484.248h.057a.63.63 0 0 0 .63-.63V8.108a.63.63 0 0 0-.09-.63zM8.87 11.124H7.115V8.108a.63.63 0 0 0-1.26 0v3.646a.63.63 0 0 0 .63.63H8.87c.349 0 .63-.286.63-.63 0-.345-.281-.63-.63-.63zM24 10.304C24 4.615 18.617.305 12 .305S0 4.615 0 10.304c0 4.942 4.383 9.08 10.305 9.862.402.087.948.265 1.086.608.124.31.081.795.04 1.11l-.175 1.048c-.054.313-.249 1.226 1.074.668 1.323-.558 7.148-4.21 9.753-7.209C23.395 14.905 24 12.726 24 10.304" />
+          </svg>
+          加入官方 LINE 了解
         </a>
       </div>
     )
@@ -146,8 +150,10 @@ function ActionButton({ lineUrl }: { lineUrl: string }) {
       rel="noopener noreferrer"
       className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#06C755] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#05b04d] active:scale-[0.98]"
     >
-      <Headset className="h-5 w-5" />
-      諮詢服務
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-5 w-5" aria-hidden="true">
+        <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386a.63.63 0 0 1-.63-.629V8.108a.63.63 0 0 1 .63-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 1.261V8.108a.631.631 0 0 0-1.261 0v3.016zm-1.783-3.646a.63.63 0 0 0-1.179.319v1.89l-2.063-2.46a.63.63 0 0 0-.483-.25h-.058a.63.63 0 0 0-.63.63v3.647a.63.63 0 0 0 1.261 0V9.274l2.071 2.47a.63.63 0 0 0 .484.248h.057a.63.63 0 0 0 .63-.63V8.108a.63.63 0 0 0-.09-.63zM8.87 11.124H7.115V8.108a.63.63 0 0 0-1.26 0v3.646a.63.63 0 0 0 .63.63H8.87c.349 0 .63-.286.63-.63 0-.345-.281-.63-.63-.63zM24 10.304C24 4.615 18.617.305 12 .305S0 4.615 0 10.304c0 4.942 4.383 9.08 10.305 9.862.402.087.948.265 1.086.608.124.31.081.795.04 1.11l-.175 1.048c-.054.313-.249 1.226 1.074.668 1.323-.558 7.148-4.21 9.753-7.209C23.395 14.905 24 12.726 24 10.304" />
+      </svg>
+      加入官方 LINE 了解
     </a>
   )
 }

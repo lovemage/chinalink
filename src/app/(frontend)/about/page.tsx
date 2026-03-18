@@ -61,7 +61,7 @@ export default function AboutPage() {
         <div className="mx-auto max-w-4xl px-6 text-center relative z-10">
           <div className="mb-6 inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-brand-primary uppercase">
             <span className="h-px w-8 bg-brand-primary"></span>
-            About ChinaLink
+            關於我們
             <span className="h-px w-8 bg-brand-primary"></span>
           </div>
           <h1 className="font-serif text-5xl font-medium tracking-tight text-brand-text sm:text-6xl md:text-7xl">

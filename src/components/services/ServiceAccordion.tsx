@@ -33,8 +33,8 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
   }
 
   return (
-    <div className="space-y-4">
-      {services.map((service) => {
+    <div className="space-y-5">
+      {services.map((service, index) => {
         const isOpen = openId === service.id
         const cover =
           typeof service.coverImage === 'object' && service.coverImage
@@ -44,28 +44,28 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
         return (
           <div
             key={service.id}
-            className={`overflow-hidden rounded-2xl border transition-colors duration-300 ${
+            className={`relative overflow-hidden rounded-[2rem] border transition-all duration-300 ${
               isOpen
-                ? 'border-brand-primary/20 bg-white shadow-lg shadow-brand-primary/5'
-                : 'border-border/70 bg-white hover:border-brand-primary/15'
+                ? 'border-brand-primary/20 bg-white shadow-xl shadow-brand-primary/5'
+                : 'border-border/70 bg-white hover:border-brand-primary/15 hover:shadow-md'
             }`}
           >
             {/* Header — always visible */}
             <button
               type="button"
               onClick={() => toggle(service.id)}
-              className="flex w-full items-center gap-5 px-6 py-5 text-left transition-colors sm:px-8 sm:py-6"
+              className="group flex w-full items-center gap-5 px-8 py-6 text-left transition-colors sm:px-10 sm:py-7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-brand-bg rounded-[2rem]"
             >
               <div
-                className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors duration-300 ${
+                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.25rem] ring-1 transition-all duration-300 ${
                   isOpen
-                    ? 'bg-brand-primary/10 text-brand-primary'
-                    : 'bg-muted text-brand-muted'
+                    ? 'bg-brand-primary/10 text-brand-primary ring-brand-primary/15'
+                    : 'bg-muted text-brand-muted ring-border/50 group-hover:ring-brand-primary/10'
                 }`}
               >
                 <MaterialSymbol
                   name={service.iconName || defaultServiceIconName}
-                  className="text-[24px]"
+                  className="text-[28px]"
                 />
               </div>
 
@@ -74,7 +74,7 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
                   {service.title}
                 </h2>
                 {!isOpen && service.seo?.metaDescription && (
-                  <p className="mt-1 truncate text-sm text-brand-muted">
+                  <p className="mt-1.5 line-clamp-1 text-sm font-light text-brand-muted">
                     {service.seo.metaDescription}
                   </p>
                 )}
@@ -93,14 +93,14 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
 
             {/* Expandable content */}
             <div
-              className="grid transition-[grid-template-rows] duration-500 ease-out"
+              className="grid transition-[grid-template-rows] duration-500"
               style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
             >
               <div className="overflow-hidden">
-                <div className="px-6 pb-8 sm:px-8">
+                <div className="border-t border-brand-primary/10 px-8 pt-8 pb-10 sm:px-10">
                   {/* Cover image */}
                   {cover?.url && (
-                    <div className="relative mb-8 aspect-[5/2] overflow-hidden rounded-xl">
+                    <div className="relative mb-10 aspect-[5/2] overflow-hidden rounded-[1.5rem]">
                       <Image
                         src={cover.sizes?.hero?.url || cover.url}
                         alt={cover.alt || service.title}
@@ -112,7 +112,7 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
                   )}
 
                   {/* Two-column: content + pricing */}
-                  <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+                  <div className="grid gap-10 lg:grid-cols-[1fr_300px]">
                     {/* Main content */}
                     <div>
                       {/* Block content */}
@@ -126,17 +126,17 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
 
                       {/* Features */}
                       {service.features && service.features.length > 0 && (
-                        <div className="mt-8 border-t border-brand-primary/10 pt-8">
-                          <h3 className="mb-4 font-serif text-lg font-medium text-brand-text">
+                        <div className="mt-10 border-t border-brand-primary/10 pt-10">
+                          <h3 className="mb-5 font-serif text-lg font-medium text-brand-text">
                             服務特點
                           </h3>
-                          <ul className="grid gap-3 sm:grid-cols-2">
+                          <ul className="grid gap-4 sm:grid-cols-2">
                             {service.features.map((feature) => (
                               <li
                                 key={feature.id}
                                 className="flex items-start gap-3"
                               >
-                                <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-primary/8 text-brand-primary">
+                                <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-primary/8 text-brand-primary ring-1 ring-brand-primary/10">
                                   <MaterialSymbol
                                     name={
                                       service.iconName || defaultServiceIconName
@@ -144,7 +144,7 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
                                     className="text-[16px]"
                                   />
                                 </div>
-                                <span className="text-sm leading-relaxed text-brand-muted">
+                                <span className="text-sm font-light leading-relaxed text-brand-muted">
                                   {feature.text}
                                 </span>
                               </li>
@@ -156,11 +156,16 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
 
                     {/* Pricing sidebar */}
                     <div className="lg:sticky lg:top-32 lg:self-start">
-                      <PricingSection service={service} lineUrl={lineUrl} />
+                      <PricingSection service={service} lineUrl={lineUrl} compact />
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* Decorative number */}
+            <div className="pointer-events-none absolute -right-2 -bottom-2 text-[72px] font-black leading-none text-black/[0.02]">
+              0{index + 1}
             </div>
           </div>
         )

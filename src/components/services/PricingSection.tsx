@@ -6,9 +6,10 @@ import type { Service } from '@/payload-types'
 interface PricingSectionProps {
   service: Service
   lineUrl: string
+  compact?: boolean
 }
 
-export function PricingSection({ service, lineUrl }: PricingSectionProps) {
+export function PricingSection({ service, lineUrl, compact }: PricingSectionProps) {
   const [selectedAddons, setSelectedAddons] = useState<Set<string>>(() => {
     const required = new Set<string>()
     if (service.pricingMode === 'addons' && service.addons) {
@@ -46,10 +47,12 @@ export function PricingSection({ service, lineUrl }: PricingSectionProps) {
     return total
   }
 
+  const containerRadius = compact ? 'rounded-2xl' : 'rounded-[2.5rem]'
+
   // Custom pricing — LINE CTA only
   if (service.pricingMode === 'custom') {
     return (
-      <div className="rounded-[2.5rem] border border-brand-primary/20 bg-brand-primary/5 p-6">
+      <div className={`${containerRadius} border border-brand-primary/20 bg-brand-primary/5 p-6`}>
         <p className="text-lg font-semibold text-brand-text">此服務需先諮詢報價</p>
         <p className="mt-2 text-sm text-brand-muted">
           歡迎加入官方 LINE，我們會為您提供專屬報價。
@@ -74,7 +77,7 @@ export function PricingSection({ service, lineUrl }: PricingSectionProps) {
     const total = calculateTotal()
 
     return (
-      <div className="rounded-[2.5rem] border border-brand-primary/10 bg-white p-6 shadow-xl shadow-brand-primary/5">
+      <div className={`${containerRadius} border border-brand-primary/10 bg-white p-6 shadow-xl shadow-brand-primary/5`}>
         <div className="mb-4">
           <span className="text-sm text-brand-muted">基本價格</span>
           <p className="text-2xl font-bold text-brand-text">
@@ -130,7 +133,7 @@ export function PricingSection({ service, lineUrl }: PricingSectionProps) {
 
   // Fixed pricing
   return (
-    <div className="rounded-[2.5rem] border border-brand-primary/10 bg-white p-6 shadow-xl shadow-brand-primary/5">
+    <div className={`${containerRadius} border border-brand-primary/10 bg-white p-6 shadow-xl shadow-brand-primary/5`}>
       <span className="text-sm text-brand-muted">價格</span>
       <p className="text-3xl font-bold text-brand-text">
         {service.price ? `NT$ ${service.price.toLocaleString()}` : '免費'}

@@ -31,10 +31,10 @@ export default async function ServicesPage() {
   const services = servicesResult.docs as Service[]
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-brand-bg pt-32 pb-24">
+    <section className="relative min-h-screen overflow-hidden bg-brand-bg py-24 pt-32 sm:py-32 sm:pt-40">
       <div className="relative z-10 mx-auto max-w-4xl px-6">
         {/* Header */}
-        <div className="mb-14 max-w-2xl">
+        <div className="mb-16 max-w-2xl">
           <div className="mb-4 inline-flex items-center gap-2 text-sm font-bold tracking-widest text-brand-primary uppercase">
             <span className="h-px w-8 bg-brand-primary" />
             服務項目
@@ -42,7 +42,7 @@ export default async function ServicesPage() {
           <h1 className="font-serif text-4xl font-medium tracking-tight text-brand-text sm:text-5xl">
             我們能幫你處理的事
           </h1>
-          <p className="mt-6 text-lg font-light leading-relaxed text-brand-muted">
+          <p className="mt-6 max-w-xl text-lg font-light leading-relaxed text-brand-muted">
             從帳號辦理到公司註冊，懂陸姐幫你搞定大陸經營的大小事。點擊展開了解每項服務的完整介紹。
           </p>
         </div>

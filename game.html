@@ -1,1 +1,21 @@
-game.html
+/
+├── src/
+│   ├── app/
+│   │   ├── (frontend)/          # 前端頁面路由
+│   │   │   └── checkout/[orderId]/page.tsx
+│   │   └── (payload)/           # Payload CMS 後台
+│   │       └── layout.tsx
+│   ├── components/
+│   │   ├── blocks/BlockRenderer.tsx
+│   │   ├── home/
+│   │   │   ├── HeroSection.tsx
+│   │   │   └── TrustSection.tsx
+│   │   └── ui/avatar.tsx
+│   ├── emails/components/       # Email 模板
+│   ├── lib/
+│   │   ├── auth/sendOtpMailerConfig.ts
+│   │   ├── ecpay/types.ts       # 金流整合
+│   │   └── services/serviceIcons.ts
+│   └── seed/                    # 種子資料
+├── game.html                    # 貪吃蛇遊戲（根目錄）
+└── ...

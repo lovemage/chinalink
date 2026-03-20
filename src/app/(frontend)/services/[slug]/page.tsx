@@ -59,6 +59,7 @@ export default async function ServiceDetailPage({
 
   const siteSettings = await payload.findGlobal({ slug: 'site-settings' }).catch(() => null)
   const lineUrl = (siteSettings as { lineOfficialUrl?: string } | null)?.lineOfficialUrl || ''
+  const consultationLineUrl = lineUrl || 'https://line.me/ti/p/~misstinachen'
 
   const cover = typeof service.coverImage === 'object' && service.coverImage ? (service.coverImage as Media) : null
   const category = typeof service.serviceCategory === 'object' && service.serviceCategory ? (service.serviceCategory as ServiceCategory) : null
@@ -136,7 +137,7 @@ export default async function ServiceDetailPage({
                 <h2 className="mb-6 font-serif text-2xl font-medium text-brand-text">專屬諮詢</h2>
                 <p className="mb-6 text-brand-muted">此服務為客製化方案，歡迎加入官方 LINE 與我們聊聊您的需求。</p>
                 <a
-                  href="https://lin.ee/S2VgXpn"
+                  href={consultationLineUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-full bg-[#06C755] px-8 py-3 font-semibold text-white transition-colors hover:bg-[#05b04d] active:scale-[0.98]"

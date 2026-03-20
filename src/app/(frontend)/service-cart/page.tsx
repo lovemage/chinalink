@@ -13,9 +13,9 @@ export const metadata = {
 export default async function ServiceCartPage({
   searchParams,
 }: {
-  searchParams: Promise<{ add?: string; addProduct?: string }>
+  searchParams: Promise<{ add?: string; addProduct?: string; checkout?: string }>
 }) {
-  const { add, addProduct } = await searchParams
+  const { add, addProduct, checkout } = await searchParams
   const payload = await getPayload({ config: configPromise })
 
   const [categoriesResult, servicesResult, productCategoriesResult, productsResult] =
@@ -66,6 +66,7 @@ export default async function ServiceCartPage({
       productCategories={productCategories}
       initialAddServiceId={initialAddId && !isNaN(initialAddId) ? initialAddId : undefined}
       initialAddProductSlug={addProduct || undefined}
+      autoCheckout={checkout === '1'}
     />
   )
 }

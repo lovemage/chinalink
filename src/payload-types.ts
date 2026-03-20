@@ -940,12 +940,17 @@ export interface Order {
    */
   orderStatus?: ('pending' | 'paid' | 'completed') | null;
   /**
-   * 購物車多項服務訂單使用
+   * 購物車多項訂單使用（服務與商品）
    */
   items?:
     | {
-        serviceId: number | Service;
-        serviceName: string;
+        itemType: 'service' | 'product';
+        serviceId?: (number | null) | Service;
+        serviceName?: string | null;
+        productId?: (number | null) | Product;
+        productName?: string | null;
+        variantSKU?: string | null;
+        variantName?: string | null;
         unitPrice: number;
         quantity: number;
         subtotal: number;
@@ -1851,8 +1856,13 @@ export interface OrdersSelect<T extends boolean = true> {
   items?:
     | T
     | {
+        itemType?: T;
         serviceId?: T;
         serviceName?: T;
+        productId?: T;
+        productName?: T;
+        variantSKU?: T;
+        variantName?: T;
         unitPrice?: T;
         quantity?: T;
         subtotal?: T;

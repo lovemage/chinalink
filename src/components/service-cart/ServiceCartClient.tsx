@@ -35,6 +35,7 @@ interface ServiceCartClientProps {
   productCategories: ProductCategory[]
   initialAddServiceId?: number
   initialAddProductSlug?: string
+  autoCheckout?: boolean
 }
 
 interface OrderResult {
@@ -42,6 +43,74 @@ interface OrderResult {
   totalAmount: number
   lineUrl: string
   lineId: string
+}
+
+/* ────────────────────────── localStorage ────────────────────────── */
+
+const CART_STORAGE_KEY = 'chinalink-cart'
+
+interface StoredCartItem {
+  type: 'service' | 'product'
+  serviceId?: number
+  productSlug?: string
+  variantSKU?: string
+  variantName?: string
+  quantity: number
+}
+
+function saveCartToStorage(cart: CartItem[]) {
+  try {
+    const items: StoredCartItem[] = cart.map((item) => ({
+      type: item.type,
+      serviceId: item.service?.id,
+      productSlug: item.product?.slug,
+      variantSKU: item.variantSKU,
+      variantName: item.variantName,
+      quantity: item.quantity,
+    }))
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items))
+  } catch {
+    // localStorage unavailable or full — silently degrade
+  }
+}
+
+function loadCartFromStorage(services: Service[], products: Product[]): CartItem[] {
+  try {
+    const raw = localStorage.getItem(CART_STORAGE_KEY)
+    if (!raw) return []
+    const items: StoredCartItem[] = JSON.parse(raw)
+    return items
+      .map((stored) => {
+        if (stored.type === 'service' && stored.serviceId) {
+          const service = services.find((s) => s.id === stored.serviceId)
+          if (!service) return null
+          return { type: 'service' as const, service, quantity: stored.quantity }
+        }
+        if (stored.type === 'product' && stored.productSlug) {
+          const product = products.find((p) => p.slug === stored.productSlug)
+          if (!product) return null
+          return {
+            type: 'product' as const,
+            product,
+            variantSKU: stored.variantSKU,
+            variantName: stored.variantName,
+            quantity: stored.quantity,
+          }
+        }
+        return null
+      })
+      .filter(Boolean) as CartItem[]
+  } catch {
+    return []
+  }
+}
+
+function clearCartStorage() {
+  try {
+    localStorage.removeItem(CART_STORAGE_KEY)
+  } catch {
+    // silently degrade
+  }
 }
 
 /* ────────────────────────────── Helpers ────────────────────────────── */
@@ -121,9 +190,10 @@ export function ServiceCartClient({
   productCategories,
   initialAddServiceId,
   initialAddProductSlug,
+  autoCheckout,
 }: ServiceCartClientProps) {
   const { data: session } = useSession()
-  const [cart, setCart] = useState<CartItem[]>([])
+  const [cart, setCart] = useState<CartItem[]>(() => loadCartFromStorage(services, products))
   const [activeTab, setActiveTab] = useState<'services' | 'products'>('services')
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [isPanelOpen, setIsPanelOpen] = useState(false)
@@ -133,6 +203,11 @@ export function ServiceCartClient({
   const [orderResult, setOrderResult] = useState<OrderResult | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const prevCartLength = useRef(0)
+
+  // Sync cart to localStorage
+  useEffect(() => {
+    saveCartToStorage(cart)
+  }, [cart])
 
   // Auto-switch to products tab if initialAddProductSlug is set
   useEffect(() => {
@@ -289,6 +364,14 @@ export function ServiceCartClient({
     }
   }, [initialAddServiceId, initialAddProductSlug, services, products, addServiceToCart, addProductToCart])
 
+  // Auto-open panel when returning from login with checkout=1
+  const hasAutoCheckedOut = useRef(false)
+  useEffect(() => {
+    if (hasAutoCheckedOut.current || !autoCheckout || cart.length === 0) return
+    hasAutoCheckedOut.current = true
+    setIsPanelOpen(true)
+  }, [autoCheckout, cart.length])
+
   // Panel open/close
   const openPanel = () => {
     setIsPanelOpen(true)
@@ -316,8 +399,9 @@ export function ServiceCartClient({
   const handleSubmitOrder = async () => {
     const customerId = (session?.user as { customerId?: number } | undefined)?.customerId
     if (!customerId) {
-      const currentUrl = window.location.pathname + window.location.search
-      window.location.href = `/login?callbackUrl=${encodeURIComponent(currentUrl)}`
+      const url = new URL(window.location.href)
+      url.searchParams.set('checkout', '1')
+      window.location.href = `/login?callbackUrl=${encodeURIComponent(url.pathname + url.search)}`
       return
     }
 
@@ -362,8 +446,9 @@ export function ServiceCartClient({
         lineId: data.lineId,
       })
 
-      // Clear cart and close panel
+      // Clear cart, storage, and close panel
       setCart([])
+      clearCartStorage()
       setIsPanelOpen(false)
     } catch {
       setSubmitError('網路錯誤，請稍後再試')

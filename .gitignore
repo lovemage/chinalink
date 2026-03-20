@@ -56,3 +56,4 @@ docs/
 .agent/
 .claude/
 .windsurf/
+.aider*

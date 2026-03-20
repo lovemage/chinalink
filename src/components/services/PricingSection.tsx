@@ -10,6 +10,8 @@ interface PricingSectionProps {
 }
 
 export function PricingSection({ service, lineUrl, compact }: PricingSectionProps) {
+  const consultationLineUrl = lineUrl || 'https://line.me/ti/p/~misstinachen'
+
   const [selectedAddons, setSelectedAddons] = useState<Set<string>>(() => {
     const required = new Set<string>()
     if (service.pricingMode === 'addons' && service.addons) {
@@ -58,7 +60,7 @@ export function PricingSection({ service, lineUrl, compact }: PricingSectionProp
           歡迎加入官方 LINE，我們會為您提供專屬報價。
         </p>
         <a
-          href="https://lin.ee/S2VgXpn"
+          href={consultationLineUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#06C755] px-6 py-2.5 font-semibold text-white transition-colors hover:bg-[#05b04d]"

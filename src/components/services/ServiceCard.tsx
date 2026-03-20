@@ -62,14 +62,12 @@ export function ServiceCard({ service, lineUrl }: ServiceCardProps) {
         </h3>
         <div className="mt-auto flex items-end justify-between gap-4 pt-6">
           <span className="font-serif text-xl font-medium text-brand-primary">{formatPrice(service)}</span>
-          {service.pricingMode !== 'custom' && (
-            <ServiceActionButton
-              serviceId={service.id}
-              cartEnabled={cartEnabled}
-              lineUrl={lineUrl}
-              variant="card"
-            />
-          )}
+          <ServiceActionButton
+            serviceId={service.id}
+            cartEnabled={cartEnabled}
+            lineUrl={lineUrl}
+            variant="card"
+          />
         </div>
       </div>
     </Link>

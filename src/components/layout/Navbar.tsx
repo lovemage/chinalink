@@ -10,6 +10,7 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuLabel,
@@ -81,9 +82,11 @@ export function Navbar() {
                 }
               />
               <DropdownMenuContent align="end" sideOffset={8} className="w-48 rounded-2xl p-2">
-                <DropdownMenuLabel className="font-bold">
-                  {session.user.name || session.user.email}
-                </DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="font-bold">
+                    {session.user.name || session.user.email}
+                  </DropdownMenuLabel>
+                </DropdownMenuGroup>
                 <DropdownMenuSeparator className="bg-brand-muted/10" />
                 <DropdownMenuItem
                   onClick={() => signOut({ callbackUrl: '/' })}

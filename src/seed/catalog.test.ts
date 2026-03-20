@@ -14,17 +14,17 @@ import {
 const root = process.cwd()
 
 test('catalog seed sources include service and product entries from the project domain', () => {
-  assert.ok(serviceCategories.length >= 4)
-  assert.ok(serviceSeedSources.length >= 4)
-  assert.ok(productCategories.length >= 2)
+  assert.ok(serviceCategories.length >= 2)
+  assert.ok(serviceSeedSources.length >= 2)
+  assert.ok(productCategories.length >= 4)
   assert.ok(productTags.length >= 4)
-  assert.ok(productSeedSources.length >= 5)
+  assert.ok(productSeedSources.length >= 4)
 
-  const procurementKit = productSeedSources.find((entry) => entry.slug === 'cross-border-procurement-kit')
-  assert.ok(procurementKit)
-  assert.equal(procurementKit.tagSlugs.length >= 2, true)
-  assert.equal(procurementKit.variants.length >= 2, true)
-  assert.match(procurementKit.summary, /採購|代購|驗貨/)
+  const digitalPass = productSeedSources.find((entry) => entry.slug === 'mainland-digital-pass-app-registration-sms')
+  assert.ok(digitalPass)
+  assert.equal(digitalPass.tagSlugs.length >= 2, true)
+  assert.equal(digitalPass.variants.length >= 2, true)
+  assert.match(digitalPass.summary, /App|簡訊|驗證/)
 })
 
 test('payload config registers product catalog collections', () => {
@@ -62,12 +62,18 @@ test('seed runner includes catalog target in default flow', () => {
   assert.match(source, /seedCatalog\(\)/)
 })
 
-test('SMS verification product has correct structure', () => {
-  const sms = productSeedSources.find((e) => e.slug === 'china-sms-verification')
-  assert.ok(sms)
-  assert.equal(sms.variants.length >= 2, true)
-  assert.match(sms.summary, /實體.*SIM/)
-  assert.equal(sms.variants[0].price, 200)
+test('service entries are consultation-first and product entries retain explicit prices', () => {
+  for (const service of serviceSeedSources) {
+    assert.equal(service.pricingMode, 'custom')
+  }
+
+  for (const product of productSeedSources) {
+    assert.ok(product.variants.length >= 1)
+    for (const variant of product.variants) {
+      assert.equal(typeof variant.price, 'number')
+      assert.ok(variant.price > 0)
+    }
+  }
 })
 
 test('services collection exposes a fixed iconName select field for admin use', () => {

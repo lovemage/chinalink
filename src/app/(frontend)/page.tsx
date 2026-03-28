@@ -4,7 +4,7 @@ import { HeroSection } from '@/components/home/HeroSection'
 import { PainPoints } from '@/components/home/PainPoints'
 import { ServiceOverview } from '@/components/home/ServiceOverview'
 import { LatestPosts } from '@/components/home/LatestPosts'
-import { TrustSection } from '@/components/home/TrustSection'
+import { FAQSection } from '@/components/home/FAQSection'
 
 export default function HomePage() {
   return (
@@ -13,7 +13,7 @@ export default function HomePage() {
       <PainPoints />
       <ServiceOverview />
       <LatestPosts />
-      <TrustSection />
+      <FAQSection />
     </>
   )
 }

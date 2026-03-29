@@ -5,25 +5,25 @@ const painPoints = [
     iconSrc: '/icons/account.png',
     title: '卡在沒有大陸門號',
     description: '不是你不會，是一開始就少了能用的大陸門號。很多 App 想註冊、想收驗證碼，第一步就先被擋在外面。',
-    className: "md:col-span-2 md:row-span-2 bg-gradient-to-br from-brand-bg to-card border-brand-primary/10",
+    className: "col-span-1 md:col-span-2 md:row-span-2 bg-gradient-to-br from-brand-bg to-card border-brand-primary/10",
   },
   {
     iconSrc: '/icons/payment.png',
     title: '付款這關一直過不了',
     description: '不是商品不能買，是付款這一步就先卡住。沒有大陸卡、支付寶綁不上，很多事情看得到卻做不了。',
-    className: "md:col-span-1 md:row-span-1 bg-card border-border/70",
+    className: "col-span-1 md:col-span-1 md:row-span-1 bg-card border-border/70",
   },
   {
     iconSrc: '/icons/company.png',
     title: '想開店，資料卻不齊',
     description: '想上架、想營運、想開始賣，結果一碰到執照、身份和開戶需求，就發現每一關都比想像中麻煩。',
-    className: "md:col-span-1 md:row-span-1 bg-card border-border/70",
+    className: "col-span-1 md:col-span-1 md:row-span-1 bg-card border-border/70",
   },
   {
     iconSrc: '/icons/marketing.png',
     title: '平台要做，但規則看不懂',
     description: '抖音、小紅書不是發文就會有流量。規則、節奏、投流方式沒抓到，時間花了，成效卻不一定出得來。',
-    className: "md:col-span-2 md:row-span-1 bg-brand-text text-white border-transparent",
+    className: "col-span-2 md:col-span-2 md:row-span-1 bg-brand-text text-white border-transparent",
   },
 ]
 
@@ -42,20 +42,20 @@ export function PainPoints() {
           </p>
         </div>
 
-        <div className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-4 md:grid-rows-2 min-h-[400px]">
+        <div className="mt-16 grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-4 md:grid-rows-2 min-h-[400px]">
           {painPoints.map((point) => (
             <div
               key={point.title}
-              className={`group relative flex flex-col justify-between overflow-hidden rounded-[2rem] border p-8 shadow-sm transition-shadow duration-300 hover:shadow-md ${point.className}`}
+              className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl sm:rounded-[2rem] border p-4 sm:p-8 shadow-sm transition-shadow duration-300 hover:shadow-md ${point.className}`}
             >
               <div className="relative z-10">
-                <div className="mb-6 relative h-[80px] w-[80px] transition-transform duration-300 group-hover:scale-[1.02]">
-                  <Image src={point.iconSrc} alt="" fill sizes="80px" className="object-contain" />
+                <div className="mb-3 sm:mb-6 relative h-10 w-10 sm:h-[80px] sm:w-[80px] transition-transform duration-300 group-hover:scale-[1.02]">
+                  <Image src={point.iconSrc} alt="" fill sizes="(max-width: 640px) 40px, 80px" className="object-contain" />
                 </div>
-                <h3 className={`text-xl font-bold ${point.className.includes('bg-brand-text') ? 'text-white' : 'text-brand-text'}`}>
+                <h3 className={`text-sm sm:text-xl font-bold ${point.className.includes('bg-brand-text') ? 'text-white' : 'text-brand-text'}`}>
                   {point.title}
                 </h3>
-                <p className={`mt-3 leading-relaxed ${point.className.includes('bg-brand-text') ? 'text-white/80' : 'text-brand-muted'}`}>
+                <p className={`mt-1.5 sm:mt-3 text-xs sm:text-base leading-relaxed ${point.className.includes('bg-brand-text') ? 'text-white/80' : 'text-brand-muted'}`}>
                   {point.description}
                 </p>
               </div>

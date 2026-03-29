@@ -32,7 +32,7 @@ export default async function ServicesPage() {
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-brand-bg py-24 pt-32 sm:py-32 sm:pt-40">
-      <div className="relative z-10 mx-auto max-w-4xl px-6">
+      <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6">
         {/* Header */}
         <div className="mb-16 max-w-2xl">
           <div className="mb-4 inline-flex items-center gap-2 text-sm font-bold tracking-widest text-brand-primary uppercase">

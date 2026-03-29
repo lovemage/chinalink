@@ -44,33 +44,33 @@ export async function ServiceOverview() {
           </Link>
         </div>
 
-        <div className="grid gap-8 lg:grid-cols-2">
+        <div className="grid grid-cols-2 gap-4 sm:gap-8">
           {services.map((service, index) => (
             <Link
               key={service.id}
               href={`/services/${service.slug}`}
-              className={`group relative flex flex-col justify-between overflow-hidden rounded-[2.5rem] bg-gradient-to-br ${cardColors[index % cardColors.length]} p-8 sm:p-10 transition-shadow duration-300 hover:shadow-xl hover:shadow-brand-primary/8 border border-border/70 min-h-[320px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-brand-bg`}
+              className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl sm:rounded-[2.5rem] bg-gradient-to-br ${cardColors[index % cardColors.length]} p-5 sm:p-8 md:p-10 transition-shadow duration-300 hover:shadow-xl hover:shadow-brand-primary/8 border border-border/70 min-h-[200px] sm:min-h-[320px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-brand-bg`}
             >
               <div className="relative z-10 flex items-start justify-between">
-                <div className="flex h-[80px] w-[80px] items-center justify-center rounded-[1.75rem] bg-white/75 text-brand-text shadow-sm ring-1 ring-brand-primary/10 transition-transform duration-300 group-hover:scale-[1.02]">
-                  <MaterialSymbol name={service.iconName || defaultServiceIconName} className="text-[44px]" />
+                <div className="flex h-12 w-12 sm:h-[80px] sm:w-[80px] items-center justify-center rounded-xl sm:rounded-[1.75rem] bg-white/75 text-brand-text shadow-sm ring-1 ring-brand-primary/10 transition-transform duration-300 group-hover:scale-[1.02]">
+                  <MaterialSymbol name={service.iconName || defaultServiceIconName} className="text-[28px] sm:text-[44px]" />
                 </div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-card/70 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:bg-card">
+                <div className="hidden sm:flex h-10 w-10 items-center justify-center rounded-full bg-card/70 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:bg-card">
                   <ArrowRight className="h-5 w-5 text-brand-text" />
                 </div>
               </div>
               
-              <div className="relative z-10 mt-16">
-                <h3 className="text-2xl font-bold text-brand-text">
+              <div className="relative z-10 mt-6 sm:mt-16">
+                <h3 className="text-base sm:text-2xl font-bold text-brand-text">
                   {service.title}
                 </h3>
-                <p className="mt-4 text-base leading-relaxed text-brand-muted max-w-md">
+                <p className="mt-2 sm:mt-4 text-xs sm:text-base leading-relaxed text-brand-muted max-w-md line-clamp-2 sm:line-clamp-none">
                   {service.seo?.metaDescription || '專業服務，協助你更順利展開大陸市場相關流程。'}
                 </p>
               </div>
               
               {/* Decorative Number */}
-              <div className="absolute -right-2 -bottom-2 text-[84px] font-black text-black/[0.025] leading-none pointer-events-none">
+              <div className="absolute -right-2 -bottom-2 text-[48px] sm:text-[84px] font-black text-black/[0.025] leading-none pointer-events-none">
                 0{index + 1}
               </div>
             </Link>

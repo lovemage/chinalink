@@ -16,11 +16,11 @@ export function HeroSection() {
             超過千位台商信賴的顧問品牌
           </div>
           
-          <h1 className="font-serif text-5xl font-medium tracking-tight text-brand-text sm:text-6xl md:text-7xl lg:leading-[1.15]">
+          <h1 className="font-serif text-5xl font-medium tracking-tight text-brand-text sm:text-6xl md:text-7xl lg:leading-[1.15] line-clamp-3">
             在大陸經商 <span className="font-playfair italic text-brand-primary px-2">ChinaLink</span> 懂陸姐是您最好的夥伴
           </h1>
 
-          <p className="mt-8 max-w-lg text-lg font-light leading-relaxed text-brand-muted mx-auto sm:text-xl lg:mx-0">
+          <p className="mt-8 max-w-lg text-lg font-light leading-relaxed text-brand-muted mx-auto sm:text-xl lg:mx-0 line-clamp-2">
             無論是 <span className="font-serif italic font-medium">帳號代辦、代購驗貨</span>，或是 <span className="font-serif italic font-medium">公司註冊與新媒體運營</span>。我們提供充滿溫度的專業顧問，為您打破兩岸資訊落差。
           </p>
 

@@ -69,7 +69,7 @@ async function readAll<T extends Record<string, unknown>>(
   }
   // sql template tag does not allow dynamic identifiers — use unsafe()
   const rows = await sql.unsafe(`SELECT * FROM "${tableName}"`)
-  return rows as T[]
+  return rows as unknown as T[]
 }
 
 /** Parse a Payload rich-text/JSON field that may already be an object or a JSON string */
@@ -254,7 +254,6 @@ async function migrateServices(tables: Set<string>): Promise<void> {
   if (rows.length === 0) return
 
   // Detect Payload column names vs our schema column names
-  const cols = await getTableColumns('services')
   let inserted = 0
 
   for (const row of rows) {

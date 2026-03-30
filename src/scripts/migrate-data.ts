@@ -48,16 +48,6 @@ async function getExistingTables(): Promise<Set<string>> {
   return new Set(rows.map((r) => r.table_name))
 }
 
-/** Return all columns of a table so we can do safe field mapping */
-async function getTableColumns(tableName: string): Promise<Set<string>> {
-  const rows = await sql<{ column_name: string }[]>`
-    SELECT column_name
-    FROM information_schema.columns
-    WHERE table_schema = 'public' AND table_name = ${tableName}
-  `
-  return new Set(rows.map((r) => r.column_name))
-}
-
 /** Read all rows from a Payload table.  Returns [] if table does not exist. */
 async function readAll<T extends Record<string, unknown>>(
   tables: Set<string>,

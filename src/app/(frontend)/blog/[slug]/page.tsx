@@ -1,15 +1,13 @@
 export const dynamic = 'force-dynamic'
 
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { headers } from 'next/headers'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import { PostCard } from '@/components/blog/PostCard'
-import type { Post, Category, Media } from '@/payload-types'
 import type { ComponentProps } from 'react'
+import { getPostByCandidateSlugs, getRelatedPosts } from '@/lib/queries/posts'
 
 type BlockRendererBlocks = ComponentProps<typeof BlockRenderer>['blocks']
 
@@ -46,32 +44,21 @@ function buildSlugCandidates(input: string) {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const payload = await getPayload({ config: configPromise })
   const slugCandidates = buildSlugCandidates(slug)
-
-  const result = await payload.find({
-    collection: 'posts',
-    where: {
-      or: slugCandidates.map((value) => ({ slug: { equals: value } })),
-    },
-    limit: 1,
-    depth: 0,
-  })
-
-  const post = result.docs[0] as Post | undefined
+  const post = await getPostByCandidateSlugs(slugCandidates)
   const allowDraft = await canViewDraftPosts()
+
   if (!post || (!allowDraft && post.status !== 'published')) {
     return { title: '找不到文章' }
   }
 
   return {
-    title: post.seo?.metaTitle || `${post.title} - 懂陸姐 ChinaLink`,
-    description: post.seo?.metaDescription || post.excerpt || `懂陸姐 - ${post.title}`,
+    title: post.seoTitle || `${post.title} - 懂陸姐 ChinaLink`,
+    description: post.seoDescription || post.excerpt || `懂陸姐 - ${post.title}`,
   }
 }
 
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr)
+function formatDate(date: Date): string {
   return date.toLocaleDateString('zh-TW', {
     year: 'numeric',
     month: 'long',
@@ -85,52 +72,19 @@ export default async function BlogArticlePage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const payload = await getPayload({ config: configPromise })
   const allowDraft = await canViewDraftPosts()
   const slugCandidates = buildSlugCandidates(slug)
 
-  const result = await payload.find({
-    collection: 'posts',
-    where: {
-      or: slugCandidates.map((value) => ({ slug: { equals: value } })),
-    },
-    limit: 1,
-    depth: 2,
-  })
-
-  const post = result.docs[0] as Post | undefined
+  const post = await getPostByCandidateSlugs(slugCandidates)
   if (!post || (!allowDraft && post.status !== 'published')) notFound()
 
-  const cover =
-    typeof post.coverImage === 'object' && post.coverImage
-      ? (post.coverImage as Media)
-      : null
-  const category =
-    typeof post.category === 'object' && post.category
-      ? (post.category as Category)
-      : null
+  const cover = post.coverImage
+  const category = post.category
 
   // Fetch related posts from same category
-  let relatedPosts: Post[] = []
-  if (category) {
-    const relatedResult = await payload.find({
-      collection: 'posts',
-      where: allowDraft
-        ? {
-            category: { equals: category.id },
-            id: { not_equals: post.id },
-          }
-        : {
-            status: { equals: 'published' },
-            category: { equals: category.id },
-            id: { not_equals: post.id },
-          },
-      sort: '-publishedAt',
-      limit: 3,
-      depth: 1,
-    })
-    relatedPosts = relatedResult.docs as Post[]
-  }
+  const relatedPosts = category
+    ? await getRelatedPosts(category.id, post.id, 3)
+    : []
 
   return (
     <article className="py-12 sm:py-16">
@@ -139,7 +93,7 @@ export default async function BlogArticlePage({
         {cover?.url && (
           <div className="relative mb-8 aspect-[2/1] overflow-hidden rounded-2xl">
             <Image
-              src={cover.sizes?.hero?.url || cover.url}
+              src={cover.heroUrl || cover.url}
               alt={cover.alt || post.title}
               fill
               className="object-cover"
@@ -167,7 +121,9 @@ export default async function BlogArticlePage({
           <time>
             {post.publishedAt
               ? formatDate(post.publishedAt)
-              : formatDate(post.createdAt)}
+              : post.createdAt
+                ? formatDate(post.createdAt)
+                : ''}
           </time>
         </div>
 

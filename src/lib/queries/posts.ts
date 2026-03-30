@@ -1,6 +1,6 @@
 import { db } from '@/lib/db'
 import { posts, categories, media } from '@/lib/db/schema'
-import { eq, and, ilike, desc } from 'drizzle-orm'
+import { eq, and, ilike, desc, ne } from 'drizzle-orm'
 
 interface GetPostsOpts {
   search?: string
@@ -46,6 +46,88 @@ export async function getPost(id: number) {
   return result ?? null
 }
 
+export async function getPostCategoriesAll() {
+  const rows = await db
+    .select({
+      id: categories.id,
+      name: categories.name,
+      slug: categories.slug,
+    })
+    .from(categories)
+    .orderBy(categories.name)
+  return rows
+}
+
+export async function getPublishedPostsFiltered(categorySlug?: string) {
+  let categoryId: number | undefined
+
+  if (categorySlug) {
+    const cat = await db
+      .select({ id: categories.id })
+      .from(categories)
+      .where(eq(categories.slug, categorySlug))
+      .limit(1)
+    categoryId = cat[0]?.id
+  }
+
+  const conditions: ReturnType<typeof eq>[] = [eq(posts.status, 'published')]
+  if (categoryId !== undefined) {
+    conditions.push(eq(posts.categoryId, categoryId))
+  }
+
+  const rows = await db
+    .select({
+      id: posts.id,
+      title: posts.title,
+      slug: posts.slug,
+      excerpt: posts.excerpt,
+      author: posts.author,
+      publishedAt: posts.publishedAt,
+      createdAt: posts.createdAt,
+      categoryName: categories.name,
+      categorySlug: categories.slug,
+      coverImageUrl: media.url,
+      coverImageAlt: media.alt,
+    })
+    .from(posts)
+    .leftJoin(categories, eq(posts.categoryId, categories.id))
+    .leftJoin(media, eq(posts.coverImageId, media.id))
+    .where(and(...conditions))
+    .orderBy(desc(posts.publishedAt))
+    .limit(20)
+
+  return rows
+}
+
+export async function getRelatedPosts(categoryId: number, excludePostId: number, limit = 3) {
+  const rows = await db
+    .select({
+      id: posts.id,
+      title: posts.title,
+      slug: posts.slug,
+      excerpt: posts.excerpt,
+      author: posts.author,
+      publishedAt: posts.publishedAt,
+      createdAt: posts.createdAt,
+      categoryName: categories.name,
+      categorySlug: categories.slug,
+      coverImageUrl: media.url,
+      coverImageAlt: media.alt,
+    })
+    .from(posts)
+    .leftJoin(categories, eq(posts.categoryId, categories.id))
+    .leftJoin(media, eq(posts.coverImageId, media.id))
+    .where(and(
+      eq(posts.status, 'published'),
+      eq(posts.categoryId, categoryId),
+      ne(posts.id, excludePostId),
+    ))
+    .orderBy(desc(posts.publishedAt))
+    .limit(limit)
+
+  return rows
+}
+
 export async function getPublishedPosts(limit?: number) {
   const query = db
     .select({
@@ -68,6 +150,20 @@ export async function getPublishedPosts(limit?: number) {
     return query.limit(limit)
   }
   return query
+}
+
+export async function getPostByCandidateSlugs(slugCandidates: string[]) {
+  for (const slug of slugCandidates) {
+    const result = await db.query.posts.findFirst({
+      where: eq(posts.slug, slug),
+      with: {
+        category: true,
+        coverImage: true,
+      },
+    })
+    if (result) return result
+  }
+  return null
 }
 
 export async function getPostBySlug(slug: string) {

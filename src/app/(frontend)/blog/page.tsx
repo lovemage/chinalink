@@ -1,19 +1,8 @@
 export const dynamic = 'force-dynamic'
 
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
-import { headers } from 'next/headers'
 import { CategoryFilter } from '@/components/blog/CategoryFilter'
 import { PostCard } from '@/components/blog/PostCard'
-import type { Category, Post } from '@/payload-types'
-import type { Where } from 'payload'
-
-async function canViewDraftPosts() {
-  if (process.env.NODE_ENV === 'development') return true
-
-  const host = (await headers()).get('host') || ''
-  return host.startsWith('localhost') || host.startsWith('127.0.0.1')
-}
+import { getPostCategoriesAll, getPublishedPostsFiltered } from '@/lib/queries/posts'
 
 export const metadata = {
   title: 'Blog - 懂陸姐 ChinaLink',
@@ -26,39 +15,11 @@ export default async function BlogPage({
   searchParams: Promise<{ category?: string }>
 }) {
   const { category } = await searchParams
-  const payload = await getPayload({ config: configPromise })
-  const allowDraft = await canViewDraftPosts()
 
-  const categoriesResult = await payload.find({
-    collection: 'categories',
-    limit: 100,
-  })
-
-  const where: Where = allowDraft
-    ? {}
-    : {
-        status: { equals: 'published' },
-      }
-
-  if (category) {
-    const matchedCategory = categoriesResult.docs.find(
-      (c: Category) => c.slug === category,
-    )
-    if (matchedCategory) {
-      where.category = { equals: matchedCategory.id }
-    }
-  }
-
-  const postsResult = await payload.find({
-    collection: 'posts',
-    where,
-    sort: '-publishedAt',
-    limit: 20,
-    depth: 1,
-  })
-
-  const categories = categoriesResult.docs as Category[]
-  const posts = postsResult.docs as Post[]
+  const [categories, posts] = await Promise.all([
+    getPostCategoriesAll(),
+    getPublishedPostsFiltered(category),
+  ])
 
   return (
     <section className="relative min-h-[50vh] pt-32 pb-24 overflow-hidden bg-brand-bg">

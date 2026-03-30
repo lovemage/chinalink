@@ -1,13 +1,25 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import type { Post, Category, Media } from '@/payload-types'
 
-interface PostCardProps {
-  post: Post
+export interface DrizzlePostForCard {
+  id: number
+  title: string
+  slug: string
+  excerpt: string | null
+  author: string | null
+  publishedAt: Date | null
+  createdAt: Date | null
+  categoryName: string | null
+  categorySlug: string | null
+  coverImageUrl: string | null
+  coverImageAlt: string | null
 }
 
-function formatDate(dateStr: string): string {
-  const date = new Date(dateStr)
+interface PostCardProps {
+  post: DrizzlePostForCard
+}
+
+function formatDate(date: Date): string {
   return date.toLocaleDateString('zh-TW', {
     year: 'numeric',
     month: 'long',
@@ -16,13 +28,10 @@ function formatDate(dateStr: string): string {
 }
 
 export function PostCard({ post }: PostCardProps) {
-  const cover =
-    typeof post.coverImage === 'object' && post.coverImage
-      ? (post.coverImage as Media)
-      : null
-  const category =
-    typeof post.category === 'object' && post.category
-      ? (post.category as Category)
+  const dateDisplay = post.publishedAt
+    ? formatDate(post.publishedAt)
+    : post.createdAt
+      ? formatDate(post.createdAt)
       : null
 
   return (
@@ -31,10 +40,10 @@ export function PostCard({ post }: PostCardProps) {
       className="group flex flex-col overflow-hidden rounded-[2rem] border border-border/70 bg-card shadow-sm transition-shadow duration-300 hover:shadow-md hover:shadow-brand-primary/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-brand-primary/10">
-        {cover?.url ? (
+        {post.coverImageUrl ? (
           <Image
-            src={cover.sizes?.card?.url || cover.url}
-            alt={cover.alt || post.title}
+            src={post.coverImageUrl}
+            alt={post.coverImageAlt || post.title}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           />
@@ -46,9 +55,9 @@ export function PostCard({ post }: PostCardProps) {
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        {category && (
+        {post.categoryName && (
           <span className="mb-3 w-fit rounded-full bg-brand-primary/10 px-3 py-1 text-xs font-medium text-brand-primary">
-            {category.name}
+            {post.categoryName}
           </span>
         )}
 
@@ -63,11 +72,11 @@ export function PostCard({ post }: PostCardProps) {
         )}
 
         <div className="mt-auto pt-4">
-          <time className="text-xs text-brand-muted">
-            {post.publishedAt
-              ? formatDate(post.publishedAt)
-              : formatDate(post.createdAt)}
-          </time>
+          {dateDisplay && (
+            <time className="text-xs text-brand-muted">
+              {dateDisplay}
+            </time>
+          )}
         </div>
       </div>
     </Link>

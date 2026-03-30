@@ -1,10 +1,15 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import type { Category } from '@/payload-types'
+
+export interface DrizzleCategory {
+  id: number
+  name: string
+  slug: string
+}
 
 interface CategoryFilterProps {
-  categories: Category[]
+  categories: DrizzleCategory[]
 }
 
 export function CategoryFilter({ categories }: CategoryFilterProps) {

@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
-import { categories, serviceCategories, productCategories } from '@/lib/db/schema'
+import { categories, serviceCategories, productCategories, productTags } from '@/lib/db/schema'
 import { asc } from 'drizzle-orm'
 
 export async function getBlogCategories() {
@@ -14,4 +14,8 @@ export async function getServiceCategories() {
 
 export async function getProductCategories() {
   return db.select().from(productCategories).orderBy(asc(productCategories.name))
+}
+
+export async function getProductTags() {
+  return db.select().from(productTags).orderBy(asc(productTags.name))
 }

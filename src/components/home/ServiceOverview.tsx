@@ -1,26 +1,14 @@
 import Link from 'next/link'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
 import { ArrowRight } from 'lucide-react'
 import { MaterialSymbol } from '@/components/ui/MaterialSymbol'
 import { defaultServiceIconName } from '@/lib/services/serviceIcons'
-import type { Service } from '@/payload-types'
+import { getPublishedServices } from '@/lib/queries/services'
 
 const cardColors = ['from-brand-bg to-card', 'from-card to-muted', 'from-brand-bg to-card', 'from-card to-muted'] as const
 
 export async function ServiceOverview() {
-  const payload = await getPayload({ config: configPromise })
-  const result = await payload.find({
-    collection: 'services',
-    where: {
-      status: { equals: 'published' },
-      visibility: { equals: 'public' },
-    },
-    sort: 'createdAt',
-    limit: 4,
-    depth: 0,
-  })
-  const services = result.docs as Service[]
+  const allServices = await getPublishedServices()
+  const services = allServices.slice(0, 4)
 
   return (
     <section className="bg-brand-bg py-24 sm:py-32">
@@ -59,16 +47,16 @@ export async function ServiceOverview() {
                   <ArrowRight className="h-5 w-5 text-brand-text" />
                 </div>
               </div>
-              
+
               <div className="relative z-10 mt-6 sm:mt-16">
                 <h3 className="text-base sm:text-2xl font-bold text-brand-text">
                   {service.title}
                 </h3>
                 <p className="mt-2 sm:mt-4 text-xs sm:text-base leading-relaxed text-brand-muted max-w-md line-clamp-2 sm:line-clamp-none">
-                  {service.seo?.metaDescription || '專業服務，協助你更順利展開大陸市場相關流程。'}
+                  {'專業服務，協助你更順利展開大陸市場相關流程。'}
                 </p>
               </div>
-              
+
               {/* Decorative Number */}
               <div className="absolute -right-2 -bottom-2 text-[48px] sm:text-[84px] font-black text-black/[0.025] leading-none pointer-events-none">
                 0{index + 1}

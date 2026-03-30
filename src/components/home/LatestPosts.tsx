@@ -1,17 +1,9 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
-import type { Media as MediaType } from '@/payload-types'
+import { getPublishedPosts } from '@/lib/queries/posts'
 
 export async function LatestPosts() {
-  const payload = await getPayload({ config: configPromise })
-  const { docs: posts } = await payload.find({
-    collection: 'posts',
-    where: { status: { equals: 'published' } },
-    sort: '-publishedAt',
-    limit: 10,
-  })
+  const posts = await getPublishedPosts(10)
 
   if (posts.length === 0) return null
 
@@ -48,7 +40,6 @@ export async function LatestPosts() {
 
         <div className="flex animate-marquee gap-6 hover:[animation-play-state:paused]">
           {marqueeItems.map((post, index) => {
-            const cover = post.coverImage as MediaType | null | undefined
             const date = post.publishedAt
               ? new Date(post.publishedAt).toLocaleDateString('zh-TW', {
                   year: 'numeric',
@@ -64,10 +55,10 @@ export async function LatestPosts() {
                 className="group relative flex-shrink-0 w-[320px] sm:w-[380px] overflow-hidden rounded-3xl bg-brand-bg/30 transition-shadow duration-300 hover:shadow-xl hover:shadow-brand-primary/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background"
               >
                 <div className="relative aspect-[4/3] w-full overflow-hidden">
-                  {cover?.url ? (
+                  {post.coverImageUrl ? (
                     <Image
-                      src={cover.url}
-                      alt={cover.alt || post.title}
+                      src={post.coverImageUrl}
+                      alt={post.title}
                       fill
                       sizes="380px"
                       className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"

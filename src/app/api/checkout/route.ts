@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
+import { db } from '@/lib/db'
+import { orders, services, products, orderSelectedAddons } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
 import { createPaymentFormHtml, formatECPayDate } from '@/lib/ecpay/ecpay'
-import type { Order } from '@/payload-types'
-
-type CreateOrderData = Omit<Order, 'id' | 'createdAt' | 'updatedAt'>
 
 function parseRelationID(value: unknown): number | null {
   if (typeof value === 'number' && Number.isInteger(value) && value > 0) return value
@@ -15,13 +13,19 @@ function parseRelationID(value: unknown): number | null {
   return null
 }
 
+function generateOrderNumber(): string {
+  const now = new Date()
+  const date = now.toISOString().slice(0, 10).replace(/-/g, '')
+  const rand = Math.floor(Math.random() * 100000).toString().padStart(5, '0')
+  return `CL${date}${rand}`
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json()
     const { itemType = 'service', serviceId, productId, productVariantSKU, customerId, selectedAddons } = body
 
-    const payload = await getPayload({ config: configPromise })
-    const normalizedItemType: Order['itemType'] = itemType === 'product' ? 'product' : 'service'
+    const normalizedItemType: 'service' | 'product' = itemType === 'product' ? 'product' : 'service'
     const customerRelationID = parseRelationID(customerId)
     if (!customerRelationID) {
       return NextResponse.json({ error: 'Customer is required' }, { status: 400 })
@@ -29,13 +33,10 @@ export async function POST(req: Request) {
 
     let amount = 0
     let itemName = ''
-    let orderData: CreateOrderData = {
-      orderNumber: '',
-      customer: customerRelationID,
-      amount: 0,
-      paymentStatus: 'pending',
-      itemType: normalizedItemType,
-    }
+    let resolvedServiceId: number | null = null
+    let resolvedProductId: number | null = null
+    let resolvedProductVariantSKU: string | null = null
+    let resolvedProductVariantName: string | null = null
 
     if (normalizedItemType === 'product') {
       const productRelationID = parseRelationID(productId)
@@ -43,7 +44,11 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'Product is required' }, { status: 400 })
       }
 
-      const product = await payload.findByID({ collection: 'products', id: productRelationID })
+      const product = await db.query.products.findFirst({
+        where: eq(products.id, productRelationID),
+        with: { variants: true },
+      })
+
       if (!product) {
         return NextResponse.json({ error: 'Product not found' }, { status: 404 })
       }
@@ -60,21 +65,20 @@ export async function POST(req: Request) {
 
       amount = selectedVariant.price || 0
       itemName = [product.title, selectedVariant.name].filter(Boolean).join(' - ')
-      orderData = {
-        ...orderData,
-        amount,
-        product: productRelationID,
-        productVariantSKU: selectedVariant.sku,
-        productVariantName: selectedVariant.name,
-        selectedAddons: [],
-      }
+      resolvedProductId = productRelationID
+      resolvedProductVariantSKU = selectedVariant.sku
+      resolvedProductVariantName = selectedVariant.name
     } else {
       const serviceRelationID = parseRelationID(serviceId)
       if (!serviceRelationID) {
         return NextResponse.json({ error: 'Service is required' }, { status: 400 })
       }
 
-      const service = await payload.findByID({ collection: 'services', id: serviceRelationID })
+      const service = await db.query.services.findFirst({
+        where: eq(services.id, serviceRelationID),
+        with: { addons: true },
+      })
+
       if (!service) {
         return NextResponse.json({ error: 'Service not found' }, { status: 404 })
       }
@@ -85,32 +89,45 @@ export async function POST(req: Request) {
         amount = service.basePrice || 0
         if (selectedAddons && service.addons) {
           for (const addon of selectedAddons) {
-            const found = (service.addons as { name: string; price: number }[]).find(
-              (a) => a.name === addon.name,
-            )
+            const found = service.addons.find((a) => a.name === addon.name)
             if (found) amount += found.price
           }
         }
       }
 
       itemName = service.title
-      orderData = {
-        ...orderData,
-        amount,
-        service: serviceRelationID,
-        selectedAddons: selectedAddons || [],
-      }
+      resolvedServiceId = serviceRelationID
     }
 
     if (amount <= 0) {
       return NextResponse.json({ error: 'Invalid amount' }, { status: 400 })
     }
 
-    const order = await payload.create({
-      collection: 'orders',
-      draft: false,
-      data: orderData,
-    })
+    const [order] = await db
+      .insert(orders)
+      .values({
+        orderNumber: generateOrderNumber(),
+        customerId: customerRelationID,
+        amount,
+        paymentStatus: 'pending',
+        itemType: normalizedItemType,
+        serviceId: resolvedServiceId,
+        productId: resolvedProductId,
+        productVariantSKU: resolvedProductVariantSKU,
+        productVariantName: resolvedProductVariantName,
+      })
+      .returning()
+
+    // Insert selected addons if service order
+    if (normalizedItemType === 'service' && selectedAddons?.length) {
+      await db.insert(orderSelectedAddons).values(
+        selectedAddons.map((addon: { name: string; price: number }) => ({
+          orderId: order.id,
+          name: addon.name,
+          price: addon.price,
+        })),
+      )
+    }
 
     // Generate ECPay params
     const now = new Date()

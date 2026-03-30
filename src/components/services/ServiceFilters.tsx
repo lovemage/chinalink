@@ -1,10 +1,15 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import type { ServiceCategory } from '@/payload-types'
+
+interface ServiceCategoryItem {
+  id: number
+  name: string
+  slug: string
+}
 
 interface ServiceFiltersProps {
-  categories: ServiceCategory[]
+  categories: ServiceCategoryItem[]
 }
 
 export function ServiceFilters({ categories }: ServiceFiltersProps) {

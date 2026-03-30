@@ -1,17 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { RichText } from '@payloadcms/richtext-lexical/react'
+import { RichText } from '@/components/RichText'
 import { ChevronDown } from 'lucide-react'
-import type { Post } from '@/payload-types'
-
-type FAQBlockData = Extract<NonNullable<Post['content']>[number], { blockType: 'faq' }>
-type FAQEntry = NonNullable<FAQBlockData['items']>[number]
+import type { LexicalNode } from '@/lib/types'
 
 interface FAQItem {
   question: string
   id?: string | null
-  answer: FAQEntry['answer']
+  answer?: LexicalNode | null
 }
 
 interface FAQBlockProps {

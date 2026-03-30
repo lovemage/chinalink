@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
+import { db } from '@/lib/db'
+import { orders } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
 import { verifyCheckMacValue } from '@/lib/ecpay/ecpay'
 
 export async function POST(req: Request) {
@@ -16,32 +17,30 @@ export async function POST(req: Request) {
       return new NextResponse('0|ErrorMessage', { status: 400 })
     }
 
-    const payload = await getPayload({ config: configPromise })
-
     // Find order by MerchantTradeNo
-    const result = await payload.find({
-      collection: 'orders',
-      where: { orderNumber: { equals: body.MerchantTradeNo } },
-      limit: 1,
-    })
+    const result = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.orderNumber, body.MerchantTradeNo))
+      .limit(1)
 
-    if (result.docs.length === 0) {
+    if (result.length === 0) {
       return new NextResponse('0|OrderNotFound', { status: 404 })
     }
 
-    const order = result.docs[0]
+    const order = result[0]
 
     // Update payment status
     const rtnCode = body.RtnCode
-    await payload.update({
-      collection: 'orders',
-      id: order.id,
-      data: {
+    await db
+      .update(orders)
+      .set({
         paymentStatus: rtnCode === '1' ? 'paid' : 'failed',
         ecpayTradeNo: body.TradeNo || '',
         paymentMethod: mapPaymentMethod(body.PaymentType),
-      },
-    })
+        updatedAt: new Date(),
+      })
+      .where(eq(orders.id, order.id))
 
     // ECPay expects "1|OK" as success response
     return new NextResponse('1|OK')

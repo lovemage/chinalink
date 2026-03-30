@@ -1,8 +1,8 @@
 import Image from 'next/image'
-import type { Media } from '@/payload-types'
+import type { MediaType } from '@/lib/types'
 
 interface ImageBlockComponentProps {
-  image: number | Media
+  image: number | MediaType
   caption?: string | null
   alignment?: ('left' | 'center' | 'right' | 'full') | null
 }

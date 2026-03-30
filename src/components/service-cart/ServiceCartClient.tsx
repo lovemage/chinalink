@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
-import type { Service, ServiceCategory, Product, ProductCategory, Media } from '@/payload-types'
 import Image from 'next/image'
 import { MaterialSymbol } from '@/components/ui/MaterialSymbol'
 import { defaultServiceIconName } from '@/lib/services/serviceIcons'
@@ -17,7 +16,68 @@ import {
   Package,
 } from 'lucide-react'
 
-/* ────────────────────────────── Types ────────────────────────────── */
+/* ────────────────────────────── Local Types ────────────────────────────── */
+
+interface MediaItem {
+  id: number
+  url: string
+  alt?: string | null
+  width?: number | null
+  height?: number | null
+  cardUrl?: string | null
+}
+
+interface ServiceCategory {
+  id: number
+  name: string
+  slug: string
+}
+
+interface ProductCategory {
+  id: number
+  name: string
+  slug: string
+}
+
+interface ServiceAddon {
+  id: number
+  name: string
+  price: number
+}
+
+interface Service {
+  id: number
+  title: string
+  slug: string
+  pricingMode: string
+  price?: number | null
+  basePrice?: number | null
+  cartEnabled?: boolean | null
+  iconName?: string | null
+  coverImage?: MediaItem | null
+  serviceCategory?: ServiceCategory | null
+  addons?: ServiceAddon[]
+}
+
+interface ProductVariant {
+  id: number
+  sku: string
+  name: string
+  price: number
+  compareAtPrice?: number | null
+  isDefault?: boolean | null
+  isActive?: boolean | null
+}
+
+interface Product {
+  id: number
+  title: string
+  slug: string
+  summary?: string | null
+  coverImage?: MediaItem | null
+  productCategory?: ProductCategory | null
+  variants?: ProductVariant[]
+}
 
 interface CartItem {
   type: 'service' | 'product'
@@ -140,22 +200,16 @@ function formatPrice(price: number): string {
   return `NT$ ${price.toLocaleString()}`
 }
 
-function getServiceCover(service: Service): Media | null {
-  return typeof service.coverImage === 'object' && service.coverImage
-    ? (service.coverImage as Media)
-    : null
+function getServiceCover(service: Service): MediaItem | null {
+  return service.coverImage ?? null
 }
 
 function getServiceCategory(service: Service): ServiceCategory | null {
-  return typeof service.serviceCategory === 'object' && service.serviceCategory
-    ? (service.serviceCategory as ServiceCategory)
-    : null
+  return service.serviceCategory ?? null
 }
 
-function getProductCover(product: Product): Media | null {
-  return typeof product.coverImage === 'object' && product.coverImage
-    ? (product.coverImage as Media)
-    : null
+function getProductCover(product: Product): MediaItem | null {
+  return product.coverImage ?? null
 }
 
 function getCartItemKey(item: CartItem): string {
@@ -231,13 +285,7 @@ export function ServiceCartClient({
   // Filter products by category
   const filteredProducts = useMemo(() => {
     if (!activeCategory) return products
-    return products.filter((p) => {
-      const cat =
-        typeof p.productCategory === 'object' && p.productCategory
-          ? (p.productCategory as ProductCategory)
-          : null
-      return cat?.slug === activeCategory
-    })
+    return products.filter((p) => p.productCategory?.slug === activeCategory)
   }, [products, activeCategory])
 
   // Cart calculations
@@ -836,7 +884,7 @@ function ServiceItemCard({ service, inCart, quantity, onAdd, onUpdateQuantity }:
       <div className="relative aspect-[16/10] overflow-hidden bg-brand-bg m-2 rounded-[1.5rem]">
         {cover?.url ? (
           <Image
-            src={cover.sizes?.card?.url || cover.url}
+            src={cover.cardUrl || cover.url}
             alt={cover.alt || service.title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -940,10 +988,7 @@ function ProductItemCard({
 }: ProductItemCardProps) {
   const cover = getProductCover(product)
   const variants = (product.variants || []).filter((v) => v.isActive !== false)
-  const category =
-    typeof product.productCategory === 'object' && product.productCategory
-      ? (product.productCategory as ProductCategory)
-      : null
+  const category = product.productCategory ?? null
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-[2rem] border border-brand-primary/8 bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-brand-primary/8">
@@ -951,7 +996,7 @@ function ProductItemCard({
       <div className="relative aspect-[16/10] overflow-hidden bg-brand-bg m-2 rounded-[1.5rem]">
         {cover?.url ? (
           <Image
-            src={cover.sizes?.card?.url || cover.url}
+            src={cover.cardUrl || cover.url}
             alt={cover.alt || product.title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

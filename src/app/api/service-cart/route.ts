@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
+import { db } from '@/lib/db'
+import { customers, services, products, orders, orderItems, siteSettings } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
 
 interface CartItemInput {
   type: 'service' | 'product'
@@ -23,6 +24,13 @@ interface OrderItem {
   subtotal: number
 }
 
+function generateOrderNumber(): string {
+  const now = new Date()
+  const date = now.toISOString().slice(0, 10).replace(/-/g, '')
+  const rand = Math.floor(Math.random() * 100000).toString().padStart(5, '0')
+  return `CL${date}${rand}`
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json()
@@ -32,42 +40,47 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: '缺少必要資料' }, { status: 400 })
     }
 
-    const payload = await getPayload({ config: configPromise })
-
     // Verify customer exists
-    const customer = await payload.findByID({ collection: 'customers', id: customerId }).catch(() => null)
-    if (!customer) {
+    const customer = await db
+      .select()
+      .from(customers)
+      .where(eq(customers.id, customerId))
+      .limit(1)
+
+    if (!customer.length) {
       return NextResponse.json({ error: '會員不存在' }, { status: 404 })
     }
 
-    const orderItems: OrderItem[] = []
+    const orderItemsData: OrderItem[] = []
     let hasServices = false
     let hasProducts = false
 
     for (const item of items) {
       if (item.type === 'product' && item.productId) {
         // Handle product item
-        const product = await payload
-          .findByID({ collection: 'products', id: item.productId })
-          .catch(() => null)
-        if (!product) {
+        const productResult = await db.query.products.findFirst({
+          where: eq(products.id, item.productId),
+          with: { variants: true },
+        })
+
+        if (!productResult) {
           return NextResponse.json({ error: `商品 ID ${item.productId} 不存在` }, { status: 404 })
         }
 
-        const variant = (product.variants || []).find(
+        const variant = (productResult.variants || []).find(
           (v) => v.sku === item.variantSKU && v.isActive !== false,
         )
         if (!variant) {
           return NextResponse.json(
-            { error: `商品「${product.title}」的規格 ${item.variantSKU} 不存在或已停用` },
+            { error: `商品「${productResult.title}」的規格 ${item.variantSKU} 不存在或已停用` },
             { status: 404 },
           )
         }
 
-        orderItems.push({
+        orderItemsData.push({
           itemType: 'product',
           productId: item.productId,
-          productName: product.title,
+          productName: productResult.title,
           variantSKU: variant.sku,
           variantName: variant.name,
           unitPrice: variant.price,
@@ -77,24 +90,28 @@ export async function POST(req: Request) {
         hasProducts = true
       } else if (item.serviceId) {
         // Handle service item
-        const service = await payload
-          .findByID({ collection: 'services', id: item.serviceId })
-          .catch(() => null)
-        if (!service) {
+        const service = await db
+          .select()
+          .from(services)
+          .where(eq(services.id, item.serviceId))
+          .limit(1)
+
+        if (!service.length) {
           return NextResponse.json({ error: `服務 ID ${item.serviceId} 不存在` }, { status: 404 })
         }
 
+        const svc = service[0]
         let unitPrice = 0
-        if (service.pricingMode === 'fixed') {
-          unitPrice = service.price ?? 0
-        } else if (service.pricingMode === 'addons') {
-          unitPrice = service.basePrice ?? 0
+        if (svc.pricingMode === 'fixed') {
+          unitPrice = svc.price ?? 0
+        } else if (svc.pricingMode === 'addons') {
+          unitPrice = svc.basePrice ?? 0
         }
 
-        orderItems.push({
+        orderItemsData.push({
           itemType: 'service',
           serviceId: item.serviceId,
-          serviceName: service.title,
+          serviceName: svc.title,
           unitPrice,
           quantity: item.quantity,
           subtotal: unitPrice * item.quantity,
@@ -103,36 +120,62 @@ export async function POST(req: Request) {
       }
     }
 
-    const totalAmount = orderItems.reduce((sum, i) => sum + i.subtotal, 0)
+    const totalAmount = orderItemsData.reduce((sum, i) => sum + i.subtotal, 0)
 
     // Determine order itemType based on contents
     const orderItemType = hasProducts && !hasServices ? 'product' : 'service'
 
     // Create order
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const order: any = await payload.create({
-      collection: 'orders',
-      draft: false,
-      data: {
+    const [order] = await db
+      .insert(orders)
+      .values({
         itemType: orderItemType,
-        orderNumber: '',
-        customer: customerId,
+        orderNumber: generateOrderNumber(),
+        customerId,
         amount: totalAmount,
         orderStatus: 'pending',
         paymentStatus: 'pending',
-        items: orderItems,
-      } as any,
-    })
+      })
+      .returning()
+
+    // Insert order items
+    if (orderItemsData.length > 0) {
+      await db.insert(orderItems).values(
+        orderItemsData.map((oi) => ({
+          orderId: order.id,
+          itemType: oi.itemType,
+          serviceId: oi.serviceId,
+          serviceName: oi.serviceName,
+          productId: oi.productId,
+          productName: oi.productName,
+          variantSKU: oi.variantSKU,
+          variantName: oi.variantName,
+          unitPrice: oi.unitPrice,
+          quantity: oi.quantity,
+          subtotal: oi.subtotal,
+        })),
+      )
+    }
 
     // Fetch LINE URL from site settings
-    const siteSettings = await payload.findGlobal({ slug: 'site-settings' }).catch(() => null)
+    const lineUrlRow = await db
+      .select()
+      .from(siteSettings)
+      .where(eq(siteSettings.key, 'lineOfficialUrl'))
+      .limit(1)
+
+    const lineIdRow = await db
+      .select()
+      .from(siteSettings)
+      .where(eq(siteSettings.key, 'lineOfficialId'))
+      .limit(1)
 
     return NextResponse.json({
       orderId: order.id,
       orderNumber: order.orderNumber,
       totalAmount,
-      lineUrl: siteSettings?.lineOfficialUrl || '',
-      lineId: siteSettings?.lineOfficialId || '',
+      lineUrl: lineUrlRow[0]?.value || '',
+      lineId: lineIdRow[0]?.value || '',
     })
   } catch (error) {
     console.error('[service-cart] Order creation failed:', error)

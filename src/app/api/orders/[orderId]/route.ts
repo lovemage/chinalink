@@ -1,16 +1,24 @@
 import { NextResponse } from 'next/server'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
+import { db } from '@/lib/db'
+import { orders } from '@/lib/db/schema'
+import { eq } from 'drizzle-orm'
 
 export async function GET(req: Request, { params }: { params: Promise<{ orderId: string }> }) {
   try {
     const { orderId } = await params
-    const payload = await getPayload({ config: configPromise })
+    const id = parseInt(orderId, 10)
 
-    const order = await payload.findByID({
-      collection: 'orders',
-      id: orderId,
-      depth: 1,
+    if (isNaN(id)) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+    }
+
+    const order = await db.query.orders.findFirst({
+      where: eq(orders.id, id),
+      with: {
+        customer: true,
+        items: true,
+        selectedAddons: true,
+      },
     })
 
     if (!order) {

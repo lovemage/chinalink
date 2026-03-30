@@ -1,8 +1,9 @@
 import type { NextAuthConfig } from 'next-auth'
 import Google from 'next-auth/providers/google'
 import Credentials from 'next-auth/providers/credentials'
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import { db } from '@/lib/db'
+import { verificationCodes, customers } from '@/lib/db/schema'
+import { eq, and, gte } from 'drizzle-orm'
 
 export const authConfig: NextAuthConfig = {
   trustHost: true,
@@ -21,19 +22,15 @@ export const authConfig: NextAuthConfig = {
         const email = String(credentials.email).trim().toLowerCase()
         const code = String(credentials.code).trim()
 
-        const payload = await getPayload({ config: configPromise })
-
         // 1. Verify latest code only
-        const latestCodes = await payload.find({
-          collection: 'verification-codes',
-          where: {
-            email: { equals: email },
-          },
-          sort: '-createdAt',
-          limit: 1,
-        })
+        const latestCodes = await db
+          .select()
+          .from(verificationCodes)
+          .where(eq(verificationCodes.email, email))
+          .orderBy(verificationCodes.createdAt)
+          .limit(1)
 
-        const latestCode = latestCodes.docs[0]
+        const latestCode = latestCodes[0]
         const isCodeValid =
           !!latestCode &&
           latestCode.code === code &&
@@ -44,26 +41,25 @@ export const authConfig: NextAuthConfig = {
         }
 
         // Mark used code as expired to keep daily send history and prevent reuse.
-        await payload.update({
-          collection: 'verification-codes',
-          id: latestCode.id,
-          data: {
-            expiresAt: new Date().toISOString(),
-          },
-        })
+        await db
+          .update(verificationCodes)
+          .set({ expiresAt: new Date() })
+          .where(eq(verificationCodes.id, latestCode.id))
 
         // 2. Find or create user
-        const customers = await payload.find({
-          collection: 'customers',
-          where: {
-            email: { equals: email },
-            authProvider: { equals: 'email' },
-          },
-          limit: 1,
-        })
+        const existingCustomers = await db
+          .select()
+          .from(customers)
+          .where(
+            and(
+              eq(customers.email, email),
+              eq(customers.authProvider, 'email'),
+            ),
+          )
+          .limit(1)
 
-        if (customers.docs.length > 0) {
-          const user = customers.docs[0]
+        if (existingCustomers.length > 0) {
+          const user = existingCustomers[0]
           return {
             id: user.id.toString(),
             email: user.email,
@@ -92,38 +88,35 @@ export const authConfig: NextAuthConfig = {
       const actualProvider = provider === 'email-otp' ? 'email' : provider
 
       try {
-        const payload = await getPayload({ config: configPromise })
+        const existing = await db
+          .select()
+          .from(customers)
+          .where(
+            and(
+              eq(customers.providerId, providerId),
+              eq(customers.authProvider, actualProvider),
+            ),
+          )
+          .limit(1)
 
-        const existing = await payload.find({
-          collection: 'customers',
-          where: {
-            providerId: { equals: providerId },
-            authProvider: { equals: actualProvider },
-          },
-          limit: 1,
-        })
-
-        if (existing.docs.length > 0) {
-          await payload.update({
-            collection: 'customers',
-            id: existing.docs[0].id,
-            data: {
-              lastLoginAt: new Date().toISOString(),
-            },
-          })
-          user.id = existing.docs[0].id.toString()
+        if (existing.length > 0) {
+          await db
+            .update(customers)
+            .set({ lastLoginAt: new Date() })
+            .where(eq(customers.id, existing[0].id))
+          user.id = existing[0].id.toString()
         } else {
-          const newUser = await payload.create({
-            collection: 'customers',
-            data: {
+          const [newUser] = await db
+            .insert(customers)
+            .values({
               name: user.name || '未命名用戶',
               email: user.email || `${providerId}@${actualProvider}.oauth`,
               avatar: user.image || undefined,
               authProvider: actualProvider,
               providerId,
-              lastLoginAt: new Date().toISOString(),
-            },
-          })
+              lastLoginAt: new Date(),
+            })
+            .returning()
           user.id = newUser.id.toString()
         }
       } catch (error) {
@@ -142,18 +135,19 @@ export const authConfig: NextAuthConfig = {
         const actualProvider = provider === 'email-otp' ? 'email' : provider
 
         try {
-          const payload = await getPayload({ config: configPromise })
-          const result = await payload.find({
-            collection: 'customers',
-            where: {
-              providerId: { equals: providerId },
-              authProvider: { equals: actualProvider },
-            },
-            limit: 1,
-          })
+          const result = await db
+            .select()
+            .from(customers)
+            .where(
+              and(
+                eq(customers.providerId, providerId),
+                eq(customers.authProvider, actualProvider),
+              ),
+            )
+            .limit(1)
 
-          if (result.docs.length > 0) {
-            token.customerId = result.docs[0].id
+          if (result.length > 0) {
+            token.customerId = result[0].id
           }
         } catch (error) {
           console.error('Error in jwt callback:', error)
@@ -166,7 +160,7 @@ export const authConfig: NextAuthConfig = {
     async session({ session, token }) {
       if (token.customerId) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (session as any).customerId = token.customerId
+        ;(session as any).customerId = token.customerId
       }
       return session
     },

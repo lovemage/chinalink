@@ -22,12 +22,12 @@ export async function sendTemplateEmail(
 ) {
   const fromEmail = getRequiredEnv('RESEND_FROM_EMAIL')
 
-  const { subject, react } = await renderTemplate(templateSlug, variables)
+  const { subject, html } = await renderTemplate(templateSlug, variables)
 
   return getResendClient().emails.send({
     from: fromEmail,
     to,
     subject,
-    react,
+    html,
   })
 }

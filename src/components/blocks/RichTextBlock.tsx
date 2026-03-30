@@ -1,7 +1,5 @@
-import { RichText } from '@payloadcms/richtext-lexical/react'
-import type { Post } from '@/payload-types'
-
-type RichTextBlockData = Extract<NonNullable<Post['content']>[number], { blockType: 'rich-text' }>
+import { RichText } from '@/components/RichText'
+import type { RichTextBlockData } from '@/lib/types'
 
 interface RichTextBlockProps {
   content: RichTextBlockData['content']

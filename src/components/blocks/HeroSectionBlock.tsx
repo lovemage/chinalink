@@ -1,9 +1,9 @@
-import type { Media } from '@/payload-types'
+import type { MediaType } from '@/lib/types'
 
 interface HeroSectionBlockProps {
   heading: string
   subheading?: string | null
-  backgroundImage?: (number | null) | Media
+  backgroundImage?: (number | null) | MediaType
 }
 
 export function HeroSectionBlock({ heading, subheading, backgroundImage }: HeroSectionBlockProps) {

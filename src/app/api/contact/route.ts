@@ -1,5 +1,5 @@
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
+import { db } from '@/lib/db'
+import { inquiries } from '@/lib/db/schema'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
@@ -14,17 +14,15 @@ export async function POST(req: Request) {
       )
     }
 
-    const payload = await getPayload({ config: configPromise })
-
-    const inquiry = await payload.create({
-      collection: 'inquiries',
-      data: {
+    const [inquiry] = await db
+      .insert(inquiries)
+      .values({
         name,
         contactMethod: contactMethod || email,
         message,
         status: 'new',
-      },
-    })
+      })
+      .returning({ id: inquiries.id })
 
     return NextResponse.json({ success: true, id: inquiry.id })
   } catch (error) {

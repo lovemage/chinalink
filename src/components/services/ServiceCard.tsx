@@ -1,16 +1,28 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import type { Service, ServiceCategory, Media } from '@/payload-types'
 import { MaterialSymbol } from '@/components/ui/MaterialSymbol'
 import { defaultServiceIconName } from '@/lib/services/serviceIcons'
 import { ServiceActionButton } from './ServiceActionButton'
 
+interface ServiceItem {
+  id: number
+  title: string
+  slug: string
+  pricingMode: string
+  price?: number | null
+  basePrice?: number | null
+  cartEnabled?: boolean | null
+  iconName?: string | null
+  coverImage?: { url: string; alt?: string | null; cardUrl?: string | null } | null
+  serviceCategory?: { name: string } | null
+}
+
 interface ServiceCardProps {
-  service: Service
+  service: ServiceItem
   lineUrl: string
 }
 
-function formatPrice(service: Service): string {
+function formatPrice(service: ServiceItem): string {
   switch (service.pricingMode) {
     case 'fixed':
       return service.price ? `NT$ ${service.price.toLocaleString()}` : '免費'
@@ -24,8 +36,8 @@ function formatPrice(service: Service): string {
 }
 
 export function ServiceCard({ service, lineUrl }: ServiceCardProps) {
-  const cover = typeof service.coverImage === 'object' && service.coverImage ? service.coverImage as Media : null
-  const category = typeof service.serviceCategory === 'object' && service.serviceCategory ? service.serviceCategory as ServiceCategory : null
+  const cover = service.coverImage ?? null
+  const category = service.serviceCategory ?? null
   const cartEnabled = service.cartEnabled !== false
 
   return (
@@ -36,7 +48,7 @@ export function ServiceCard({ service, lineUrl }: ServiceCardProps) {
       <div className="relative aspect-[16/10] overflow-hidden bg-brand-bg m-2 rounded-[2rem]">
         {cover?.url ? (
           <Image
-            src={cover.sizes?.card?.url || cover.url}
+            src={cover.cardUrl || cover.url}
             alt={cover.alt || service.title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

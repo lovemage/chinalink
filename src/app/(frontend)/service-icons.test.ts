@@ -9,7 +9,8 @@ test('service-related views use MaterialSymbol instead of custom png icons', () 
   const card = read('components/services/ServiceCard.tsx')
   const detail = read('app/(frontend)/services/[slug]/page.tsx')
 
-  assert.match(overview, /getPayload/)
+  // Verify service overview uses Drizzle (not Payload) and MaterialSymbol icons
+  assert.doesNotMatch(overview, /getPayload/)
   assert.match(overview, /MaterialSymbol/)
   assert.match(card, /MaterialSymbol/)
   assert.match(detail, /MaterialSymbol/)

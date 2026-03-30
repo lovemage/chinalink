@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
+import { db } from '@/lib/db'
+import { verificationCodes } from '@/lib/db/schema'
+import { eq, and, gte, lte, desc } from 'drizzle-orm'
 import { Resend } from 'resend'
 import { getSendOtpMailerConfig } from '@/lib/auth/sendOtpMailerConfig'
 import { evaluateSendOtpEligibility, getTaipeiDayRange } from '@/lib/auth/otpPolicy'
@@ -26,35 +27,33 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Email is invalid' }, { status: 400 })
     }
 
-    const payload = await getPayload({ config: configPromise })
     const now = new Date()
 
-    const latestResult = await payload.find({
-      collection: 'verification-codes',
-      where: {
-        email: { equals: email },
-      },
-      sort: '-createdAt',
-      limit: 1,
-    })
+    const latestResult = await db
+      .select()
+      .from(verificationCodes)
+      .where(eq(verificationCodes.email, email))
+      .orderBy(desc(verificationCodes.createdAt))
+      .limit(1)
 
     const { startIso, endIso } = getTaipeiDayRange(now)
-    const sentTodayResult = await payload.find({
-      collection: 'verification-codes',
-      where: {
-        and: [
-          { email: { equals: email } },
-          { createdAt: { greater_than_equal: startIso } },
-          { createdAt: { less_than: endIso } },
-        ],
-      },
-      limit: 1,
-    })
+
+    const sentTodayResult = await db
+      .select()
+      .from(verificationCodes)
+      .where(
+        and(
+          eq(verificationCodes.email, email),
+          gte(verificationCodes.createdAt, new Date(startIso)),
+          lte(verificationCodes.createdAt, new Date(endIso)),
+        ),
+      )
+      .limit(1)
 
     const eligibility = evaluateSendOtpEligibility({
       now,
-      lastSentAt: latestResult.docs[0]?.createdAt,
-      sentToday: sentTodayResult.totalDocs,
+      lastSentAt: latestResult[0]?.createdAt?.toISOString(),
+      sentToday: sentTodayResult.length,
     })
 
     if (!eligibility.allowed) {
@@ -84,14 +83,11 @@ export async function POST(req: Request) {
     const expiresAt = new Date()
     expiresAt.setMinutes(expiresAt.getMinutes() + 10)
 
-    // Store in Payload
-    await payload.create({
-      collection: 'verification-codes',
-      data: {
-        email,
-        code,
-        expiresAt: expiresAt.toISOString(),
-      },
+    // Store in DB
+    await db.insert(verificationCodes).values({
+      email,
+      code,
+      expiresAt,
     })
 
     // Send email using Resend
@@ -124,11 +120,11 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error('Error sending OTP:', error)
     return NextResponse.json(
-      { 
-        error: 'Failed to send OTP', 
-        details: error instanceof Error ? error.message : String(error) 
-      }, 
-      { status: 500 }
+      {
+        error: 'Failed to send OTP',
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 },
     )
   }
 }

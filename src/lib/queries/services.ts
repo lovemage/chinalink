@@ -80,6 +80,24 @@ export async function getPublishedServices() {
   return rows
 }
 
+export async function getPublishedServicesWithDetails() {
+  const rows = await db.query.services.findMany({
+    where: and(eq(services.status, 'published'), eq(services.visibility, 'public')),
+    orderBy: [desc(services.createdAt)],
+    with: {
+      serviceCategory: true,
+      coverImage: true,
+      addons: {
+        orderBy: (addons, { asc }) => [asc(addons.sortOrder)],
+      },
+      features: {
+        orderBy: (features, { asc }) => [asc(features.sortOrder)],
+      },
+    },
+  })
+  return rows
+}
+
 export async function getServiceBySlug(slug: string) {
   const result = await db.query.services.findFirst({
     where: eq(services.slug, slug),

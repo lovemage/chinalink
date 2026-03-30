@@ -1,10 +1,9 @@
 export const dynamic = 'force-dynamic'
 
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
 import { ServiceAccordion } from '@/components/services/ServiceAccordion'
 import type { Metadata } from 'next'
-import type { Service } from '@/payload-types'
+import { getPublishedServicesWithDetails } from '@/lib/queries/services'
+import { getSetting } from '@/lib/queries/settings'
 
 export const metadata: Metadata = {
   title: '服務項目 - 懂陸姐 ChinaLink',
@@ -12,23 +11,10 @@ export const metadata: Metadata = {
 }
 
 export default async function ServicesPage() {
-  const payload = await getPayload({ config: configPromise })
-
-  const servicesResult = await payload.find({
-    collection: 'services',
-    where: {
-      status: { equals: 'published' },
-      visibility: { equals: 'public' },
-    },
-    sort: 'createdAt',
-    limit: 100,
-    depth: 2,
-  })
-
-  const siteSettings = await payload.findGlobal({ slug: 'site-settings' }).catch(() => null)
-  const lineUrl = (siteSettings as { lineOfficialUrl?: string } | null)?.lineOfficialUrl || ''
-
-  const services = servicesResult.docs as Service[]
+  const [services, lineUrl] = await Promise.all([
+    getPublishedServicesWithDetails(),
+    getSetting('lineOfficialUrl'),
+  ])
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-brand-bg py-24 pt-32 sm:py-32 sm:pt-40">
@@ -49,7 +35,7 @@ export default async function ServicesPage() {
 
         {/* Accordion */}
         {services.length > 0 ? (
-          <ServiceAccordion services={services} lineUrl={lineUrl} />
+          <ServiceAccordion services={services} lineUrl={lineUrl ?? ''} />
         ) : (
           <div className="mt-24 text-center">
             <p className="font-serif text-xl text-brand-muted">目前沒有可用的服務項目</p>

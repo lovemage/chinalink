@@ -7,17 +7,56 @@ import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import { PricingSection } from '@/components/services/PricingSection'
 import { MaterialSymbol } from '@/components/ui/MaterialSymbol'
 import { defaultServiceIconName } from '@/lib/services/serviceIcons'
-import type { Service, Media } from '@/payload-types'
 import type { ComponentProps } from 'react'
 
 type BlockRendererBlocks = ComponentProps<typeof BlockRenderer>['blocks']
 
+export interface DrizzleServiceAddon {
+  id: number
+  name: string
+  price: number
+  required: boolean | null
+  sortOrder: number | null
+  serviceId: number
+}
+
+export interface DrizzleServiceFeature {
+  id: number
+  text: string
+  sortOrder: number | null
+  serviceId: number
+}
+
+export interface DrizzleServiceCoverImage {
+  id: number
+  url: string
+  alt: string | null
+  heroUrl: string | null
+}
+
+export interface DrizzleService {
+  id: number
+  title: string
+  slug: string
+  iconName: string
+  pricingMode: string
+  price: number | null
+  basePrice: number | null
+  cartEnabled: boolean | null
+  seoDescription: string | null
+  description: unknown
+  serviceCategory: { id: number; name: string; slug: string } | null
+  coverImage: DrizzleServiceCoverImage | null
+  addons: DrizzleServiceAddon[]
+  features: DrizzleServiceFeature[]
+}
+
 interface ServiceAccordionProps {
-  services: Service[]
+  services: DrizzleService[]
   lineUrl: string
 }
 
-function formatPrice(service: Service): string {
+function formatPrice(service: DrizzleService): string {
   if (service.pricingMode === 'custom') return '諮詢報價'
   if (service.pricingMode === 'addons') {
     return service.basePrice ? `NT$ ${service.basePrice.toLocaleString()} 起` : '諮詢報價'
@@ -36,10 +75,7 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-1 sm:gap-5">
       {services.map((service, index) => {
         const isOpen = openId === service.id
-        const cover =
-          typeof service.coverImage === 'object' && service.coverImage
-            ? (service.coverImage as Media)
-            : null
+        const cover = service.coverImage
 
         return (
           <div
@@ -73,9 +109,9 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
                 <h2 className="font-serif text-sm sm:text-xl font-medium text-brand-text sm:text-2xl">
                   {service.title}
                 </h2>
-                {!isOpen && service.seo?.metaDescription && (
+                {!isOpen && service.seoDescription && (
                   <p className="mt-1 sm:mt-1.5 line-clamp-1 text-xs sm:text-sm font-light text-brand-muted hidden sm:block">
-                    {service.seo.metaDescription}
+                    {service.seoDescription}
                   </p>
                 )}
                 {!isOpen && (
@@ -107,7 +143,7 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
                   {cover?.url && (
                     <div className="relative mb-8 sm:mb-10 aspect-[5/2] overflow-hidden rounded-xl sm:rounded-[1.5rem]">
                       <Image
-                        src={cover.sizes?.hero?.url || cover.url}
+                        src={cover.heroUrl || cover.url}
                         alt={cover.alt || service.title}
                         fill
                         className="object-cover"

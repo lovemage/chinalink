@@ -1,10 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import type { Service } from '@/payload-types'
+import type { DrizzleService } from '@/components/services/ServiceAccordion'
 
 interface PricingSectionProps {
-  service: Service
+  service: DrizzleService
   lineUrl: string
   compact?: boolean
 }
@@ -12,8 +12,8 @@ interface PricingSectionProps {
 export function PricingSection({ service, lineUrl, compact }: PricingSectionProps) {
   const consultationLineUrl = lineUrl || 'https://line.me/ti/p/~misstinachen'
 
-  const [selectedAddons, setSelectedAddons] = useState<Set<string>>(() => {
-    const required = new Set<string>()
+  const [selectedAddons, setSelectedAddons] = useState<Set<number>>(() => {
+    const required = new Set<number>()
     if (service.pricingMode === 'addons' && service.addons) {
       for (const addon of service.addons) {
         if (addon.required && addon.id) {
@@ -24,7 +24,7 @@ export function PricingSection({ service, lineUrl, compact }: PricingSectionProp
     return required
   })
 
-  function toggleAddon(id: string, isRequired: boolean) {
+  function toggleAddon(id: number, isRequired: boolean) {
     if (isRequired) return
     setSelectedAddons((prev) => {
       const next = new Set(prev)
@@ -94,15 +94,15 @@ export function PricingSection({ service, lineUrl, compact }: PricingSectionProp
               <label
                 key={addon.id}
                 className={`flex cursor-pointer items-center gap-3 rounded-2xl border px-4 py-3 transition-colors ${
-                  addon.id && selectedAddons.has(addon.id)
+                  selectedAddons.has(addon.id)
                     ? 'border-brand-primary bg-brand-primary/5'
                     : 'border-brand-primary/10 hover:border-brand-primary/30'
                 } ${addon.required ? 'cursor-not-allowed opacity-80' : ''}`}
               >
                 <input
                   type="checkbox"
-                  checked={addon.id ? selectedAddons.has(addon.id) : false}
-                  onChange={() => addon.id && toggleAddon(addon.id, !!addon.required)}
+                  checked={selectedAddons.has(addon.id)}
+                  onChange={() => toggleAddon(addon.id, !!addon.required)}
                   disabled={!!addon.required}
                   className="h-4 w-4 rounded border-brand-primary/30 text-brand-primary accent-brand-primary"
                 />

@@ -1,7 +1,5 @@
 export const dynamic = 'force-dynamic'
 
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -10,28 +8,20 @@ import { BlockRenderer } from '@/components/blocks/BlockRenderer'
 import { PricingSection } from '@/components/services/PricingSection'
 import { MaterialSymbol } from '@/components/ui/MaterialSymbol'
 import { defaultServiceIconName } from '@/lib/services/serviceIcons'
-import type { Service, ServiceCategory, Media } from '@/payload-types'
 import type { ComponentProps } from 'react'
+import { getServiceBySlug } from '@/lib/queries/services'
+import { getSetting } from '@/lib/queries/settings'
 
 type BlockRendererBlocks = ComponentProps<typeof BlockRenderer>['blocks']
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const payload = await getPayload({ config: configPromise })
-
-  const result = await payload.find({
-    collection: 'services',
-    where: { slug: { equals: slug } },
-    limit: 1,
-    depth: 0,
-  })
-
-  const service = result.docs[0] as Service | undefined
+  const service = await getServiceBySlug(slug)
   if (!service) return { title: '找不到服務' }
 
   return {
-    title: service.seo?.metaTitle || `${service.title} - 懂陸姐 ChinaLink`,
-    description: service.seo?.metaDescription || `懂陸姐 - ${service.title}`,
+    title: service.seoTitle || `${service.title} - 懂陸姐 ChinaLink`,
+    description: service.seoDescription || `懂陸姐 - ${service.title}`,
   }
 }
 
@@ -41,28 +31,19 @@ export default async function ServiceDetailPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const payload = await getPayload({ config: configPromise })
 
-  const result = await payload.find({
-    collection: 'services',
-    where: {
-      slug: { equals: slug },
-      status: { equals: 'published' },
-      visibility: { in: ['public', 'unlisted'] },
-    },
-    limit: 1,
-    depth: 2,
-  })
+  const [service, lineUrl] = await Promise.all([
+    getServiceBySlug(slug),
+    getSetting('lineOfficialUrl'),
+  ])
 
-  const service = result.docs[0] as Service | undefined
   if (!service) notFound()
+  if (service.status !== 'published') notFound()
+  if (service.visibility === 'private') notFound()
 
-  const siteSettings = await payload.findGlobal({ slug: 'site-settings' }).catch(() => null)
-  const lineUrl = (siteSettings as { lineOfficialUrl?: string } | null)?.lineOfficialUrl || ''
   const consultationLineUrl = lineUrl || 'https://line.me/ti/p/~misstinachen'
-
-  const cover = typeof service.coverImage === 'object' && service.coverImage ? (service.coverImage as Media) : null
-  const category = typeof service.serviceCategory === 'object' && service.serviceCategory ? (service.serviceCategory as ServiceCategory) : null
+  const cover = service.coverImage
+  const category = service.serviceCategory
 
   return (
     <article className="relative min-h-screen overflow-hidden bg-brand-bg pt-32 pb-24">
@@ -82,7 +63,7 @@ export default async function ServiceDetailPage({
         {cover?.url && (
           <div className="relative mb-12 aspect-[2/1] overflow-hidden rounded-[2.5rem] border border-white/50 shadow-2xl shadow-brand-text/5">
             <Image
-              src={cover.sizes?.hero?.url || cover.url}
+              src={cover.heroUrl || cover.url}
               alt={cover.alt || service.title}
               fill
               className="object-cover"
@@ -153,7 +134,7 @@ export default async function ServiceDetailPage({
 
           {/* Sidebar pricing */}
           <div className="lg:sticky lg:top-32 lg:self-start">
-            <PricingSection service={service} lineUrl={lineUrl} />
+            <PricingSection service={service} lineUrl={lineUrl ?? ''} />
           </div>
         </div>
       </div>

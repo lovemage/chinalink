@@ -133,7 +133,7 @@ export default function ServiceForm({ service, categories, mode }: ServiceFormPr
   }
 
   // --- Submit ---
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setErrors({})
 

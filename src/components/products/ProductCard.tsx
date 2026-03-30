@@ -1,13 +1,30 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { ShoppingCart } from 'lucide-react'
-import type { Media, Product } from '@/payload-types'
 
-interface ProductCardProps {
-  product: Product
+export interface DrizzleProductVariant {
+  id: number
+  sku: string
+  name: string
+  price: number
+  isActive: boolean | null
+  sortOrder: number | null
 }
 
-function getDisplayPrice(product: Product) {
+export interface DrizzleProductForCard {
+  id: number
+  title: string
+  slug: string
+  summary: string | null
+  coverImage: { id: number; url: string; alt: string | null; cardUrl: string | null } | null
+  variants: DrizzleProductVariant[]
+}
+
+interface ProductCardProps {
+  product: DrizzleProductForCard
+}
+
+function getDisplayPrice(product: DrizzleProductForCard) {
   const variants = product.variants || []
   const activeVariants = variants.filter((variant) => variant.isActive !== false)
   const priceCandidates = (activeVariants.length > 0 ? activeVariants : variants)
@@ -22,10 +39,7 @@ function getDisplayPrice(product: Product) {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const cover =
-    typeof product.coverImage === 'object' && product.coverImage
-      ? (product.coverImage as Media)
-      : null
+  const cover = product.coverImage
   const startingPrice = getDisplayPrice(product)
 
   return (
@@ -36,7 +50,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <div className="relative aspect-[16/10] overflow-hidden bg-brand-bg m-2 rounded-[2rem]">
         {cover?.url ? (
           <Image
-            src={cover.sizes?.card?.url || cover.url}
+            src={cover.cardUrl || cover.url}
             alt={cover.alt || product.title}
             fill
             className="object-cover transition-transform duration-500 group-hover:scale-105"

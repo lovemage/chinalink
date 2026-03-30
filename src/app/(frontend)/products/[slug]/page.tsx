@@ -1,34 +1,23 @@
 export const dynamic = 'force-dynamic'
 
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft, ShoppingCart } from 'lucide-react'
 import type { ComponentProps } from 'react'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
-import type { Media, Product, ProductCategory, ProductTag } from '@/payload-types'
+import { getProductBySlug } from '@/lib/queries/products'
 
 type BlockRendererBlocks = ComponentProps<typeof BlockRenderer>['blocks']
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const payload = await getPayload({ config: configPromise })
-
-  const result = await payload.find({
-    collection: 'products',
-    where: { slug: { equals: slug } },
-    limit: 1,
-    depth: 0,
-  })
-
-  const product = result.docs[0] as Product | undefined
+  const product = await getProductBySlug(slug)
   if (!product) return { title: '找不到商品' }
 
   return {
-    title: product.seo?.metaTitle || `${product.title} - 懂陸姐 ChinaLink`,
-    description: product.seo?.metaDescription || product.summary || `懂陸姐 - ${product.title}`,
+    title: product.seoTitle || `${product.title} - 懂陸姐 ChinaLink`,
+    description: product.seoDescription || product.summary || `懂陸姐 - ${product.title}`,
   }
 }
 
@@ -38,31 +27,15 @@ export default async function ProductDetailPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const payload = await getPayload({ config: configPromise })
+  const product = await getProductBySlug(slug)
 
-  const result = await payload.find({
-    collection: 'products',
-    where: {
-      slug: { equals: slug },
-      status: { equals: 'published' },
-      visibility: { in: ['public', 'unlisted'] },
-    },
-    limit: 1,
-    depth: 2,
-  })
-
-  const product = result.docs[0] as Product | undefined
   if (!product) notFound()
+  if (product.status !== 'published') notFound()
+  if (product.visibility === 'private') notFound()
 
-  const cover =
-    typeof product.coverImage === 'object' && product.coverImage
-      ? (product.coverImage as Media)
-      : null
-  const category =
-    typeof product.productCategory === 'object' && product.productCategory
-      ? (product.productCategory as ProductCategory)
-      : null
-  const tags = (product.tags || []).filter((tag): tag is ProductTag => typeof tag === 'object' && !!tag)
+  const cover = product.coverImage
+  const category = product.productCategory
+  const tags = (product.tagRelations || []).map((rel) => rel.tag).filter(Boolean)
 
   const variants = (product.variants || []).filter((variant) => variant.isActive !== false)
   const sortedPrices = variants.map((variant) => variant.price).sort((a, b) => a - b)
@@ -85,7 +58,7 @@ export default async function ProductDetailPage({
         {cover?.url && (
           <div className="relative mb-12 aspect-[2/1] overflow-hidden rounded-[2.5rem] border border-white/50 shadow-2xl shadow-brand-text/5">
             <Image
-              src={cover.sizes?.hero?.url || cover.url}
+              src={cover.heroUrl || cover.url}
               alt={cover.alt || product.title}
               fill
               className="object-cover"
@@ -150,7 +123,7 @@ export default async function ProductDetailPage({
             {variants.length > 0 && (
               <div className="mt-6 space-y-3">
                 {variants.map((variant) => (
-                  <div key={variant.id || variant.sku} className="rounded-2xl border border-brand-primary/10 p-4">
+                  <div key={variant.id} className="rounded-2xl border border-brand-primary/10 p-4">
                     <p className="font-medium text-brand-text">{variant.name}</p>
                     <p className="mt-1 text-sm text-brand-muted">SKU: {variant.sku}</p>
                     <p className="mt-2 font-medium text-brand-cta">NT$ {variant.price.toLocaleString()}</p>

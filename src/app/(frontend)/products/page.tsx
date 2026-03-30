@@ -1,11 +1,8 @@
 export const dynamic = 'force-dynamic'
 
-import { getPayload } from 'payload'
-import configPromise from '@payload-config'
-import type { Product, ProductCategory } from '@/payload-types'
-import type { Where } from 'payload'
 import { ProductCard } from '@/components/products/ProductCard'
 import Link from 'next/link'
+import { getProductCategoriesAll, getPublishedProductsWithDetails } from '@/lib/queries/products'
 
 export const metadata = {
   title: '商品專區 - 懂陸姐 ChinaLink',
@@ -18,36 +15,11 @@ export default async function ProductsPage({
   searchParams: Promise<{ category?: string }>
 }) {
   const { category } = await searchParams
-  const payload = await getPayload({ config: configPromise })
 
-  const categoriesResult = await payload.find({
-    collection: 'product-categories',
-    limit: 100,
-    sort: 'createdAt',
-  })
-
-  const where: Where = {
-    status: { equals: 'published' },
-    visibility: { equals: 'public' },
-  }
-
-  if (category) {
-    const matchedCategory = categoriesResult.docs.find((item) => item.slug === category)
-    if (matchedCategory) {
-      where.productCategory = { equals: matchedCategory.id }
-    }
-  }
-
-  const productsResult = await payload.find({
-    collection: 'products',
-    where,
-    limit: 100,
-    depth: 1,
-    sort: '-createdAt',
-  })
-
-  const categories = categoriesResult.docs as ProductCategory[]
-  const products = productsResult.docs as Product[]
+  const [categories, products] = await Promise.all([
+    getProductCategoriesAll(),
+    getPublishedProductsWithDetails(category),
+  ])
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-brand-bg pt-32 pb-24">

@@ -68,6 +68,52 @@ export async function getProduct(id: number) {
   return result ?? null
 }
 
+export async function getProductCategoriesAll() {
+  const rows = await db
+    .select({
+      id: productCategories.id,
+      name: productCategories.name,
+      slug: productCategories.slug,
+    })
+    .from(productCategories)
+    .orderBy(productCategories.name)
+  return rows
+}
+
+export async function getPublishedProductsWithDetails(categorySlug?: string) {
+  let categoryId: number | undefined
+
+  if (categorySlug) {
+    const cat = await db
+      .select({ id: productCategories.id })
+      .from(productCategories)
+      .where(eq(productCategories.slug, categorySlug))
+      .limit(1)
+    categoryId = cat[0]?.id
+  }
+
+  const conditions = [
+    eq(products.status, 'published'),
+    eq(products.visibility, 'public'),
+  ]
+  if (categoryId !== undefined) {
+    conditions.push(eq(products.productCategoryId, categoryId))
+  }
+
+  const rows = await db.query.products.findMany({
+    where: and(...conditions),
+    orderBy: [desc(products.createdAt)],
+    with: {
+      productCategory: true,
+      coverImage: true,
+      variants: {
+        orderBy: (variants, { asc }) => [asc(variants.sortOrder)],
+      },
+    },
+  })
+  return rows
+}
+
 export async function getPublishedProducts() {
   const rows = await db
     .select({

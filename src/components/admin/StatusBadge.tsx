@@ -3,7 +3,7 @@ interface StatusBadgeProps {
   variant?: 'default' | 'success' | 'warning' | 'danger' | 'info'
 }
 
-function detectVariant(status: string): StatusBadgeProps['variant'] {
+function detectVariant(status: string): NonNullable<StatusBadgeProps['variant']> {
   const s = status.toLowerCase()
   if (['published', 'paid', 'completed', 'active'].includes(s)) return 'success'
   if (['draft', 'pending'].includes(s)) return 'warning'

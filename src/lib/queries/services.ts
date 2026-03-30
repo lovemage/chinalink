@@ -1,8 +1,6 @@
 import { db } from '@/lib/db'
 import {
   services,
-  serviceAddons,
-  serviceFeatures,
   serviceCategories,
   media,
 } from '@/lib/db/schema'

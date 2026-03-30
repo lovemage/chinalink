@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation'
 import { getService } from '@/lib/queries/services'
 import { getServiceCategories } from '@/lib/queries/categories'
 import ServiceForm from '@/components/admin/ServiceForm'
-import { deleteService } from '@/lib/actions/services'
 import DeleteServiceButton from './DeleteServiceButton'
 
 interface PageProps {

@@ -20,7 +20,7 @@ interface DataTableProps<T> {
   actions?: React.ReactNode
 }
 
-export default function DataTable<T extends Record<string, unknown>>({
+export default function DataTable<T>({
   columns,
   data,
   searchValue,
@@ -85,7 +85,7 @@ export default function DataTable<T extends Record<string, unknown>>({
                       key={col.key}
                       className={`px-4 py-3 text-gray-700 ${col.className ?? ''}`}
                     >
-                      {col.render ? col.render(item) : String(item[col.key] ?? '')}
+                      {col.render ? col.render(item) : String((item as Record<string, unknown>)[col.key] ?? '')}
                     </td>
                   ))}
                 </tr>

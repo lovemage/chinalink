@@ -3,7 +3,7 @@ import Google from 'next-auth/providers/google'
 import Credentials from 'next-auth/providers/credentials'
 import { db } from '@/lib/db'
 import { verificationCodes, customers } from '@/lib/db/schema'
-import { eq, and, gte } from 'drizzle-orm'
+import { eq, and } from 'drizzle-orm'
 
 export const authConfig: NextAuthConfig = {
   trustHost: true,

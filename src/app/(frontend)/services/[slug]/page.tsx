@@ -89,7 +89,7 @@ export default async function ServiceDetailPage({
           {/* Main content column */}
           <div className="rounded-[2.5rem] border border-brand-primary/10 bg-white p-8 shadow-xl shadow-brand-primary/5 sm:p-12">
             {/* Block content */}
-            {service.description && (
+            {!!service.description && (
               <div className="prose prose-lg prose-stone max-w-none font-light leading-relaxed text-brand-muted prose-headings:font-serif prose-headings:font-medium prose-headings:text-brand-text prose-a:text-brand-primary">
                 <BlockRenderer blocks={service.description as BlockRendererBlocks} />
               </div>

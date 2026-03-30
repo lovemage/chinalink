@@ -93,7 +93,7 @@ export default async function ProductDetailPage({
 
         <div className="mt-16 grid gap-12 lg:grid-cols-[1fr_360px]">
           <div className="rounded-[2.5rem] border border-brand-primary/10 bg-white p-8 shadow-xl shadow-brand-primary/5 sm:p-12">
-            {product.description && (
+            {!!product.description && (
               <div className="prose prose-stone prose-lg max-w-none font-light leading-relaxed text-brand-muted prose-headings:font-serif prose-headings:font-medium prose-headings:text-brand-text">
                 <BlockRenderer blocks={product.description as BlockRendererBlocks} />
               </div>

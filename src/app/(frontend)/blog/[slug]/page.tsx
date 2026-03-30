@@ -129,7 +129,7 @@ export default async function BlogArticlePage({
 
         {/* Content blocks */}
         <div className="mt-10">
-          {post.content && (
+          {!!post.content && (
             <BlockRenderer blocks={post.content as BlockRendererBlocks} />
           )}
         </div>

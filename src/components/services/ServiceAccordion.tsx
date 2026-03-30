@@ -44,7 +44,14 @@ export interface DrizzleService {
   basePrice: number | null
   cartEnabled: boolean | null
   seoDescription: string | null
+  seoTitle?: string | null
   description: unknown
+  status?: string
+  visibility?: string
+  serviceCategoryId?: number | null
+  coverImageId?: number | null
+  createdAt?: Date | null
+  updatedAt?: Date | null
   serviceCategory: { id: number; name: string; slug: string } | null
   coverImage: DrizzleServiceCoverImage | null
   addons: DrizzleServiceAddon[]
@@ -157,7 +164,7 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
                     {/* Main content */}
                     <div>
                       {/* Block content */}
-                      {service.description && (
+                      {!!service.description && (
                         <div className="prose prose-sm sm:prose-lg prose-stone max-w-none font-light leading-relaxed text-brand-muted prose-headings:font-serif prose-headings:font-medium prose-headings:text-brand-text prose-a:text-brand-primary prose-table:text-sm prose-table:border prose-table:border-border/50 prose-th:bg-brand-bg prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-medium prose-th:text-brand-text prose-td:px-3 prose-td:py-2 prose-td:border-t prose-td:border-border/30">
                           <BlockRenderer
                             blocks={service.description as BlockRendererBlocks}

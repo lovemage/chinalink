@@ -1,9 +1,13 @@
 import Link from 'next/link'
 import { getBlogCategories } from '@/lib/queries/categories'
+import { getPostTagsAll } from '@/lib/queries/post-tags'
 import PostForm from '@/components/admin/PostForm'
 
 export default async function NewPostPage() {
-  const categories = await getBlogCategories()
+  const [categories, tags] = await Promise.all([
+    getBlogCategories(),
+    getPostTagsAll(),
+  ])
 
   return (
     <div className="p-6 space-y-4">
@@ -20,6 +24,7 @@ export default async function NewPostPage() {
 
       <PostForm
         categories={categories}
+        availableTags={tags}
         mode="create"
       />
     </div>

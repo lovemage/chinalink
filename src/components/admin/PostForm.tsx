@@ -12,6 +12,7 @@ interface PostFormProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   post?: any
   categories: { id: number; name: string }[]
+  availableTags: { id: number; name: string; slug: string }[]
   mode: 'create' | 'edit'
 }
 
@@ -26,7 +27,7 @@ function toDateInputValue(date: Date | string | null | undefined): string {
   return d.toISOString().slice(0, 16)
 }
 
-export default function PostForm({ post, categories, mode }: PostFormProps) {
+export default function PostForm({ post, categories, availableTags, mode }: PostFormProps) {
   const router = useRouter()
   const { addToast } = useToast()
 
@@ -40,10 +41,11 @@ export default function PostForm({ post, categories, mode }: PostFormProps) {
   const [categoryId, setCategoryId] = useState(String(post?.categoryId ?? ''))
   const [author, setAuthor] = useState(post?.author ?? '懂陸姐')
   const [excerpt, setExcerpt] = useState(post?.excerpt ?? '')
-  const [tagsInput, setTagsInput] = useState<string>(
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ((post?.tagRelations ?? []).map((tr: any) => tr.tag?.name ?? '').filter(Boolean) as string[]).join(', ')
+    ((post?.tagRelations ?? []).map((tr: any) => tr.tagId ?? tr.tag?.id).filter(Boolean) as number[])
   )
+  const [customTagsInput, setCustomTagsInput] = useState<string>('')
 
   // Cover image
   const [coverImages, setCoverImages] = useState<string[]>(
@@ -105,15 +107,19 @@ export default function PostForm({ post, categories, mode }: PostFormProps) {
     formData.set('content', content ? JSON.stringify(content) : '')
     formData.set('seoTitle', seoTitle)
     formData.set('seoDescription', seoDescription)
+    const selectedTagNames = availableTags
+      .filter((tag) => selectedTagIds.includes(tag.id))
+      .map((tag) => tag.name)
+    const customTagNames = customTagsInput
+      .split(/[,\n，]/)
+      .map((s) => s.trim())
+      .filter(Boolean)
     formData.set(
       'tagNames',
       JSON.stringify(
         Array.from(
           new Set(
-            tagsInput
-              .split(/[,\n，]/)
-              .map((s) => s.trim())
-              .filter(Boolean)
+            [...selectedTagNames, ...customTagNames]
           )
         )
       )
@@ -219,14 +225,42 @@ export default function PostForm({ post, categories, mode }: PostFormProps) {
           />
         </AdminFormField>
 
-        <AdminFormField label="文章標籤" name="tagsInput" description="以逗號分隔，例如：跨境電商, 小紅書, 台灣商家">
+        {availableTags.length > 0 && (
+          <AdminFormField label="通用標籤" name="selectedTagIds" description="點選套用可重複使用的文章標籤">
+            <div className="flex flex-wrap gap-2">
+              {availableTags.map((tag) => {
+                const selected = selectedTagIds.includes(tag.id)
+                return (
+                  <button
+                    key={tag.id}
+                    type="button"
+                    onClick={() =>
+                      setSelectedTagIds((prev) =>
+                        prev.includes(tag.id) ? prev.filter((id) => id !== tag.id) : [...prev, tag.id]
+                      )
+                    }
+                    className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                      selected
+                        ? 'border-blue-600 bg-blue-600 text-white'
+                        : 'border-gray-200 bg-white text-gray-700 hover:border-blue-400'
+                    }`}
+                  >
+                    {tag.name}
+                  </button>
+                )
+              })}
+            </div>
+          </AdminFormField>
+        )}
+
+        <AdminFormField label="自訂標籤" name="customTagsInput" description="以逗號分隔，例如：跨境電商, 小紅書, 台灣商家">
           <input
-            id="tagsInput"
+            id="customTagsInput"
             type="text"
-            value={tagsInput}
-            onChange={(e) => setTagsInput(e.target.value)}
+            value={customTagsInput}
+            onChange={(e) => setCustomTagsInput(e.target.value)}
             className={inputClass}
-            placeholder="輸入標籤，使用逗號分隔"
+            placeholder="輸入額外標籤，使用逗號分隔"
           />
         </AdminFormField>
       </section>

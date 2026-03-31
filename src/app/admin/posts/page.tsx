@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getPosts } from '@/lib/queries/posts'
 import { getBlogCategories } from '@/lib/queries/categories'
+import { getPostTagsAll } from '@/lib/queries/post-tags'
 import PostsTable from './PostsTable'
 
 interface PageProps {
@@ -17,13 +18,14 @@ export default async function PostsPage({ searchParams }: PageProps) {
   const categoryId = params.categoryId ? parseInt(params.categoryId) : undefined
   const status = params.status ?? ''
 
-  const [postsList, categories] = await Promise.all([
+  const [postsList, categories, tags] = await Promise.all([
     getPosts({
       search: search || undefined,
       categoryId,
       status: status || undefined,
     }),
     getBlogCategories(),
+    getPostTagsAll(),
   ])
 
   return (
@@ -41,6 +43,7 @@ export default async function PostsPage({ searchParams }: PageProps) {
       <PostsTable
         posts={postsList}
         categories={categories}
+        tags={tags}
         initialSearch={search}
         initialCategoryId={categoryId?.toString() ?? ''}
         initialStatus={status}

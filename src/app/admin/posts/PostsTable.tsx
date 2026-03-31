@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import DataTable from '@/components/admin/DataTable'
 import StatusBadge from '@/components/admin/StatusBadge'
+import PostTagsManagerModal from './PostTagsManagerModal'
 
 interface PostRow {
   id: number
@@ -19,6 +20,7 @@ interface PostRow {
 interface PostsTableProps {
   posts: PostRow[]
   categories: { id: number; name: string }[]
+  tags: { id: number; name: string; slug: string }[]
   initialSearch: string
   initialCategoryId: string
   initialStatus: string
@@ -27,6 +29,7 @@ interface PostsTableProps {
 export default function PostsTable({
   posts,
   categories,
+  tags,
   initialSearch,
   initialCategoryId,
   initialStatus,
@@ -173,6 +176,7 @@ export default function PostsTable({
         searchValue={search}
         onSearchChange={handleSearchChange}
         searchPlaceholder="搜尋文章標題..."
+        actions={<PostTagsManagerModal tags={tags} />}
         onRowClick={(row) =>
           router.push(`/admin/posts/${(row as unknown as PostRow).id}`)
         }

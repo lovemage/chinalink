@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getPost } from '@/lib/queries/posts'
 import { getBlogCategories } from '@/lib/queries/categories'
+import { getPostTagsAll } from '@/lib/queries/post-tags'
 import PostForm from '@/components/admin/PostForm'
 import DeletePostButton from './DeletePostButton'
 
@@ -15,9 +16,10 @@ export default async function EditPostPage({ params }: PageProps) {
 
   if (isNaN(postId)) notFound()
 
-  const [post, categories] = await Promise.all([
+  const [post, categories, tags] = await Promise.all([
     getPost(postId),
     getBlogCategories(),
+    getPostTagsAll(),
   ])
 
   if (!post) notFound()
@@ -39,6 +41,7 @@ export default async function EditPostPage({ params }: PageProps) {
       <PostForm
         post={post}
         categories={categories}
+        availableTags={tags}
         mode="edit"
       />
     </div>

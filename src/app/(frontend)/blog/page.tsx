@@ -50,7 +50,7 @@ export default async function BlogPage({
         </div>
 
         {posts.length > 0 ? (
-          <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-12 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3 lg:gap-8">
             {posts.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}

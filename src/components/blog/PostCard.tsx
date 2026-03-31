@@ -37,7 +37,7 @@ export function PostCard({ post }: PostCardProps) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col overflow-hidden rounded-[2rem] border border-border/70 bg-card shadow-sm transition-shadow duration-300 hover:shadow-md hover:shadow-brand-primary/8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm transition-shadow duration-300 hover:shadow-md hover:shadow-brand-primary/8 sm:rounded-[2rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background"
     >
       <div className="relative aspect-[16/10] overflow-hidden bg-brand-primary/10">
         {post.coverImageUrl ? (
@@ -54,19 +54,19 @@ export function PostCard({ post }: PostCardProps) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col p-5">
+      <div className="flex flex-1 flex-col p-3 sm:p-5">
         {post.categoryName && (
-          <span className="mb-3 w-fit rounded-full bg-brand-primary/10 px-3 py-1 text-xs font-medium text-brand-primary">
+          <span className="mb-2 w-fit rounded-full bg-brand-primary/10 px-2.5 py-1 text-[11px] font-medium text-brand-primary sm:mb-3 sm:px-3 sm:text-xs">
             {post.categoryName}
           </span>
         )}
 
-        <h3 className="text-lg font-bold text-brand-text transition-colors group-hover:text-brand-primary">
+        <h3 className="text-base font-bold text-brand-text transition-colors group-hover:text-brand-primary sm:text-lg">
           {post.title}
         </h3>
 
         {post.excerpt && (
-          <p className="mt-2 line-clamp-2 text-sm text-brand-muted">
+          <p className="mt-1.5 line-clamp-2 text-xs text-brand-muted sm:mt-2 sm:text-sm">
             {post.excerpt}
           </p>
         )}

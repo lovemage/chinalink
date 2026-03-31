@@ -107,7 +107,7 @@ export default async function BlogArticlePage({
         {category && (
           <Link
             href={`/blog?category=${category.slug}`}
-            className="mb-3 inline-block rounded-full bg-brand-primary/10 px-4 py-1 text-sm font-medium text-brand-primary hover:bg-brand-primary/20 transition-colors"
+            className="mb-3 inline-block rounded-full bg-brand-primary/10 px-3 py-1 text-xs font-medium text-brand-primary hover:bg-brand-primary/20 transition-colors sm:px-4 sm:text-sm"
           >
             {category.name}
           </Link>
@@ -118,7 +118,7 @@ export default async function BlogArticlePage({
             {tags.map((tag) => (
               <span
                 key={tag.id}
-                className="inline-flex items-center rounded-full border border-brand-primary/20 bg-white/80 px-3 py-1 text-xs font-medium text-brand-primary"
+                className="inline-flex items-center rounded-full border border-brand-primary/20 bg-white/80 px-2.5 py-1 text-[11px] font-medium text-brand-primary sm:px-3 sm:text-xs"
               >
                 #{tag.name}
               </span>

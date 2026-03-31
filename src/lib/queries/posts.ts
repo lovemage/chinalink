@@ -1,6 +1,6 @@
 import { db } from '@/lib/db'
 import { posts, categories, media } from '@/lib/db/schema'
-import { eq, and, ilike, desc, ne } from 'drizzle-orm'
+import { eq, and, or, ilike, desc, ne } from 'drizzle-orm'
 
 interface GetPostsOpts {
   search?: string
@@ -63,7 +63,7 @@ export async function getPostCategoriesAll() {
   return rows
 }
 
-export async function getPublishedPostsFiltered(categorySlug?: string) {
+export async function getPublishedPostsFiltered(categorySlug?: string, search?: string) {
   let categoryId: number | undefined
 
   if (categorySlug) {
@@ -75,9 +75,18 @@ export async function getPublishedPostsFiltered(categorySlug?: string) {
     categoryId = cat[0]?.id
   }
 
-  const conditions: ReturnType<typeof eq>[] = [eq(posts.status, 'published')]
+  const conditions = [eq(posts.status, 'published')]
   if (categoryId !== undefined) {
     conditions.push(eq(posts.categoryId, categoryId))
+  }
+  if (search?.trim()) {
+    const q = `%${search.trim()}%`
+    conditions.push(
+      or(
+        ilike(posts.title, q),
+        ilike(posts.excerpt, q)
+      )!
+    )
   }
 
   const rows = await db

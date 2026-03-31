@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import { CategoryFilter } from '@/components/blog/CategoryFilter'
+import { BlogSearchBar } from '@/components/blog/BlogSearchBar'
 import { PostCard } from '@/components/blog/PostCard'
 import { getPostCategoriesAll, getPublishedPostsFiltered } from '@/lib/queries/posts'
 
@@ -12,13 +13,13 @@ export const metadata = {
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>
+  searchParams: Promise<{ category?: string; search?: string }>
 }) {
-  const { category } = await searchParams
+  const { category, search } = await searchParams
 
   const [categories, posts] = await Promise.all([
     getPostCategoriesAll(),
-    getPublishedPostsFiltered(category),
+    getPublishedPostsFiltered(category, search),
   ])
 
   return (
@@ -42,6 +43,10 @@ export default async function BlogPage({
 
         <div className="mt-16">
           <CategoryFilter categories={categories} />
+        </div>
+
+        <div className="mt-4 max-w-xl">
+          <BlogSearchBar initialSearch={search ?? ''} />
         </div>
 
         {posts.length > 0 ? (

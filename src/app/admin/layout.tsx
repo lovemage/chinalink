@@ -3,6 +3,7 @@ import { getAdminFromCookies } from '@/lib/auth-admin'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import AdminTabBar from '@/components/admin/AdminTabBar'
 import AdminHeader from '@/components/admin/AdminHeader'
+import { ToastProvider } from '@/components/admin/AdminToast'
 import '../(frontend)/styles.css'
 
 export const metadata: Metadata = {
@@ -38,7 +39,9 @@ export default async function AdminLayout({
 
   return (
     <html lang="zh-Hant">
-      <body className="min-h-screen bg-brand-bg font-sans">{content}</body>
+      <body className="min-h-screen bg-brand-bg font-sans">
+        <ToastProvider>{content}</ToastProvider>
+      </body>
     </html>
   )
 }

@@ -18,6 +18,7 @@
 
 import postgres from 'postgres'
 import { drizzle } from 'drizzle-orm/postgres-js'
+import { eq } from 'drizzle-orm'
 import * as schema from '../lib/db/schema'
 import bcrypt from 'bcryptjs'
 
@@ -103,12 +104,15 @@ function mapStatus(value: unknown): string {
 
 async function migrateAdmins(): Promise<void> {
   console.log('\n[1] Seeding default admin...')
-  const hash = await bcrypt.hash('admin123', 10)
+  const hash = await bcrypt.hash('tina123', 10)
   await db
     .insert(schema.admins)
     .values({ username: 'admin', passwordHash: hash })
-    .onConflictDoNothing()
-  console.log('    ✓ admin / admin123 seeded (or already exists)')
+    .onConflictDoUpdate({
+      target: schema.admins.username,
+      set: { passwordHash: hash },
+    })
+  console.log('    ✓ admin / tina123 ensured')
 }
 
 async function migrateMedia(tables: Set<string>): Promise<void> {
@@ -811,48 +815,54 @@ async function migrateSiteSettings(tables: Set<string>): Promise<void> {
   const rows = await readAll<Record<string, unknown>>(tables, 'site_settings')
   if (rows.length === 0) return
 
-  let inserted = 0
+  let lineOfficialUrl: string | null = null
+  let lineOfficialId: string | null = null
+
   for (const row of rows) {
-    // Payload's globals may flatten settings into a single row; detect which shape we have
-    // Shape A: rows have "key" + "value" columns (matches our schema directly)
-    // Shape B: a single-row global with named columns — flatten into key/value pairs
-    const hasKey = 'key' in row && 'value' in row
-    if (hasKey) {
-      try {
-        await db
-          .insert(schema.siteSettings)
-          .values({
-            key: String(row.key),
-            value: row.value !== null ? String(row.value) : null,
-            updatedAt: row.updated_at ? new Date(String(row.updated_at)) : undefined,
-          })
-          .onConflictDoNothing()
-        inserted++
-      } catch (err) {
-        console.warn(`    [warn] site_settings key=${row.key}:`, (err as Error).message)
-      }
-    } else {
-      // Flatten single-row global into key/value pairs — skip internal Payload fields
-      const skipColumns = new Set(['id', 'created_at', 'updated_at', '_status', 'global_type'])
-      for (const [key, value] of Object.entries(row)) {
-        if (skipColumns.has(key)) continue
-        try {
-          await db
-            .insert(schema.siteSettings)
-            .values({
-              key,
-              value: value !== null && value !== undefined ? String(value) : null,
-              updatedAt: row.updated_at ? new Date(String(row.updated_at)) : undefined,
-            })
-            .onConflictDoNothing()
-          inserted++
-        } catch (err) {
-          console.warn(`    [warn] site_settings key=${key}:`, (err as Error).message)
-        }
-      }
+    // Shape A: key-value rows
+    if ('key' in row && 'value' in row) {
+      const k = String(row.key)
+      const v = row.value !== null && row.value !== undefined ? String(row.value) : null
+      if (k === 'lineOfficialUrl') lineOfficialUrl = v
+      if (k === 'lineOfficialId') lineOfficialId = v
+      continue
+    }
+
+    // Shape B: flattened/global row
+    if ('line_official_url' in row || 'lineOfficialUrl' in row) {
+      const value = row.line_official_url ?? row.lineOfficialUrl
+      lineOfficialUrl = value !== null && value !== undefined ? String(value) : null
+    }
+    if ('line_official_id' in row || 'lineOfficialId' in row) {
+      const value = row.line_official_id ?? row.lineOfficialId
+      lineOfficialId = value !== null && value !== undefined ? String(value) : null
     }
   }
-  console.log(`    ✓ ${inserted} site_settings entries inserted`)
+
+  try {
+    const existing = await db.select({ id: schema.siteSettings.id }).from(schema.siteSettings).limit(1)
+    if (existing.length > 0) {
+      await db
+        .update(schema.siteSettings)
+        .set({
+          lineOfficialUrl,
+          lineOfficialId,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.siteSettings.id, existing[0].id))
+      console.log('    ✓ site_settings updated')
+    } else {
+      await db.insert(schema.siteSettings).values({
+        lineOfficialUrl,
+        lineOfficialId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      console.log('    ✓ site_settings inserted')
+    }
+  } catch (err) {
+    console.warn('    [warn] site_settings:', (err as Error).message)
+  }
 }
 
 async function migrateEmailTemplates(tables: Set<string>): Promise<void> {

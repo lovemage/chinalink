@@ -3,21 +3,34 @@
 import { db } from '@/lib/db'
 import { siteSettings } from '@/lib/db/schema'
 import { revalidatePath } from 'next/cache'
+import { desc, eq } from 'drizzle-orm'
 
 export async function updateSettings(
   formData: FormData
 ): Promise<{ success: true } | { error: string }> {
   try {
-    const entries = Array.from(formData.entries()) as [string, string][]
+    const lineOfficialUrl = String(formData.get('lineOfficialUrl') ?? '')
+    const lineOfficialId = String(formData.get('lineOfficialId') ?? '')
+    const now = new Date()
 
-    for (const [key, value] of entries) {
+    const existing = await db
+      .select({ id: siteSettings.id })
+      .from(siteSettings)
+      .orderBy(desc(siteSettings.updatedAt), desc(siteSettings.id))
+      .limit(1)
+
+    if (existing[0]?.id) {
       await db
-        .insert(siteSettings)
-        .values({ key, value, updatedAt: new Date() })
-        .onConflictDoUpdate({
-          target: siteSettings.key,
-          set: { value, updatedAt: new Date() },
-        })
+        .update(siteSettings)
+        .set({ lineOfficialUrl, lineOfficialId, updatedAt: now })
+        .where(eq(siteSettings.id, existing[0].id))
+    } else {
+      await db.insert(siteSettings).values({
+        lineOfficialUrl,
+        lineOfficialId,
+        updatedAt: now,
+        createdAt: now,
+      })
     }
 
     revalidatePath('/admin/settings')

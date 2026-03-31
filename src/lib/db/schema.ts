@@ -32,9 +32,10 @@ export const media = pgTable('media', {
   width: integer('width'),
   height: integer('height'),
   url: text('url').notNull(),
-  thumbnailUrl: text('thumbnail_url'),
-  cardUrl: text('card_url'),
-  heroUrl: text('hero_url'),
+  // Payload legacy column naming used in production DB
+  thumbnailUrl: text('thumbnail_u_r_l'),
+  cardUrl: text('sizes_card_url'),
+  heroUrl: text('sizes_hero_url'),
   createdAt: timestamp('created_at').defaultNow(),
 })
 
@@ -361,8 +362,10 @@ export const inquiryAttachments = pgTable('inquiry_attachments', {
 // siteSettings
 // ---------------------------------------------------------------------------
 export const siteSettings = pgTable('site_settings', {
-  key: text('key').primaryKey(),
-  value: text('value'),
+  id: serial('id').primaryKey(),
+  lineOfficialUrl: text('line_official_url'),
+  lineOfficialId: text('line_official_id'),
+  createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 })
 

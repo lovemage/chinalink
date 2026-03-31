@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { customers, services, products, orders, orderItems, siteSettings } from '@/lib/db/schema'
+import { customers, services, products, orders, orderItems } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
+import { getSetting } from '@/lib/queries/settings'
 
 interface CartItemInput {
   type: 'service' | 'product'
@@ -157,25 +158,17 @@ export async function POST(req: Request) {
       )
     }
 
-    // Fetch LINE URL from site settings
-    const lineUrlRow = await db
-      .select()
-      .from(siteSettings)
-      .where(eq(siteSettings.key, 'lineOfficialUrl'))
-      .limit(1)
-
-    const lineIdRow = await db
-      .select()
-      .from(siteSettings)
-      .where(eq(siteSettings.key, 'lineOfficialId'))
-      .limit(1)
+    const [lineUrl, lineId] = await Promise.all([
+      getSetting('lineOfficialUrl'),
+      getSetting('lineOfficialId'),
+    ])
 
     return NextResponse.json({
       orderId: order.id,
       orderNumber: order.orderNumber,
       totalAmount,
-      lineUrl: lineUrlRow[0]?.value || '',
-      lineId: lineIdRow[0]?.value || '',
+      lineUrl: lineUrl || '',
+      lineId: lineId || '',
     })
   } catch (error) {
     console.error('[service-cart] Order creation failed:', error)

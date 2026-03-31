@@ -16,12 +16,9 @@ export default async function AdminLayout({
 }) {
   const admin = await getAdminFromCookies()
 
-  // No valid session — render bare (login page)
-  if (!admin) {
-    return <>{children}</>
-  }
-
-  return (
+  const content = !admin ? (
+    children
+  ) : (
     <div className="min-h-screen bg-gray-50">
       {/* Desktop sidebar */}
       <AdminSidebar />
@@ -37,5 +34,11 @@ export default async function AdminLayout({
       {/* Mobile tab bar */}
       <AdminTabBar />
     </div>
+  )
+
+  return (
+    <html lang="zh-Hant">
+      <body className="min-h-screen bg-brand-bg font-sans">{content}</body>
+    </html>
   )
 }

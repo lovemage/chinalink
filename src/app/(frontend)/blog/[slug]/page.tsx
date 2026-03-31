@@ -80,6 +80,7 @@ export default async function BlogArticlePage({
 
   const cover = post.coverImage
   const category = post.category
+  const tags = (post.tagRelations || []).map((rel) => rel.tag).filter(Boolean)
 
   // Fetch related posts from same category
   const relatedPosts = category
@@ -110,6 +111,19 @@ export default async function BlogArticlePage({
           >
             {category.name}
           </Link>
+        )}
+
+        {tags.length > 0 && (
+          <div className="mb-4 flex flex-wrap gap-2">
+            {tags.map((tag) => (
+              <span
+                key={tag.id}
+                className="inline-flex items-center rounded-full border border-brand-primary/20 bg-white/80 px-3 py-1 text-xs font-medium text-brand-primary"
+              >
+                #{tag.name}
+              </span>
+            ))}
+          </div>
         )}
 
         <h1 className="text-3xl font-bold text-brand-text sm:text-4xl">

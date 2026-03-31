@@ -41,6 +41,11 @@ export async function getPost(id: number) {
     with: {
       category: true,
       coverImage: true,
+      tagRelations: {
+        with: {
+          tag: true,
+        },
+      },
     },
   })
   return result ?? null
@@ -159,6 +164,11 @@ export async function getPostByCandidateSlugs(slugCandidates: string[]) {
       with: {
         category: true,
         coverImage: true,
+        tagRelations: {
+          with: {
+            tag: true,
+          },
+        },
       },
     })
     if (result) return result
@@ -172,6 +182,11 @@ export async function getPostBySlug(slug: string) {
     with: {
       category: true,
       coverImage: true,
+      tagRelations: {
+        with: {
+          tag: true,
+        },
+      },
     },
   })
   return result ?? null

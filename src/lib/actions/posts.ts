@@ -1,12 +1,16 @@
 'use server'
 
 import { db } from '@/lib/db'
-import { posts, media } from '@/lib/db/schema'
+import { posts, media, postTags, postTagRelations } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 
 function generateSlug(title: string): string {
   return title.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fff-]/g, '')
+}
+
+function generateTagSlug(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fff-]/g, '')
 }
 
 async function findOrCreateMedia(url: string): Promise<number> {
@@ -21,6 +25,50 @@ async function findOrCreateMedia(url: string): Promise<number> {
     .values({ url, filename, alt: filename })
     .returning({ id: media.id })
   return created.id
+}
+
+async function upsertPostTagsForPost(postId: number, rawTagNames: string[]) {
+  const normalizedNames = Array.from(
+    new Set(rawTagNames.map((name) => name.trim()).filter(Boolean))
+  )
+
+  await db.delete(postTagRelations).where(eq(postTagRelations.postId, postId))
+  if (normalizedNames.length === 0) return
+
+  const tagIds: number[] = []
+  for (const tagName of normalizedNames) {
+    const slug = generateTagSlug(tagName)
+    if (!slug) continue
+
+    const existing = await db.query.postTags.findFirst({
+      where: eq(postTags.slug, slug),
+    })
+
+    if (existing) {
+      tagIds.push(existing.id)
+      continue
+    }
+
+    const [created] = await db
+      .insert(postTags)
+      .values({ name: tagName, slug })
+      .onConflictDoUpdate({
+        target: postTags.slug,
+        set: { name: tagName },
+      })
+      .returning({ id: postTags.id })
+
+    tagIds.push(created.id)
+  }
+
+  if (tagIds.length > 0) {
+    await db.insert(postTagRelations).values(
+      tagIds.map((tagId) => ({
+        postId,
+        tagId,
+      }))
+    )
+  }
 }
 
 export async function createPost(
@@ -56,6 +104,13 @@ export async function createPost(
 
     const seoTitle = (formData.get('seoTitle') as string)?.trim() || null
     const seoDescription = (formData.get('seoDescription') as string)?.trim() || null
+    const tagNamesRaw = (formData.get('tagNames') as string) || '[]'
+    let tagNames: string[] = []
+    try {
+      tagNames = JSON.parse(tagNamesRaw)
+    } catch {
+      tagNames = []
+    }
 
     let coverImageId: number | null = null
     if (coverImageUrl) {
@@ -78,6 +133,8 @@ export async function createPost(
         seoDescription,
       })
       .returning({ id: posts.id })
+
+    await upsertPostTagsForPost(post.id, tagNames)
 
     revalidatePath('/admin/posts')
     return { success: true, id: post.id }
@@ -127,6 +184,13 @@ export async function updatePost(
 
     const seoTitle = (formData.get('seoTitle') as string)?.trim() || null
     const seoDescription = (formData.get('seoDescription') as string)?.trim() || null
+    const tagNamesRaw = (formData.get('tagNames') as string) || '[]'
+    let tagNames: string[] = []
+    try {
+      tagNames = JSON.parse(tagNamesRaw)
+    } catch {
+      tagNames = []
+    }
 
     let coverImageId: number | null = null
     if (coverImageUrl) {
@@ -150,6 +214,8 @@ export async function updatePost(
         updatedAt: new Date(),
       })
       .where(eq(posts.id, id))
+
+    await upsertPostTagsForPost(id, tagNames)
 
     revalidatePath('/admin/posts')
     revalidatePath(`/admin/posts/${id}`)

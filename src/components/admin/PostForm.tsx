@@ -40,6 +40,10 @@ export default function PostForm({ post, categories, mode }: PostFormProps) {
   const [categoryId, setCategoryId] = useState(String(post?.categoryId ?? ''))
   const [author, setAuthor] = useState(post?.author ?? '懂陸姐')
   const [excerpt, setExcerpt] = useState(post?.excerpt ?? '')
+  const [tagsInput, setTagsInput] = useState<string>(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ((post?.tagRelations ?? []).map((tr: any) => tr.tag?.name ?? '').filter(Boolean) as string[]).join(', ')
+  )
 
   // Cover image
   const [coverImages, setCoverImages] = useState<string[]>(
@@ -101,6 +105,19 @@ export default function PostForm({ post, categories, mode }: PostFormProps) {
     formData.set('content', content ? JSON.stringify(content) : '')
     formData.set('seoTitle', seoTitle)
     formData.set('seoDescription', seoDescription)
+    formData.set(
+      'tagNames',
+      JSON.stringify(
+        Array.from(
+          new Set(
+            tagsInput
+              .split(/[,\n，]/)
+              .map((s) => s.trim())
+              .filter(Boolean)
+          )
+        )
+      )
+    )
 
     try {
       if (mode === 'create') {
@@ -199,6 +216,17 @@ export default function PostForm({ post, categories, mode }: PostFormProps) {
             rows={3}
             className={inputClass}
             placeholder="輸入文章摘要..."
+          />
+        </AdminFormField>
+
+        <AdminFormField label="文章標籤" name="tagsInput" description="以逗號分隔，例如：跨境電商, 小紅書, 台灣商家">
+          <input
+            id="tagsInput"
+            type="text"
+            value={tagsInput}
+            onChange={(e) => setTagsInput(e.target.value)}
+            className={inputClass}
+            placeholder="輸入標籤，使用逗號分隔"
           />
         </AdminFormField>
       </section>

@@ -80,6 +80,16 @@ export const productTags = pgTable('product_tags', {
 })
 
 // ---------------------------------------------------------------------------
+// postTags
+// ---------------------------------------------------------------------------
+export const postTags = pgTable('post_tags', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  slug: text('slug').unique().notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+})
+
+// ---------------------------------------------------------------------------
 // services
 // ---------------------------------------------------------------------------
 export const services = pgTable('services', {
@@ -241,6 +251,22 @@ export const posts = pgTable('posts', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 })
+
+// ---------------------------------------------------------------------------
+// postTagRelations (composite PK junction table)
+// ---------------------------------------------------------------------------
+export const postTagRelations = pgTable(
+  'post_tag_relations',
+  {
+    postId: integer('post_id')
+      .references(() => posts.id, { onDelete: 'cascade' })
+      .notNull(),
+    tagId: integer('tag_id')
+      .references(() => postTags.id, { onDelete: 'cascade' })
+      .notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.postId, table.tagId] })]
+)
 
 // ---------------------------------------------------------------------------
 // customers
@@ -450,6 +476,10 @@ export const productTagsRelations = relations(productTags, ({ many }) => ({
   tagRelations: many(productTagRelations),
 }))
 
+export const postTagsRelations = relations(postTags, ({ many }) => ({
+  tagRelations: many(postTagRelations),
+}))
+
 export const productsRelations = relations(products, ({ one, many }) => ({
   productCategory: one(productCategories, {
     fields: [products.productCategoryId],
@@ -516,7 +546,8 @@ export const categoriesRelations = relations(categories, ({ many }) => ({
   posts: many(posts),
 }))
 
-export const postsRelations = relations(posts, ({ one }) => ({
+export const postsRelations = relations(posts, ({ one, many }) => ({
+  tagRelations: many(postTagRelations),
   category: one(categories, {
     fields: [posts.categoryId],
     references: [categories.id],
@@ -526,6 +557,20 @@ export const postsRelations = relations(posts, ({ one }) => ({
     references: [media.id],
   }),
 }))
+
+export const postTagRelationsRelations = relations(
+  postTagRelations,
+  ({ one }) => ({
+    post: one(posts, {
+      fields: [postTagRelations.postId],
+      references: [posts.id],
+    }),
+    tag: one(postTags, {
+      fields: [postTagRelations.tagId],
+      references: [postTags.id],
+    }),
+  })
+)
 
 export const customersRelations = relations(customers, ({ many }) => ({
   orders: many(orders),

@@ -3,6 +3,7 @@ import { getAdminFromCookies } from '@/lib/auth-admin'
 import AdminSidebar from '@/components/admin/AdminSidebar'
 import AdminTabBar from '@/components/admin/AdminTabBar'
 import AdminHeader from '@/components/admin/AdminHeader'
+import '../(frontend)/styles.css'
 
 export const metadata: Metadata = {
   title: 'ChinaLink 後台管理',

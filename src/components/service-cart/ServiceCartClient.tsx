@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { MaterialSymbol } from '@/components/ui/MaterialSymbol'
 import { defaultServiceIconName } from '@/lib/services/serviceIcons'
@@ -96,13 +97,6 @@ interface ServiceCartClientProps {
   initialAddServiceId?: number
   initialAddProductSlug?: string
   autoCheckout?: boolean
-}
-
-interface OrderResult {
-  orderNumber: string
-  totalAmount: number
-  lineUrl: string
-  lineId: string
 }
 
 /* ────────────────────────── localStorage ────────────────────────── */
@@ -247,6 +241,7 @@ export function ServiceCartClient({
   autoCheckout,
 }: ServiceCartClientProps) {
   const { data: session } = useSession()
+  const router = useRouter()
   const [cart, setCart] = useState<CartItem[]>(() => loadCartFromStorage(services, products))
   const [activeTab, setActiveTab] = useState<'services' | 'products'>('services')
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
@@ -254,7 +249,6 @@ export function ServiceCartClient({
   const [fabVisible, setFabVisible] = useState(false)
   const [fabAnimating, setFabAnimating] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [orderResult, setOrderResult] = useState<OrderResult | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const prevCartLength = useRef(0)
 
@@ -443,7 +437,7 @@ export function ServiceCartClient({
     }
   }, [cart.length, isPanelOpen])
 
-  // Submit order
+  // Submit order — create order then redirect to checkout page
   const handleSubmitOrder = async () => {
     const customerId = (session?.user as { customerId?: number } | undefined)?.customerId
     if (!customerId) {
@@ -487,27 +481,16 @@ export function ServiceCartClient({
         return
       }
 
-      setOrderResult({
-        orderNumber: data.orderNumber,
-        totalAmount: data.totalAmount,
-        lineUrl: data.lineUrl,
-        lineId: data.lineId,
-      })
-
-      // Clear cart, storage, and close panel
+      // Clear cart and redirect to checkout page
       setCart([])
       clearCartStorage()
       setIsPanelOpen(false)
+      router.push(`/checkout/${data.orderId}`)
     } catch {
       setSubmitError('網路錯誤，請稍後再試')
     } finally {
       setIsSubmitting(false)
     }
-  }
-
-  // Close success dialog
-  const closeSuccessDialog = () => {
-    setOrderResult(null)
   }
 
   const currentCategories = activeTab === 'services' ? categories : productCategories
@@ -790,74 +773,6 @@ export function ServiceCartClient({
         )}
       </div>
 
-      {/* Success Dialog — Order Placed */}
-      {orderResult && (
-        <>
-          <div
-            className="fixed inset-0 z-[60] bg-brand-text/20 backdrop-blur-sm"
-            onClick={closeSuccessDialog}
-          />
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 pointer-events-none">
-            <div className="pointer-events-auto w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl">
-              {/* Success icon */}
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50">
-                <CheckCircle className="h-[32px] w-[32px] text-emerald-500" />
-              </div>
-
-              <h3 className="mt-5 text-center font-serif text-2xl font-medium text-brand-text">
-                訂單已建立
-              </h3>
-              <p className="mt-2 text-center text-sm text-brand-muted">
-                請透過官方 LINE 聯繫客服，並提供訂單編號以完成後續服務。
-              </p>
-
-              {/* Order number */}
-              <div className="mt-6 rounded-2xl border border-brand-primary/10 bg-brand-bg p-5">
-                <p className="text-xs tracking-wider text-brand-muted uppercase">訂單編號</p>
-                <p className="mt-1 font-mono text-xl font-semibold tracking-widest text-brand-text">
-                  {orderResult.orderNumber}
-                </p>
-                <div className="mt-3 flex items-baseline justify-between border-t border-brand-primary/8 pt-3">
-                  <span className="text-sm text-brand-muted">訂單金額</span>
-                  <span className="font-serif text-lg font-semibold text-brand-primary">
-                    {formatPrice(orderResult.totalAmount)}
-                  </span>
-                </div>
-              </div>
-
-              {/* LINE CTA */}
-              {orderResult.lineUrl && (
-                <a
-                  href={orderResult.lineUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-cta py-4 font-semibold text-white shadow-lg shadow-brand-cta/20 transition-all duration-200 hover:bg-brand-cta/90 active:scale-[0.98]"
-                >
-                  <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current" aria-hidden="true">
-                    <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
-                  </svg>
-                  加入官方 LINE 聯繫客服
-                  {orderResult.lineId && (
-                    <span className="text-sm font-normal opacity-80">{orderResult.lineId}</span>
-                  )}
-                </a>
-              )}
-
-              <p className="mt-4 text-center text-xs leading-relaxed text-brand-muted">
-                請將訂單編號 <span className="font-semibold text-brand-text">{orderResult.orderNumber}</span> 傳送給客服，
-                我們將盡速為您處理。
-              </p>
-
-              <button
-                onClick={closeSuccessDialog}
-                className="mt-5 w-full rounded-2xl border border-brand-primary/15 py-3 text-sm font-medium text-brand-text transition-colors hover:bg-brand-bg"
-              >
-                關閉
-              </button>
-            </div>
-          </div>
-        </>
-      )}
     </section>
   )
 }

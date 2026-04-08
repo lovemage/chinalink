@@ -33,6 +33,7 @@ export async function getOrders(opts: GetOrdersOpts = {}) {
       amount: orders.amount,
       orderStatus: orders.orderStatus,
       paymentStatus: orders.paymentStatus,
+      note: orders.note,
       createdAt: orders.createdAt,
     })
     .from(orders)

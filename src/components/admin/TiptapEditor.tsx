@@ -3,7 +3,6 @@
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
-import Link from '@tiptap/extension-link'
 import { Table } from '@tiptap/extension-table'
 import { TableRow } from '@tiptap/extension-table-row'
 import { TableHeader } from '@tiptap/extension-table-header'
@@ -32,11 +31,12 @@ interface TiptapEditorProps {
 export function TiptapEditor({ content, onChange, placeholder }: TiptapEditorProps) {
   const editor = useEditor({
     extensions: [
-      StarterKit,
-      Image,
-      Link.configure({
-        openOnClick: false,
+      StarterKit.configure({
+        link: {
+          openOnClick: false,
+        },
       }),
+      Image,
       Table.configure({
         resizable: true,
       }),

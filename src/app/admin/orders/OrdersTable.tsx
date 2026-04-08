@@ -1,9 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import DataTable from '@/components/admin/DataTable'
 import StatusBadge from '@/components/admin/StatusBadge'
+import {
+  updateOrderStatus,
+  updatePaymentStatus,
+  updateOrderNote,
+} from '@/lib/actions/orders'
 
 interface OrderRow {
   id: number
@@ -12,6 +17,7 @@ interface OrderRow {
   amount: number
   orderStatus: string
   paymentStatus: string
+  note: string | null
   createdAt: Date | null
 }
 
@@ -34,12 +40,33 @@ const PAYMENT_STATUS_LABELS: Record<string, string> = {
   expired: '已過期',
 }
 
+const ORDER_STATUS_OPTIONS = [
+  { value: 'pending', label: '待處理' },
+  { value: 'paid', label: '已付款' },
+  { value: 'completed', label: '已完成' },
+]
+
+const PAYMENT_STATUS_OPTIONS = [
+  { value: 'pending', label: '待付款' },
+  { value: 'paid', label: '已付款' },
+  { value: 'failed', label: '失敗' },
+  { value: 'expired', label: '已過期' },
+]
+
 const STATUS_TABS = [
   { value: '', label: '全部' },
   { value: 'pending', label: '待處理' },
   { value: 'paid', label: '已付款' },
   { value: 'completed', label: '已完成' },
 ]
+
+interface EditingOrder {
+  id: number
+  orderNumber: string
+  orderStatus: string
+  paymentStatus: string
+  note: string
+}
 
 export default function OrdersTable({
   orders,
@@ -48,6 +75,8 @@ export default function OrdersTable({
 }: OrdersTableProps) {
   const router = useRouter()
   const [search, setSearch] = useState(initialSearch)
+  const [editing, setEditing] = useState<EditingOrder | null>(null)
+  const [isPending, startTransition] = useTransition()
 
   function buildParams(overrides: Record<string, string>) {
     const base: Record<string, string> = {}
@@ -62,6 +91,38 @@ export default function OrdersTable({
     if (value) params.set('search', value)
     if (initialOrderStatus) params.set('orderStatus', initialOrderStatus)
     router.push(`/admin/orders?${params.toString()}`)
+  }
+
+  function openEditor(order: OrderRow, e: React.MouseEvent) {
+    e.stopPropagation()
+    setEditing({
+      id: order.id,
+      orderNumber: order.orderNumber,
+      orderStatus: order.orderStatus,
+      paymentStatus: order.paymentStatus,
+      note: order.note ?? '',
+    })
+  }
+
+  function handleSave() {
+    if (!editing) return
+    startTransition(async () => {
+      const [r1, r2, r3] = await Promise.all([
+        updateOrderStatus(editing.id, editing.orderStatus),
+        updatePaymentStatus(editing.id, editing.paymentStatus),
+        updateOrderNote(editing.id, editing.note),
+      ])
+      if ('error' in r1 || 'error' in r2 || 'error' in r3) {
+        const err =
+          ('error' in r1 ? r1.error : '') ||
+          ('error' in r2 ? r2.error : '') ||
+          ('error' in r3 ? r3.error : '')
+        alert(err)
+      } else {
+        setEditing(null)
+        router.refresh()
+      }
+    })
   }
 
   const columns = [
@@ -96,12 +157,18 @@ export default function OrdersTable({
       render: (row: Record<string, unknown>) => {
         const s = row.orderStatus as string
         return (
-          <StatusBadge
-            status={ORDER_STATUS_LABELS[s] ?? s}
-            variant={
-              s === 'completed' ? 'success' : s === 'paid' ? 'info' : 'warning'
-            }
-          />
+          <button
+            type="button"
+            onClick={(e) => openEditor(row as unknown as OrderRow, e)}
+            title="點擊編輯狀態"
+          >
+            <StatusBadge
+              status={ORDER_STATUS_LABELS[s] ?? s}
+              variant={
+                s === 'completed' ? 'success' : s === 'paid' ? 'info' : 'warning'
+              }
+            />
+          </button>
         )
       },
     },
@@ -110,7 +177,15 @@ export default function OrdersTable({
       label: '付款狀態',
       render: (row: Record<string, unknown>) => {
         const s = row.paymentStatus as string
-        return <StatusBadge status={PAYMENT_STATUS_LABELS[s] ?? s} />
+        return (
+          <button
+            type="button"
+            onClick={(e) => openEditor(row as unknown as OrderRow, e)}
+            title="點擊編輯狀態"
+          >
+            <StatusBadge status={PAYMENT_STATUS_LABELS[s] ?? s} />
+          </button>
+        )
       },
     },
     {
@@ -168,6 +243,94 @@ export default function OrdersTable({
         }
         emptyMessage="尚無訂單資料"
       />
+
+      {/* Status Edit Modal */}
+      {editing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white shadow-xl">
+            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+              <h2 className="text-base font-semibold text-gray-900">
+                編輯訂單 {editing.orderNumber}
+              </h2>
+              <button
+                type="button"
+                onClick={() => !isPending && setEditing(null)}
+                className="rounded-md px-2 py-1 text-gray-500 hover:bg-gray-100"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4 p-5">
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">訂單狀態</label>
+                <select
+                  value={editing.orderStatus}
+                  onChange={(e) =>
+                    setEditing({ ...editing, orderStatus: e.target.value })
+                  }
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {ORDER_STATUS_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">付款狀態</label>
+                <select
+                  value={editing.paymentStatus}
+                  onChange={(e) =>
+                    setEditing({ ...editing, paymentStatus: e.target.value })
+                  }
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {PAYMENT_STATUS_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-sm font-medium text-gray-700">備註</label>
+                <textarea
+                  value={editing.note}
+                  onChange={(e) =>
+                    setEditing({ ...editing, note: e.target.value })
+                  }
+                  rows={3}
+                  placeholder="輸入備註..."
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setEditing(null)}
+                  disabled={isPending}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                >
+                  取消
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={isPending}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {isPending ? '儲存中...' : '儲存'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

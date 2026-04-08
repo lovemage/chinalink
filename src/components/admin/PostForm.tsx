@@ -7,6 +7,7 @@ import ImageUploader from '@/components/admin/ImageUploader'
 import { TiptapEditor } from '@/components/admin/TiptapEditor'
 import { createPost, updatePost } from '@/lib/actions/posts'
 import { useToast } from '@/components/admin/AdminToast'
+import PostTagsManagerModal from '@/app/admin/posts/PostTagsManagerModal'
 
 interface PostFormProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -225,33 +226,36 @@ export default function PostForm({ post, categories, availableTags, mode }: Post
           />
         </AdminFormField>
 
-        {availableTags.length > 0 && (
-          <AdminFormField label="通用標籤" name="selectedTagIds" description="點選套用可重複使用的文章標籤">
-            <div className="flex flex-wrap gap-2">
-              {availableTags.map((tag) => {
-                const selected = selectedTagIds.includes(tag.id)
-                return (
-                  <button
-                    key={tag.id}
-                    type="button"
-                    onClick={() =>
-                      setSelectedTagIds((prev) =>
-                        prev.includes(tag.id) ? prev.filter((id) => id !== tag.id) : [...prev, tag.id]
-                      )
-                    }
-                    className={`rounded-full border px-3 py-1 text-xs transition-colors ${
-                      selected
-                        ? 'border-blue-600 bg-blue-600 text-white'
-                        : 'border-gray-200 bg-white text-gray-700 hover:border-blue-400'
-                    }`}
-                  >
-                    {tag.name}
-                  </button>
-                )
-              })}
-            </div>
-          </AdminFormField>
-        )}
+        <AdminFormField label="通用標籤" name="selectedTagIds" description="點選套用可重複使用的文章標籤，或透過「管理文章標籤」新增、編輯、刪除標籤">
+          <div className="space-y-2">
+            {availableTags.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {availableTags.map((tag) => {
+                  const selected = selectedTagIds.includes(tag.id)
+                  return (
+                    <button
+                      key={tag.id}
+                      type="button"
+                      onClick={() =>
+                        setSelectedTagIds((prev) =>
+                          prev.includes(tag.id) ? prev.filter((id) => id !== tag.id) : [...prev, tag.id]
+                        )
+                      }
+                      className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                        selected
+                          ? 'border-blue-600 bg-blue-600 text-white'
+                          : 'border-gray-200 bg-white text-gray-700 hover:border-blue-400'
+                      }`}
+                    >
+                      {tag.name}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+            <PostTagsManagerModal tags={availableTags} />
+          </div>
+        </AdminFormField>
 
         <AdminFormField label="自訂標籤" name="customTagsInput" description="以逗號分隔，例如：跨境電商, 小紅書, 台灣商家">
           <input

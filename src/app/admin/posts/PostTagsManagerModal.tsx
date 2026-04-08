@@ -73,6 +73,11 @@ export default function PostTagsManagerModal({ tags }: Props) {
     })
   }
 
+  // Prevent Enter key inside modal inputs from submitting a parent <form>
+  const stopFormSubmit = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') e.preventDefault()
+  }
+
   return (
     <>
       <button
@@ -84,7 +89,10 @@ export default function PostTagsManagerModal({ tags }: Props) {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onKeyDown={stopFormSubmit}
+        >
           <div className="w-full max-w-xl rounded-xl bg-white shadow-xl">
             <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
               <h2 className="text-base font-semibold text-gray-900">文章標籤管理</h2>
@@ -103,6 +111,12 @@ export default function PostTagsManagerModal({ tags }: Props) {
                   type="text"
                   value={newTagName}
                   onChange={(e) => setNewTagName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      handleCreate()
+                    }
+                  }}
                   placeholder="新增通用標籤，例如：跨境電商"
                   className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -129,6 +143,12 @@ export default function PostTagsManagerModal({ tags }: Props) {
                               type="text"
                               value={editingName}
                               onChange={(e) => setEditingName(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault()
+                                  handleUpdate(tag.id)
+                                }
+                              }}
                               className="flex-1 rounded border border-gray-200 px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             <button

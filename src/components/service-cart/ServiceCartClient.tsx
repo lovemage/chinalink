@@ -242,7 +242,7 @@ export function ServiceCartClient({
 }: ServiceCartClientProps) {
   const { data: session } = useSession()
   const router = useRouter()
-  const [cart, setCart] = useState<CartItem[]>(() => loadCartFromStorage(services, products))
+  const [cart, setCart] = useState<CartItem[]>([])
   const [activeTab, setActiveTab] = useState<'services' | 'products'>('services')
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [isPanelOpen, setIsPanelOpen] = useState(false)
@@ -250,6 +250,15 @@ export function ServiceCartClient({
   const [fabAnimating, setFabAnimating] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+
+  // Hydrate cart from localStorage after mount
+  const hasHydrated = useRef(false)
+  useEffect(() => {
+    if (hasHydrated.current) return
+    hasHydrated.current = true
+    const stored = loadCartFromStorage(services, products)
+    if (stored.length > 0) setCart(stored)
+  }, [services, products])
   const prevCartLength = useRef(0)
 
   // Sync cart to localStorage

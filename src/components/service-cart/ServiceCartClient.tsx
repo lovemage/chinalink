@@ -439,7 +439,7 @@ export function ServiceCartClient({
 
   // Submit order — create order then redirect to checkout page
   const handleSubmitOrder = async () => {
-    const customerId = (session?.user as { customerId?: number } | undefined)?.customerId
+    const customerId = (session as { customerId?: number } | undefined)?.customerId
     if (!customerId) {
       const url = new URL(window.location.href)
       url.searchParams.set('checkout', '1')

@@ -70,10 +70,15 @@ export default function CheckoutPage() {
 
       const data = await res.json()
       if (data.formHtml) {
-        // Inject ECPay auto-submit form
+        // Parse the form HTML and manually submit (innerHTML won't execute <script>)
         const container = document.getElementById('ecpay-container')
         if (container) {
           container.innerHTML = data.formHtml
+          const form = container.querySelector('form') as HTMLFormElement | null
+          if (form) {
+            form.submit()
+            return
+          }
         }
       } else {
         setError(data.error || '付款請求失敗')

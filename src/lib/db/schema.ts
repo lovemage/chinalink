@@ -300,7 +300,7 @@ export const orders = pgTable('orders', {
   productId: integer('product_id').references(() => products.id, {
     onDelete: 'set null',
   }),
-  productVariantSKU: text('product_variant_sku'),
+  productVariantSKU: text('product_variant_s_k_u'),
   productVariantName: text('product_variant_name'),
   amount: integer('amount').notNull(),
   paymentMethod: text('payment_method'),

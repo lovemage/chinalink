@@ -1,22 +1,23 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useMemo, useState, useTransition } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import DataTable from '@/components/admin/DataTable'
-import StatusBadge from '@/components/admin/StatusBadge'
 import {
   updateOrderStatus,
   updatePaymentStatus,
-  updateOrderNote,
 } from '@/lib/actions/orders'
 
 interface OrderRow {
   id: number
   orderNumber: string
+  customerId: number | null
   customerName: string | null
   amount: number
   orderStatus: string
   paymentStatus: string
+  paymentMethod: string | null
   note: string | null
   createdAt: Date | null
 }
@@ -25,19 +26,6 @@ interface OrdersTableProps {
   orders: OrderRow[]
   initialSearch: string
   initialOrderStatus: string
-}
-
-const ORDER_STATUS_LABELS: Record<string, string> = {
-  pending: '待處理',
-  paid: '已付款',
-  completed: '已完成',
-}
-
-const PAYMENT_STATUS_LABELS: Record<string, string> = {
-  pending: '待付款',
-  paid: '已付款',
-  failed: '失敗',
-  expired: '已過期',
 }
 
 const ORDER_STATUS_OPTIONS = [
@@ -53,6 +41,13 @@ const PAYMENT_STATUS_OPTIONS = [
   { value: 'expired', label: '已過期' },
 ]
 
+const PAYMENT_METHOD_LABELS: Record<string, string> = {
+  credit_card: '信用卡',
+  atm: 'ATM',
+  cvs: '超商代碼',
+  barcode: '超商條碼',
+}
+
 const STATUS_TABS = [
   { value: '', label: '全部' },
   { value: 'pending', label: '待處理' },
@@ -60,12 +55,28 @@ const STATUS_TABS = [
   { value: 'completed', label: '已完成' },
 ]
 
-interface EditingOrder {
-  id: number
-  orderNumber: string
-  orderStatus: string
-  paymentStatus: string
-  note: string
+function orderStatusSelectClass(status: string): string {
+  switch (status) {
+    case 'completed':
+      return 'bg-emerald-50 text-emerald-700 border-emerald-200 focus:ring-emerald-400'
+    case 'paid':
+      return 'bg-blue-50 text-blue-700 border-blue-200 focus:ring-blue-400'
+    default:
+      return 'bg-amber-50 text-amber-700 border-amber-200 focus:ring-amber-400'
+  }
+}
+
+function paymentStatusSelectClass(status: string): string {
+  switch (status) {
+    case 'paid':
+      return 'bg-emerald-50 text-emerald-700 border-emerald-200 focus:ring-emerald-400'
+    case 'failed':
+      return 'bg-rose-50 text-rose-700 border-rose-200 focus:ring-rose-400'
+    case 'expired':
+      return 'bg-gray-100 text-gray-600 border-gray-200 focus:ring-gray-400'
+    default:
+      return 'bg-amber-50 text-amber-700 border-amber-200 focus:ring-amber-400'
+  }
 }
 
 export default function OrdersTable({
@@ -75,8 +86,18 @@ export default function OrdersTable({
 }: OrdersTableProps) {
   const router = useRouter()
   const [search, setSearch] = useState(initialSearch)
-  const [editing, setEditing] = useState<EditingOrder | null>(null)
-  const [isPending, startTransition] = useTransition()
+  const [savingId, setSavingId] = useState<number | null>(null)
+  const [, startTransition] = useTransition()
+
+  // Count orders per customer so we can visually hint "this customer has multiple orders".
+  const customerOrderCount = useMemo(() => {
+    const counts = new Map<number, number>()
+    for (const o of orders) {
+      if (o.customerId == null) continue
+      counts.set(o.customerId, (counts.get(o.customerId) ?? 0) + 1)
+    }
+    return counts
+  }, [orders])
 
   function buildParams(overrides: Record<string, string>) {
     const base: Record<string, string> = {}
@@ -93,33 +114,27 @@ export default function OrdersTable({
     router.push(`/admin/orders?${params.toString()}`)
   }
 
-  function openEditor(order: OrderRow, e: React.MouseEvent) {
-    e.stopPropagation()
-    setEditing({
-      id: order.id,
-      orderNumber: order.orderNumber,
-      orderStatus: order.orderStatus,
-      paymentStatus: order.paymentStatus,
-      note: order.note ?? '',
+  function handleOrderStatusChange(orderId: number, nextStatus: string) {
+    setSavingId(orderId)
+    startTransition(async () => {
+      const result = await updateOrderStatus(orderId, nextStatus)
+      setSavingId(null)
+      if ('error' in result) {
+        alert(result.error)
+      } else {
+        router.refresh()
+      }
     })
   }
 
-  function handleSave() {
-    if (!editing) return
+  function handlePaymentStatusChange(orderId: number, nextStatus: string) {
+    setSavingId(orderId)
     startTransition(async () => {
-      const [r1, r2, r3] = await Promise.all([
-        updateOrderStatus(editing.id, editing.orderStatus),
-        updatePaymentStatus(editing.id, editing.paymentStatus),
-        updateOrderNote(editing.id, editing.note),
-      ])
-      if ('error' in r1 || 'error' in r2 || 'error' in r3) {
-        const err =
-          ('error' in r1 ? r1.error : '') ||
-          ('error' in r2 ? r2.error : '') ||
-          ('error' in r3 ? r3.error : '')
-        alert(err)
+      const result = await updatePaymentStatus(orderId, nextStatus)
+      setSavingId(null)
+      if ('error' in result) {
+        alert(result.error)
       } else {
-        setEditing(null)
         router.refresh()
       }
     })
@@ -129,18 +144,50 @@ export default function OrdersTable({
     {
       key: 'orderNumber',
       label: '訂單編號',
-      render: (row: Record<string, unknown>) => (
-        <span className="font-mono font-medium text-gray-900">
-          {row.orderNumber as string}
-        </span>
-      ),
+      render: (row: Record<string, unknown>) => {
+        const order = row as unknown as OrderRow
+        return (
+          <Link
+            href={`/admin/orders/${order.id}`}
+            className="font-mono font-medium text-blue-600 hover:text-blue-800"
+          >
+            {order.orderNumber}
+          </Link>
+        )
+      },
     },
     {
       key: 'customerName',
       label: '客戶',
-      render: (row: Record<string, unknown>) => (
-        <span className="text-gray-700">{(row.customerName as string) ?? '—'}</span>
-      ),
+      render: (row: Record<string, unknown>) => {
+        const order = row as unknown as OrderRow
+        const name = order.customerName ?? '—'
+        const count = order.customerId != null
+          ? customerOrderCount.get(order.customerId) ?? 0
+          : 0
+        return (
+          <div className="flex items-center gap-2">
+            {order.customerId != null ? (
+              <Link
+                href={`/admin/members/${order.customerId}`}
+                className="text-gray-700 hover:text-blue-700 hover:underline"
+              >
+                {name}
+              </Link>
+            ) : (
+              <span className="text-gray-500">{name}</span>
+            )}
+            {count > 1 && (
+              <span
+                title={`此會員共有 ${count} 筆訂單`}
+                className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600"
+              >
+                {count} 筆
+              </span>
+            )}
+          </div>
+        )
+      },
     },
     {
       key: 'amount',
@@ -155,20 +202,22 @@ export default function OrdersTable({
       key: 'orderStatus',
       label: '訂單狀態',
       render: (row: Record<string, unknown>) => {
-        const s = row.orderStatus as string
+        const order = row as unknown as OrderRow
+        const isSaving = savingId === order.id
         return (
-          <button
-            type="button"
-            onClick={(e) => openEditor(row as unknown as OrderRow, e)}
-            title="點擊編輯狀態"
+          <select
+            value={order.orderStatus}
+            disabled={isSaving}
+            onClick={(e) => e.stopPropagation()}
+            onChange={(e) => handleOrderStatusChange(order.id, e.target.value)}
+            className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-semibold outline-none transition-colors focus:ring-2 disabled:opacity-60 ${orderStatusSelectClass(order.orderStatus)}`}
           >
-            <StatusBadge
-              status={ORDER_STATUS_LABELS[s] ?? s}
-              variant={
-                s === 'completed' ? 'success' : s === 'paid' ? 'info' : 'warning'
-              }
-            />
-          </button>
+            {ORDER_STATUS_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
         )
       },
     },
@@ -176,15 +225,30 @@ export default function OrdersTable({
       key: 'paymentStatus',
       label: '付款狀態',
       render: (row: Record<string, unknown>) => {
-        const s = row.paymentStatus as string
+        const order = row as unknown as OrderRow
+        const isSaving = savingId === order.id
+        const method = order.paymentMethod
+          ? PAYMENT_METHOD_LABELS[order.paymentMethod] ?? order.paymentMethod
+          : null
         return (
-          <button
-            type="button"
-            onClick={(e) => openEditor(row as unknown as OrderRow, e)}
-            title="點擊編輯狀態"
-          >
-            <StatusBadge status={PAYMENT_STATUS_LABELS[s] ?? s} />
-          </button>
+          <div className="flex flex-col gap-1">
+            <select
+              value={order.paymentStatus}
+              disabled={isSaving}
+              onClick={(e) => e.stopPropagation()}
+              onChange={(e) => handlePaymentStatusChange(order.id, e.target.value)}
+              className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-semibold outline-none transition-colors focus:ring-2 disabled:opacity-60 ${paymentStatusSelectClass(order.paymentStatus)}`}
+            >
+              {PAYMENT_STATUS_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            {method && (
+              <span className="text-[11px] text-gray-400">{method}</span>
+            )}
+          </div>
         )
       },
     },
@@ -237,100 +301,9 @@ export default function OrdersTable({
         data={filtered as unknown as Record<string, unknown>[]}
         searchValue={search}
         onSearchChange={handleSearchChange}
-        searchPlaceholder="搜尋訂單編號..."
-        onRowClick={(row) =>
-          router.push(`/admin/orders/${(row as unknown as OrderRow).id}`)
-        }
+        searchPlaceholder="搜尋訂單編號或客戶..."
         emptyMessage="尚無訂單資料"
       />
-
-      {/* Status Edit Modal */}
-      {editing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-md rounded-xl bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
-              <h2 className="text-base font-semibold text-gray-900">
-                編輯訂單 {editing.orderNumber}
-              </h2>
-              <button
-                type="button"
-                onClick={() => !isPending && setEditing(null)}
-                className="rounded-md px-2 py-1 text-gray-500 hover:bg-gray-100"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-4 p-5">
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">訂單狀態</label>
-                <select
-                  value={editing.orderStatus}
-                  onChange={(e) =>
-                    setEditing({ ...editing, orderStatus: e.target.value })
-                  }
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {ORDER_STATUS_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">付款狀態</label>
-                <select
-                  value={editing.paymentStatus}
-                  onChange={(e) =>
-                    setEditing({ ...editing, paymentStatus: e.target.value })
-                  }
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {PAYMENT_STATUS_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">備註</label>
-                <textarea
-                  value={editing.note}
-                  onChange={(e) =>
-                    setEditing({ ...editing, note: e.target.value })
-                  }
-                  rows={3}
-                  placeholder="輸入備註..."
-                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                />
-              </div>
-
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setEditing(null)}
-                  disabled={isPending}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
-                >
-                  取消
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  disabled={isPending}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                >
-                  {isPending ? '儲存中...' : '儲存'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useSession, signOut } from 'next-auth/react'
-import { LogOut } from 'lucide-react'
+import { LogOut, Receipt } from 'lucide-react'
 import { MobileNav } from './MobileNav'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -87,6 +87,18 @@ export function Navbar() {
                     {session.user.name || session.user.email}
                   </DropdownMenuLabel>
                 </DropdownMenuGroup>
+                <DropdownMenuSeparator className="bg-brand-muted/10" />
+                <DropdownMenuItem
+                  render={
+                    <Link
+                      href="/account/orders"
+                      className="rounded-xl font-medium cursor-pointer"
+                    />
+                  }
+                >
+                  <Receipt className="mr-2 size-4" />
+                  付款紀錄
+                </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-brand-muted/10" />
                 <DropdownMenuItem
                   onClick={() => signOut({ callbackUrl: '/' })}

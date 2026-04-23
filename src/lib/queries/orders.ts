@@ -29,10 +29,12 @@ export async function getOrders(opts: GetOrdersOpts = {}) {
     .select({
       id: orders.id,
       orderNumber: orders.orderNumber,
+      customerId: orders.customerId,
       customerName: customers.name,
       amount: orders.amount,
       orderStatus: orders.orderStatus,
       paymentStatus: orders.paymentStatus,
+      paymentMethod: orders.paymentMethod,
       note: orders.note,
       createdAt: orders.createdAt,
     })
@@ -54,4 +56,16 @@ export async function getOrder(id: number) {
     },
   })
   return result ?? null
+}
+
+export async function getCustomerOrders(customerId: number) {
+  const result = await db.query.orders.findMany({
+    where: eq(orders.customerId, customerId),
+    orderBy: desc(orders.createdAt),
+    with: {
+      items: true,
+      selectedAddons: true,
+    },
+  })
+  return result
 }

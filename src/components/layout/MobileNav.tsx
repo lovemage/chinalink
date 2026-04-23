@@ -53,6 +53,13 @@ export function MobileNav({ navItems }: { navItems: NavItem[] }) {
               <div className="mt-4 px-3 text-sm text-muted-foreground">
                 {session?.user?.name || session?.user?.email}
               </div>
+              <Link
+                href="/account/orders"
+                onClick={() => setOpen(false)}
+                className="mt-2 rounded-lg px-3 py-3 text-sm font-medium text-brand-text transition-colors hover:bg-accent"
+              >
+                付款紀錄
+              </Link>
               <button
                 onClick={() => {
                   setOpen(false)

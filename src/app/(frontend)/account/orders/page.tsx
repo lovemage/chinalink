@@ -93,7 +93,6 @@ export default async function AccountOrdersPage() {
             const items = order.items ?? []
             const addons = order.selectedAddons ?? []
             const status = paymentStatusLabel(order.paymentStatus)
-            const isPending = order.paymentStatus === 'pending'
 
             return (
               <li
@@ -172,21 +171,6 @@ export default async function AccountOrdersPage() {
                       {formatPrice(order.amount)}
                     </p>
                   </div>
-                  {isPending ? (
-                    <Link
-                      href={`/checkout/${order.id}`}
-                      className="rounded-2xl bg-brand-cta px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-brand-cta/20 transition-colors hover:bg-brand-cta/90"
-                    >
-                      前往付款
-                    </Link>
-                  ) : (
-                    <Link
-                      href={`/checkout/success?orderId=${order.id}`}
-                      className="rounded-2xl border border-brand-primary/20 px-5 py-2.5 text-sm font-medium text-brand-text transition-colors hover:bg-brand-primary/5"
-                    >
-                      查看明細
-                    </Link>
-                  )}
                 </div>
               </li>
             )

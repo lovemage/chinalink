@@ -12,12 +12,14 @@ interface PageProps {
 export default async function OrdersPage({ searchParams }: PageProps) {
   const params = await searchParams
   const search = params.search ?? ''
-  const orderStatus = params.orderStatus ?? ''
+  // Default to 'paid' tab so abandoned/unpaid orders are hidden by default.
+  // 'all' is the sentinel used by the "全部" tab to show every order.
+  const orderStatus = params.orderStatus ?? 'paid'
   const paymentStatus = params.paymentStatus ?? ''
 
   const ordersList = await getOrders({
     search: search || undefined,
-    orderStatus: orderStatus || undefined,
+    orderStatus: orderStatus && orderStatus !== 'all' ? orderStatus : undefined,
     paymentStatus: paymentStatus || undefined,
   })
 

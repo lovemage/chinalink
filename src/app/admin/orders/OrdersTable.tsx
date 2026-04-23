@@ -49,7 +49,7 @@ const PAYMENT_METHOD_LABELS: Record<string, string> = {
 }
 
 const STATUS_TABS = [
-  { value: '', label: '全部' },
+  { value: 'all', label: '全部' },
   { value: 'pending', label: '待處理' },
   { value: 'paid', label: '已付款' },
   { value: 'completed', label: '已完成' },
@@ -111,6 +111,11 @@ export default function OrdersTable({
     const params = new URLSearchParams()
     if (value) params.set('search', value)
     if (initialOrderStatus) params.set('orderStatus', initialOrderStatus)
+    router.push(`/admin/orders?${params.toString()}`)
+  }
+
+  function handleTabClick(value: string) {
+    const params = buildParams({ orderStatus: value })
     router.push(`/admin/orders?${params.toString()}`)
   }
 
@@ -280,11 +285,7 @@ export default function OrdersTable({
         {STATUS_TABS.map((tab) => (
           <button
             key={tab.value}
-            onClick={() => {
-              const params = buildParams({ orderStatus: tab.value })
-              if (!tab.value) params.delete('orderStatus')
-              router.push(`/admin/orders?${params.toString()}`)
-            }}
+            onClick={() => handleTabClick(tab.value)}
             className={`px-3 py-1 text-xs rounded-full border transition-colors ${
               initialOrderStatus === tab.value
                 ? 'bg-blue-600 text-white border-blue-600'

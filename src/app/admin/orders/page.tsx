@@ -14,13 +14,23 @@ export default async function OrdersPage({ searchParams }: PageProps) {
   const search = params.search ?? ''
   // Default to 'paid' tab so abandoned/unpaid orders are hidden by default.
   // 'all' is the sentinel used by the "全部" tab to show every order.
-  const orderStatus = params.orderStatus ?? 'paid'
-  const paymentStatus = params.paymentStatus ?? ''
+  const tab = params.orderStatus ?? 'paid'
+
+  // The "已付款" tab filters by paymentStatus because ECPay only flips
+  // paymentStatus — orderStatus stays 'pending' until an admin marks it
+  // 'completed'. Other tabs continue to filter by orderStatus.
+  let orderStatusFilter: string | undefined
+  let paymentStatusFilter: string | undefined
+  if (tab === 'paid') {
+    paymentStatusFilter = 'paid'
+  } else if (tab !== 'all') {
+    orderStatusFilter = tab
+  }
 
   const ordersList = await getOrders({
     search: search || undefined,
-    orderStatus: orderStatus && orderStatus !== 'all' ? orderStatus : undefined,
-    paymentStatus: paymentStatus || undefined,
+    orderStatus: orderStatusFilter,
+    paymentStatus: paymentStatusFilter,
   })
 
   return (
@@ -32,7 +42,7 @@ export default async function OrdersPage({ searchParams }: PageProps) {
       <OrdersTable
         orders={ordersList}
         initialSearch={search}
-        initialOrderStatus={orderStatus}
+        initialOrderStatus={tab}
       />
     </div>
   )

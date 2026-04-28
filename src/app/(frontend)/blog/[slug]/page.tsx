@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { headers } from 'next/headers'
 import { BlockRenderer } from '@/components/blocks/BlockRenderer'
+import { TiptapRenderer } from '@/components/admin/TiptapRenderer'
 import { PostCard } from '@/components/blog/PostCard'
 import type { ComponentProps } from 'react'
 import { getPostByCandidateSlugs, getRelatedPosts } from '@/lib/queries/posts'
@@ -87,6 +88,15 @@ export default async function BlogArticlePage({
     ? await getRelatedPosts(category.id, post.id, 3)
     : []
 
+  const hasBlockContent = Array.isArray(post.content)
+  const contentType =
+    post.content &&
+    typeof post.content === 'object' &&
+    !Array.isArray(post.content) &&
+    (post.content as { type?: string }).type === 'doc'
+      ? 'tiptap'
+      : 'none'
+
   return (
     <article className="py-12 sm:py-16">
       <div className="mx-auto max-w-4xl px-4">
@@ -143,9 +153,10 @@ export default async function BlogArticlePage({
 
         {/* Content blocks */}
         <div className="mt-10">
-          {!!post.content && (
+          {hasBlockContent && (
             <BlockRenderer blocks={post.content as BlockRendererBlocks} />
           )}
+          {contentType === 'tiptap' && <TiptapRenderer content={post.content} />}
         </div>
 
         {/* Related posts */}

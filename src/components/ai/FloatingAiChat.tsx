@@ -1,0 +1,269 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import { shouldShowAiChat } from '@/lib/ai-chat/visibility'
+
+interface AiMessage {
+  id: number
+  role: 'user' | 'assistant'
+  content: string
+  createdAt: string | null
+}
+
+interface ChatConfig {
+  enabled: boolean
+  lineOfficialUrl?: string
+  lineOfficialId?: string
+  whatsappUrl?: string
+}
+
+const STORAGE_KEY = 'linkai-chat-session-messages'
+const OPEN_KEY = 'linkai-chat-open'
+
+function LinkAiIcon() {
+  return (
+    <svg viewBox="0 0 120 120" className="h-9 w-9" aria-hidden="true">
+      <defs>
+        <radialGradient id="linkai-glow" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stopColor="#7DD3FC" stopOpacity="0.95" />
+          <stop offset="100%" stopColor="#0EA5E9" stopOpacity="0.35" />
+        </radialGradient>
+      </defs>
+      <circle cx="60" cy="60" r="53" fill="url(#linkai-glow)" />
+      <path
+        d="M31 64c0-9 7-16 16-16h11v8H47c-4 0-8 4-8 8s4 8 8 8h11v8H47c-9 0-16-7-16-16Zm30 8h12c4 0 8-4 8-8s-4-8-8-8H61v-8h12c9 0 16 7 16 16s-7 16-16 16H61v-8Zm-7-12h12v8H54v-8Z"
+        fill="#0F172A"
+      />
+      <text
+        x="60"
+        y="35"
+        textAnchor="middle"
+        fontSize="14"
+        fontWeight="700"
+        letterSpacing="1.8"
+        fill="#082F49"
+      >
+        AI
+      </text>
+    </svg>
+  )
+}
+
+export function FloatingAiChat() {
+  const pathname = usePathname()
+  const { data: session, status } = useSession()
+  const [open, setOpen] = useState(false)
+  const [messages, setMessages] = useState<AiMessage[]>([])
+  const [input, setInput] = useState('')
+  const [sending, setSending] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [config, setConfig] = useState<ChatConfig | null>(null)
+
+  const isLoggedIn = status === 'authenticated' && !!session?.user
+  const isCheckoutRoute = pathname ? !shouldShowAiChat(pathname) : false
+
+  useEffect(() => {
+    if (!isLoggedIn || isCheckoutRoute) return
+
+    const cachedOpen = sessionStorage.getItem(OPEN_KEY)
+    if (cachedOpen === '1') {
+      setOpen(true)
+    }
+    const cached = sessionStorage.getItem(STORAGE_KEY)
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached) as AiMessage[]
+        if (Array.isArray(parsed)) setMessages(parsed.slice(-20))
+      } catch {
+        sessionStorage.removeItem(STORAGE_KEY)
+      }
+    }
+  }, [isLoggedIn, isCheckoutRoute])
+
+  useEffect(() => {
+    sessionStorage.setItem(OPEN_KEY, open ? '1' : '0')
+  }, [open])
+
+  useEffect(() => {
+    if (!messages.length) return
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-20)))
+  }, [messages])
+
+  useEffect(() => {
+    if (!open || !isLoggedIn || isCheckoutRoute) return
+
+    let mounted = true
+    async function fetchHistory() {
+      setLoading(true)
+      setError('')
+      try {
+        const resp = await fetch('/api/ai-chat', { cache: 'no-store' })
+        const data = (await resp.json()) as {
+          error?: string
+          messages?: AiMessage[]
+          config?: ChatConfig
+        }
+        if (!resp.ok) {
+          throw new Error(data.error || 'AI 客服暫時無法使用')
+        }
+        if (!mounted) return
+        setConfig(data.config ?? null)
+        setMessages((prev) => {
+          const base = data.messages ?? []
+          if (!prev.length) return base
+          const merged = [...base, ...prev]
+          const dedup = new Map<number, AiMessage>()
+          for (const row of merged) dedup.set(row.id, row)
+          return Array.from(dedup.values()).slice(-20)
+        })
+      } catch (err) {
+        if (mounted) {
+          setError(err instanceof Error ? err.message : 'AI 客服暫時無法使用')
+        }
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    }
+
+    void fetchHistory()
+    return () => {
+      mounted = false
+    }
+  }, [open, isLoggedIn, isCheckoutRoute])
+
+  async function sendMessage() {
+    if (sending) return
+    const text = input.trim()
+    if (!text) return
+
+    setSending(true)
+    setError('')
+    try {
+      const resp = await fetch('/api/ai-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text }),
+      })
+      const data = (await resp.json()) as {
+        error?: string
+        messages?: AiMessage[]
+      }
+
+      if (!resp.ok) {
+        throw new Error(data.error || '訊息送出失敗')
+      }
+      setInput('')
+      setMessages((data.messages ?? []).slice(-20))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '訊息送出失敗')
+    } finally {
+      setSending(false)
+    }
+  }
+
+  if (!isLoggedIn || isCheckoutRoute) return null
+
+  if (config && !config.enabled) return null
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className={`fixed bottom-5 right-5 z-40 flex h-16 w-16 items-center justify-center rounded-full border border-sky-200 bg-white shadow-lg transition-all duration-200 ${
+          open ? 'ring-4 ring-sky-300/45' : ''
+        }`}
+        style={{
+          boxShadow: open
+            ? '0 0 28px rgba(56, 189, 248, 0.55), 0 12px 28px rgba(15, 23, 42, 0.2)'
+            : '0 0 18px rgba(56, 189, 248, 0.35), 0 10px 24px rgba(15, 23, 42, 0.18)',
+        }}
+        aria-label="LinkAI 客服"
+      >
+        <LinkAiIcon />
+      </button>
+
+      {open ? (
+        <section className="fixed bottom-24 right-5 z-40 w-[min(92vw,380px)] overflow-hidden rounded-2xl border border-sky-100 bg-white shadow-2xl">
+          <header className="border-b border-sky-100 bg-sky-50/70 px-4 py-3">
+            <p className="text-sm font-semibold text-slate-800">LinkAI 智能客服</p>
+            <p className="text-xs text-slate-500">僅回答站內商品、服務與下單相關問題</p>
+          </header>
+
+          <div className="h-80 space-y-2 overflow-y-auto bg-slate-50 px-4 py-3">
+            {loading ? <p className="text-xs text-slate-500">載入對話中...</p> : null}
+            {!messages.length && !loading ? (
+              <p className="text-xs text-slate-500">
+                歡迎使用 LinkAI，請輸入您想了解的商品或服務問題。
+              </p>
+            ) : null}
+            {messages.map((m) => (
+              <div
+                key={m.id}
+                className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
+                  m.role === 'user'
+                    ? 'ml-auto bg-sky-500 text-white'
+                    : 'bg-white text-slate-700 shadow-sm'
+                }`}
+              >
+                {m.content}
+              </div>
+            ))}
+          </div>
+
+          <div className="space-y-2 border-t border-slate-100 p-3">
+            {error ? <p className="text-xs text-rose-600">{error}</p> : null}
+            <div className="flex gap-2">
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    void sendMessage()
+                  }
+                }}
+                placeholder="請輸入商品或服務相關問題..."
+                className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-sky-400"
+              />
+              <button
+                type="button"
+                onClick={() => void sendMessage()}
+                disabled={sending}
+                className="rounded-xl bg-sky-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+              >
+                {sending ? '送出中' : '送出'}
+              </button>
+            </div>
+            <div className="flex gap-3 text-xs text-slate-500">
+              {config?.lineOfficialUrl ? (
+                <a
+                  href={config.lineOfficialUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sky-700 underline"
+                >
+                  官方 LINE
+                </a>
+              ) : null}
+              {config?.whatsappUrl ? (
+                <a
+                  href={config.whatsappUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sky-700 underline"
+                >
+                  官方 WhatsApp
+                </a>
+              ) : null}
+            </div>
+          </div>
+        </section>
+      ) : null}
+    </>
+  )
+}
+

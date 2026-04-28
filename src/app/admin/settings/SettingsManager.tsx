@@ -5,6 +5,7 @@ import DataTable from '@/components/admin/DataTable'
 import StatusBadge from '@/components/admin/StatusBadge'
 import { updateSettings } from '@/lib/actions/settings'
 import { updateInquiryStatus } from '@/lib/actions/inquiries'
+import type { SiteSettings } from '@/lib/queries/settings'
 
 interface InquiryRow {
   id: number
@@ -17,7 +18,7 @@ interface InquiryRow {
 }
 
 interface SettingsManagerProps {
-  settings: Record<string, string>
+  settings: SiteSettings
   inquiries: InquiryRow[]
 }
 
@@ -191,6 +192,93 @@ export default function SettingsManager({
                 placeholder="@xxxxxxxx"
                 className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
+            </div>
+
+            <div className="rounded-lg border border-gray-100 bg-gray-50 p-4 space-y-4">
+              <div>
+                <h2 className="text-sm font-semibold text-gray-800">AI 客服設定</h2>
+                <p className="mt-1 text-xs text-gray-500">
+                  系統會強制限制 AI 只回答站內商品與服務相關問題。
+                </p>
+              </div>
+
+              <label className="inline-flex items-center gap-2 text-sm text-gray-700">
+                <input
+                  name="aiAgentEnabled"
+                  type="checkbox"
+                  defaultChecked={settings.aiAgentEnabled}
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                啟用 AI 客服
+              </label>
+
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="openrouterApiKey"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  OpenRouter API Key
+                </label>
+                <input
+                  id="openrouterApiKey"
+                  name="openrouterApiKey"
+                  type="password"
+                  defaultValue={settings.openrouterApiKey ?? ''}
+                  placeholder="sk-or-v1-..."
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="openrouterModel"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  OpenRouter Model
+                </label>
+                <input
+                  id="openrouterModel"
+                  name="openrouterModel"
+                  type="text"
+                  defaultValue={settings.openrouterModel ?? 'openai/gpt-4.1-mini'}
+                  placeholder="openai/gpt-4.1-mini"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="aiAgentPrompt"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  AI 客服 Prompt
+                </label>
+                <textarea
+                  id="aiAgentPrompt"
+                  name="aiAgentPrompt"
+                  rows={5}
+                  defaultValue={settings.aiAgentPrompt ?? ''}
+                  placeholder="你是懂陸姐站內客服..."
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="whatsappUrl"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  WhatsApp 官方連結
+                </label>
+                <input
+                  id="whatsappUrl"
+                  name="whatsappUrl"
+                  type="text"
+                  defaultValue={settings.whatsappUrl ?? ''}
+                  placeholder="https://wa.me/886XXXXXXXXX"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
             </div>
           </div>
 

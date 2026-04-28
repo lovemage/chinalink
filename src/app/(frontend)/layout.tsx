@@ -4,6 +4,7 @@ import { Noto_Sans_TC, Noto_Serif_TC, Playfair_Display } from 'next/font/google'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { AuthProvider } from '@/components/auth/AuthProvider'
+import { FloatingAiChat } from '@/components/ai/FloatingAiChat'
 import './styles.css'
 
 const notoSansTC = Noto_Sans_TC({
@@ -57,6 +58,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           <Navbar />
           <main className="flex-1 relative z-10">{children}</main>
           <Footer />
+          <FloatingAiChat />
         </AuthProvider>
       </body>
     </html>

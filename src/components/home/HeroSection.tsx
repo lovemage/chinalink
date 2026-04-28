@@ -12,10 +12,6 @@ export function HeroSection() {
         
         {/* Text Content */}
         <div className="relative z-10 flex max-w-2xl flex-col justify-center text-center lg:w-1/2 lg:text-left lg:pr-10">
-          <div className="mb-8 inline-flex self-center rounded-full border border-brand-primary/20 bg-card/70 px-5 py-2 text-xs font-semibold tracking-widest text-brand-primary uppercase lg:self-start">
-            超過千位台商信賴的顧問品牌
-          </div>
-          
           <h1 className="font-serif text-5xl font-medium tracking-tight text-brand-text sm:text-6xl md:text-7xl lg:leading-[1.15] line-clamp-3">
             在大陸經商 <span className="font-playfair italic text-brand-primary px-2">ChinaLink</span> 懂陸姐是您最好的夥伴
           </h1>
@@ -56,18 +52,6 @@ export function HeroSection() {
             />
           </div>
           
-          {/* Floating Organic badge */}
-          <div className="mt-6 rounded-[2rem] rounded-bl-none border border-brand-primary/10 bg-card p-6 shadow-xl shadow-brand-text/5 sm:mt-0 sm:absolute sm:bottom-10 sm:-left-6 lg:left-0">
-              <div className="flex items-center gap-5">
-                <div className="relative h-[80px] w-[80px] shrink-0">
-                <Image src="/icons/consulting.png" alt="" fill sizes="80px" className="object-contain" />
-                </div>
-              <div>
-                <p className="font-serif text-lg font-medium text-brand-text">100% 成功案例</p>
-                <p className="text-sm font-light text-brand-muted">協助超過千位台商</p>
-              </div>
-            </div>
-          </div>
         </div>
         
       </div>

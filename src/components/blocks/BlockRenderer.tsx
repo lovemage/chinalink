@@ -37,7 +37,7 @@ interface BlockRendererProps {
 }
 
 export function BlockRenderer({ blocks }: BlockRendererProps) {
-  if (!blocks || blocks.length === 0) return null
+  if (!Array.isArray(blocks) || blocks.length === 0) return null
 
   return (
     <div className="space-y-2">

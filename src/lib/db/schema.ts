@@ -391,8 +391,26 @@ export const siteSettings = pgTable('site_settings', {
   id: serial('id').primaryKey(),
   lineOfficialUrl: text('line_official_url'),
   lineOfficialId: text('line_official_id'),
+  aiAgentEnabled: boolean('ai_agent_enabled').default(false),
+  openrouterApiKey: text('openrouter_api_key'),
+  openrouterModel: text('openrouter_model'),
+  aiAgentPrompt: text('ai_agent_prompt'),
+  whatsappUrl: text('whatsapp_url'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
+})
+
+// ---------------------------------------------------------------------------
+// memberAiChatMessages
+// ---------------------------------------------------------------------------
+export const memberAiChatMessages = pgTable('member_ai_chat_messages', {
+  id: serial('id').primaryKey(),
+  memberId: integer('member_id')
+    .references(() => customers.id, { onDelete: 'cascade' })
+    .notNull(),
+  role: text('role').notNull(),
+  content: text('content').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
 })
 
 // ---------------------------------------------------------------------------
@@ -575,6 +593,7 @@ export const postTagRelationsRelations = relations(
 export const customersRelations = relations(customers, ({ many }) => ({
   orders: many(orders),
   inquiries: many(inquiries),
+  aiChatMessages: many(memberAiChatMessages),
 }))
 
 export const ordersRelations = relations(orders, ({ one, many }) => ({
@@ -645,6 +664,16 @@ export const inquiryAttachmentsRelations = relations(
     media: one(media, {
       fields: [inquiryAttachments.mediaId],
       references: [media.id],
+    }),
+  })
+)
+
+export const memberAiChatMessagesRelations = relations(
+  memberAiChatMessages,
+  ({ one }) => ({
+    member: one(customers, {
+      fields: [memberAiChatMessages.memberId],
+      references: [customers.id],
     }),
   })
 )

@@ -13,7 +13,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "db:backfill:post-content": "tsx src/scripts/backfill-post-content.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",

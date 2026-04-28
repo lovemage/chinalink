@@ -11,6 +11,11 @@ export async function updateSettings(
   try {
     const lineOfficialUrl = String(formData.get('lineOfficialUrl') ?? '')
     const lineOfficialId = String(formData.get('lineOfficialId') ?? '')
+    const aiAgentEnabled = String(formData.get('aiAgentEnabled') ?? '') === 'on'
+    const openrouterApiKey = String(formData.get('openrouterApiKey') ?? '')
+    const openrouterModel = String(formData.get('openrouterModel') ?? '')
+    const aiAgentPrompt = String(formData.get('aiAgentPrompt') ?? '')
+    const whatsappUrl = String(formData.get('whatsappUrl') ?? '')
     const now = new Date()
 
     const existing = await db
@@ -22,12 +27,26 @@ export async function updateSettings(
     if (existing[0]?.id) {
       await db
         .update(siteSettings)
-        .set({ lineOfficialUrl, lineOfficialId, updatedAt: now })
+        .set({
+          lineOfficialUrl,
+          lineOfficialId,
+          aiAgentEnabled,
+          openrouterApiKey,
+          openrouterModel,
+          aiAgentPrompt,
+          whatsappUrl,
+          updatedAt: now,
+        })
         .where(eq(siteSettings.id, existing[0].id))
     } else {
       await db.insert(siteSettings).values({
         lineOfficialUrl,
         lineOfficialId,
+        aiAgentEnabled,
+        openrouterApiKey,
+        openrouterModel,
+        aiAgentPrompt,
+        whatsappUrl,
         updatedAt: now,
         createdAt: now,
       })

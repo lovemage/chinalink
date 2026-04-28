@@ -232,6 +232,11 @@ export function FloatingAiChat() {
 
   return (
     <>
+      {!open ? (
+        <div className="fixed bottom-24 right-6 z-40 rounded-full border border-brand-primary/20 bg-white px-3 py-1.5 text-xs text-brand-text shadow-md">
+          任何問題都可以問我~
+        </div>
+      ) : null}
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}

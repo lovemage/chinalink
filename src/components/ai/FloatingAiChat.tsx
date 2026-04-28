@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { shouldShowAiChat } from '@/lib/ai-chat/visibility'
 
@@ -54,6 +54,7 @@ function LinkAiIcon() {
 
 export function FloatingAiChat() {
   const pathname = usePathname()
+  const router = useRouter()
   const { data: session, status } = useSession()
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<AiMessage[]>([])
@@ -232,20 +233,26 @@ export function FloatingAiChat() {
     }
   }
 
-  if (!isLoggedIn || isCheckoutRoute) return null
+  if (isCheckoutRoute) return null
 
-  if (config && !config.enabled) return null
+  if (isLoggedIn && config && !config.enabled) return null
 
   return (
     <>
       {!open ? (
-        <div className="fixed bottom-24 right-6 z-40 rounded-full border border-brand-primary/20 bg-white px-3 py-1.5 text-xs text-brand-text shadow-md">
-          任何問題都可以問我~
+        <div className="fixed bottom-24 right-6 z-40 rounded-full border border-brand-primary/20 bg-white px-3 py-1.5 text-sm text-brand-text shadow-md">
+          我是客服人員，可以解答您的需求～
         </div>
       ) : null}
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => {
+          if (!isLoggedIn) {
+            router.push('/login')
+            return
+          }
+          setOpen((v) => !v)
+        }}
         className={`fixed bottom-5 right-5 z-40 flex h-16 w-16 items-center justify-center rounded-full border border-brand-primary/25 bg-brand-bg shadow-lg transition-all duration-200 ${
           open ? 'ring-4 ring-brand-primary/35' : ''
         }`}

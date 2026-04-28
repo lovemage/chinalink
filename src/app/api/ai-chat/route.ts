@@ -9,6 +9,7 @@ import {
   pruneMemberAiMessages,
 } from '@/lib/queries/ai-chat'
 import { askOpenRouter } from '@/lib/services/openrouter'
+import { buildAllowedLinks, sanitizeAssistantLinks } from '@/lib/ai-chat/sanitize'
 
 function getSessionCustomerId(session: unknown): number | null {
   const id = (session as { customerId?: number } | null)?.customerId
@@ -70,15 +71,25 @@ export async function POST(req: Request) {
       whatsappUrl: config.whatsappUrl,
       context,
     })
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.chinalink.tw'
+    const allowedLinks = buildAllowedLinks(
+      context,
+      {
+        lineOfficialUrl: config.lineOfficialUrl,
+        whatsappUrl: config.whatsappUrl,
+      },
+      siteUrl,
+    )
+    const safeReply = sanitizeAssistantLinks(reply, allowedLinks, siteUrl)
 
     await appendMemberAiMessage(customerId, 'user', message)
-    await appendMemberAiMessage(customerId, 'assistant', reply)
+    await appendMemberAiMessage(customerId, 'assistant', safeReply)
     await pruneMemberAiMessages(customerId, 20)
 
     const messages = await getMemberAiMessages(customerId, 20)
 
     return NextResponse.json({
-      message: reply,
+      message: safeReply,
       messages,
     })
   } catch (error) {
@@ -89,4 +100,3 @@ export async function POST(req: Request) {
     )
   }
 }
-

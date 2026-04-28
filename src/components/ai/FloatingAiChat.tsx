@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { shouldShowAiChat } from '@/lib/ai-chat/visibility'
@@ -65,6 +65,7 @@ export function FloatingAiChat() {
   const [typingMessageId, setTypingMessageId] = useState<number | null>(null)
   const [typingLength, setTypingLength] = useState(0)
   const [dotCount, setDotCount] = useState(1)
+  const messagesEndRef = useRef<HTMLDivElement | null>(null)
 
   const isLoggedIn = status === 'authenticated' && !!session?.user
   const isCheckoutRoute = pathname ? !shouldShowAiChat(pathname) : false
@@ -95,6 +96,11 @@ export function FloatingAiChat() {
     if (!messages.length) return
     sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages.slice(-20)))
   }, [messages])
+
+  useEffect(() => {
+    if (!open) return
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+  }, [open, messages, typingLength])
 
   useEffect(() => {
     if (!open || !isLoggedIn || isCheckoutRoute) return
@@ -196,6 +202,7 @@ export function FloatingAiChat() {
     const text = input.trim()
     if (!text) return
 
+    setInput('')
     setSending(true)
     setError('')
     try {
@@ -212,7 +219,6 @@ export function FloatingAiChat() {
       if (!resp.ok) {
         throw new Error(data.error || '訊息送出失敗')
       }
-      setInput('')
       setMessages((data.messages ?? []).slice(-20))
       const latestAssistant = (data.messages ?? [])
         .slice()
@@ -290,6 +296,7 @@ export function FloatingAiChat() {
                 </div>
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
 
           <div className="space-y-2 border-t border-brand-primary/12 p-3">
@@ -313,7 +320,7 @@ export function FloatingAiChat() {
                 disabled={sending}
                 className="rounded-xl bg-brand-primary px-4 py-2 text-sm font-medium text-white disabled:opacity-50 hover:bg-brand-primary/90 transition-colors"
               >
-                {sending ? '送出中' : '送出'}
+                {sending ? 'AI檢索中' : '送出'}
               </button>
             </div>
             <div className="flex gap-3 text-xs text-brand-muted">

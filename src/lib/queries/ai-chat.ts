@@ -76,6 +76,7 @@ export async function getAiServerConfig() {
     enabled: settings.aiAgentEnabled,
     apiKey: settings.openrouterApiKey,
     model: settings.openrouterModel || 'openai/gpt-4.1-mini',
+    systemPrompt: settings.systemPrompt || '',
     prompt: settings.aiAgentPrompt || '',
     lineOfficialUrl: settings.lineOfficialUrl,
     lineOfficialId: settings.lineOfficialId,

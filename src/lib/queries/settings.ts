@@ -8,6 +8,7 @@ export interface SiteSettings {
   aiAgentEnabled: boolean
   openrouterApiKey: string
   openrouterModel: string
+  systemPrompt: string
   aiAgentPrompt: string
   whatsappUrl: string
 }
@@ -20,6 +21,7 @@ export async function getSettings(): Promise<SiteSettings> {
       aiAgentEnabled: siteSettings.aiAgentEnabled,
       openrouterApiKey: siteSettings.openrouterApiKey,
       openrouterModel: siteSettings.openrouterModel,
+      systemPrompt: siteSettings.systemPrompt,
       aiAgentPrompt: siteSettings.aiAgentPrompt,
       whatsappUrl: siteSettings.whatsappUrl,
     })
@@ -33,6 +35,7 @@ export async function getSettings(): Promise<SiteSettings> {
     aiAgentEnabled: row[0]?.aiAgentEnabled ?? false,
     openrouterApiKey: row[0]?.openrouterApiKey ?? '',
     openrouterModel: row[0]?.openrouterModel ?? 'openai/gpt-4.1-mini',
+    systemPrompt: row[0]?.systemPrompt ?? '',
     aiAgentPrompt: row[0]?.aiAgentPrompt ?? '',
     whatsappUrl: row[0]?.whatsappUrl ?? '',
   }
@@ -44,6 +47,7 @@ export async function getSetting(key: string): Promise<string | null> {
   if (key === 'lineOfficialId') return settings.lineOfficialId || null
   if (key === 'openrouterApiKey') return settings.openrouterApiKey || null
   if (key === 'openrouterModel') return settings.openrouterModel || null
+  if (key === 'systemPrompt') return settings.systemPrompt || null
   if (key === 'aiAgentPrompt') return settings.aiAgentPrompt || null
   if (key === 'whatsappUrl') return settings.whatsappUrl || null
   if (key === 'aiAgentEnabled') return settings.aiAgentEnabled ? 'true' : 'false'

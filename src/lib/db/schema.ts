@@ -394,6 +394,7 @@ export const siteSettings = pgTable('site_settings', {
   aiAgentEnabled: boolean('ai_agent_enabled').default(false),
   openrouterApiKey: text('openrouter_api_key'),
   openrouterModel: text('openrouter_model'),
+  systemPrompt: text('system_prompt'),
   aiAgentPrompt: text('ai_agent_prompt'),
   whatsappUrl: text('whatsapp_url'),
   createdAt: timestamp('created_at').defaultNow(),

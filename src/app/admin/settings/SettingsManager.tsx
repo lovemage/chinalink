@@ -248,10 +248,27 @@ export default function SettingsManager({
 
               <div className="space-y-1.5">
                 <label
+                  htmlFor="systemPrompt"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  系統 Prompt
+                </label>
+                <textarea
+                  id="systemPrompt"
+                  name="systemPrompt"
+                  rows={6}
+                  defaultValue={settings.systemPrompt ?? ''}
+                  placeholder="你是懂陸姐網站的 AI 客服..."
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label
                   htmlFor="aiAgentPrompt"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  AI 客服 Prompt
+                  管理員額外 Prompt
                 </label>
                 <textarea
                   id="aiAgentPrompt"

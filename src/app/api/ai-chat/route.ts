@@ -63,6 +63,7 @@ export async function POST(req: Request) {
     const reply = await askOpenRouter({
       apiKey: config.apiKey,
       model: config.model,
+      systemPrompt: config.systemPrompt,
       adminPrompt: config.prompt,
       userMessage: message,
       history,

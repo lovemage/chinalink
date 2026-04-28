@@ -14,6 +14,7 @@ export async function updateSettings(
     const aiAgentEnabled = String(formData.get('aiAgentEnabled') ?? '') === 'on'
     const openrouterApiKey = String(formData.get('openrouterApiKey') ?? '')
     const openrouterModel = String(formData.get('openrouterModel') ?? '')
+    const systemPrompt = String(formData.get('systemPrompt') ?? '')
     const aiAgentPrompt = String(formData.get('aiAgentPrompt') ?? '')
     const whatsappUrl = String(formData.get('whatsappUrl') ?? '')
     const now = new Date()
@@ -33,6 +34,7 @@ export async function updateSettings(
           aiAgentEnabled,
           openrouterApiKey,
           openrouterModel,
+          systemPrompt,
           aiAgentPrompt,
           whatsappUrl,
           updatedAt: now,
@@ -45,6 +47,7 @@ export async function updateSettings(
         aiAgentEnabled,
         openrouterApiKey,
         openrouterModel,
+        systemPrompt,
         aiAgentPrompt,
         whatsappUrl,
         updatedAt: now,

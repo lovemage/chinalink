@@ -2,9 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import DataTable from '@/components/admin/DataTable'
-import StatusBadge from '@/components/admin/StatusBadge'
 import { updateSettings } from '@/lib/actions/settings'
-import { updateInquiryStatus } from '@/lib/actions/inquiries'
 import type { SiteSettings } from '@/lib/queries/settings'
 
 interface InquiryRow {
@@ -12,8 +10,6 @@ interface InquiryRow {
   name: string
   contactMethod: string
   message: string
-  status: string
-  itemType: string | null
   createdAt: Date | null
 }
 
@@ -22,28 +18,9 @@ interface SettingsManagerProps {
   inquiries: InquiryRow[]
 }
 
-const INQUIRY_STATUS_OPTIONS = [
-  { value: 'new', label: '新諮詢' },
-  { value: 'contacted', label: '已聯繫' },
-  { value: 'quoted', label: '已報價' },
-  { value: 'closed', label: '已結案' },
-]
-
-const INQUIRY_STATUS_LABELS: Record<string, string> = {
-  new: '新諮詢',
-  contacted: '已聯繫',
-  quoted: '已報價',
-  closed: '已結案',
-}
-
-const ITEM_TYPE_LABELS: Record<string, string> = {
-  service: '服務',
-  product: '商品',
-}
-
 const TABS = [
   { key: 'settings', label: '基本設定' },
-  { key: 'inquiries', label: '諮詢紀錄' },
+  { key: 'inquiries', label: '聯絡諮詢AI紀錄' },
 ] as const
 
 type TabKey = (typeof TABS)[number]['key']
@@ -57,7 +34,6 @@ export default function SettingsManager({
   const [settingsError, setSettingsError] = useState('')
   const [isPending, startTransition] = useTransition()
   const [expandedId, setExpandedId] = useState<number | null>(null)
-  const [statusUpdating, setStatusUpdating] = useState<number | null>(null)
 
   async function handleSettingsSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -72,15 +48,6 @@ export default function SettingsManager({
         setSettingsSaved(true)
       }
     })
-  }
-
-  async function handleStatusChange(id: number, status: string) {
-    setStatusUpdating(id)
-    const result = await updateInquiryStatus(id, status)
-    setStatusUpdating(null)
-    if ('error' in result) {
-      alert(result.error)
-    }
   }
 
   const inquiryColumns = [
@@ -99,26 +66,14 @@ export default function SettingsManager({
       ),
     },
     {
-      key: 'itemType',
-      label: '類型',
-      render: (row: Record<string, unknown>) => {
-        const t = row.itemType as string | null
-        return (
-          <span className="text-gray-500 text-sm">
-            {t ? (ITEM_TYPE_LABELS[t] ?? t) : '—'}
-          </span>
-        )
-      },
-    },
-    {
-      key: 'status',
-      label: '狀態',
-      render: (row: Record<string, unknown>) => {
-        const s = row.status as string
-        return (
-          <StatusBadge status={INQUIRY_STATUS_LABELS[s] ?? s} />
-        )
-      },
+      key: 'message',
+      label: '訊息',
+      render: (row: Record<string, unknown>) => (
+        <span className="text-gray-600 text-sm">
+          {String(row.message ?? '').slice(0, 30)}
+          {String(row.message ?? '').length > 30 ? '…' : ''}
+        </span>
+      ),
     },
     {
       key: 'createdAt',
@@ -352,29 +307,6 @@ export default function SettingsManager({
                 <p className="text-sm text-gray-700 whitespace-pre-wrap bg-gray-50 rounded-lg p-3">
                   {inquiry.message}
                 </p>
-
-                <div className="flex items-center gap-3">
-                  <label className="text-sm font-medium text-gray-700">
-                    更新狀態
-                  </label>
-                  <select
-                    value={inquiry.status}
-                    disabled={statusUpdating === inquiry.id}
-                    onChange={(e) =>
-                      handleStatusChange(inquiry.id, e.target.value)
-                    }
-                    className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
-                  >
-                    {INQUIRY_STATUS_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                  {statusUpdating === inquiry.id && (
-                    <span className="text-xs text-gray-400">更新中...</span>
-                  )}
-                </div>
               </div>
             )
           })()}

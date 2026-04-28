@@ -67,6 +67,8 @@ export function FloatingAiChat() {
   const [typingLength, setTypingLength] = useState(0)
   const [dotCount, setDotCount] = useState(1)
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
+  const chatPanelRef = useRef<HTMLElement | null>(null)
+  const toggleButtonRef = useRef<HTMLButtonElement | null>(null)
 
   const isLoggedIn = status === 'authenticated' && !!session?.user
   const isCheckoutRoute = pathname ? !shouldShowAiChat(pathname) : false
@@ -178,6 +180,23 @@ export function FloatingAiChat() {
     return () => clearInterval(timer)
   }, [typingMessageId, messages])
 
+  useEffect(() => {
+    if (!open) return
+
+    function handlePointerDown(event: MouseEvent) {
+      const target = event.target as Node | null
+      if (!target) return
+      if (chatPanelRef.current?.contains(target)) return
+      if (toggleButtonRef.current?.contains(target)) return
+      setOpen(false)
+    }
+
+    document.addEventListener('mousedown', handlePointerDown)
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown)
+    }
+  }, [open])
+
   function renderTextWithLinks(text: string) {
     const parts = text.split(URL_REGEX)
     return parts.map((part, idx) => {
@@ -245,6 +264,7 @@ export function FloatingAiChat() {
         </div>
       ) : null}
       <button
+        ref={toggleButtonRef}
         type="button"
         onClick={() => {
           if (!isLoggedIn) {
@@ -267,7 +287,10 @@ export function FloatingAiChat() {
       </button>
 
       {open ? (
-        <section className="fixed bottom-24 right-5 z-40 w-[min(92vw,380px)] overflow-hidden rounded-2xl border border-brand-primary/15 bg-brand-bg shadow-2xl">
+        <section
+          ref={chatPanelRef}
+          className="fixed bottom-24 right-5 z-40 w-[min(92vw,380px)] overflow-hidden rounded-2xl border border-brand-primary/15 bg-brand-bg shadow-2xl"
+        >
           <header className="border-b border-brand-primary/12 bg-brand-primary/8 px-4 py-3">
             <p className="text-sm font-semibold text-brand-text">LinkAI 智能客服</p>
             <p className="text-xs text-brand-muted">僅回答站內商品、服務與下單相關問題</p>

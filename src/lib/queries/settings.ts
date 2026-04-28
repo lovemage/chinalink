@@ -14,20 +14,53 @@ export interface SiteSettings {
 }
 
 export async function getSettings(): Promise<SiteSettings> {
-  const row = await db
-    .select({
-      lineOfficialUrl: siteSettings.lineOfficialUrl,
-      lineOfficialId: siteSettings.lineOfficialId,
-      aiAgentEnabled: siteSettings.aiAgentEnabled,
-      openrouterApiKey: siteSettings.openrouterApiKey,
-      openrouterModel: siteSettings.openrouterModel,
-      systemPrompt: siteSettings.systemPrompt,
-      aiAgentPrompt: siteSettings.aiAgentPrompt,
-      whatsappUrl: siteSettings.whatsappUrl,
-    })
-    .from(siteSettings)
-    .orderBy(desc(siteSettings.updatedAt), desc(siteSettings.id))
-    .limit(1)
+  let row: Array<{
+    lineOfficialUrl: string | null
+    lineOfficialId: string | null
+    aiAgentEnabled: boolean | null
+    openrouterApiKey: string | null
+    openrouterModel: string | null
+    systemPrompt: string | null
+    aiAgentPrompt: string | null
+    whatsappUrl: string | null
+  }> = []
+
+  try {
+    row = await db
+      .select({
+        lineOfficialUrl: siteSettings.lineOfficialUrl,
+        lineOfficialId: siteSettings.lineOfficialId,
+        aiAgentEnabled: siteSettings.aiAgentEnabled,
+        openrouterApiKey: siteSettings.openrouterApiKey,
+        openrouterModel: siteSettings.openrouterModel,
+        systemPrompt: siteSettings.systemPrompt,
+        aiAgentPrompt: siteSettings.aiAgentPrompt,
+        whatsappUrl: siteSettings.whatsappUrl,
+      })
+      .from(siteSettings)
+      .orderBy(desc(siteSettings.updatedAt), desc(siteSettings.id))
+      .limit(1)
+  } catch (error) {
+    if (!isMissingSystemPromptColumnError(error)) throw error
+    const fallbackRow = await db
+      .select({
+        lineOfficialUrl: siteSettings.lineOfficialUrl,
+        lineOfficialId: siteSettings.lineOfficialId,
+        aiAgentEnabled: siteSettings.aiAgentEnabled,
+        openrouterApiKey: siteSettings.openrouterApiKey,
+        openrouterModel: siteSettings.openrouterModel,
+        aiAgentPrompt: siteSettings.aiAgentPrompt,
+        whatsappUrl: siteSettings.whatsappUrl,
+      })
+      .from(siteSettings)
+      .orderBy(desc(siteSettings.updatedAt), desc(siteSettings.id))
+      .limit(1)
+
+    row = fallbackRow.map((r) => ({
+      ...r,
+      systemPrompt: null,
+    }))
+  }
 
   return {
     lineOfficialUrl: row[0]?.lineOfficialUrl ?? '',
@@ -39,6 +72,11 @@ export async function getSettings(): Promise<SiteSettings> {
     aiAgentPrompt: row[0]?.aiAgentPrompt ?? '',
     whatsappUrl: row[0]?.whatsappUrl ?? '',
   }
+}
+
+function isMissingSystemPromptColumnError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false
+  return /system_prompt/.test(error.message) && /does not exist/i.test(error.message)
 }
 
 export async function getSetting(key: string): Promise<string | null> {

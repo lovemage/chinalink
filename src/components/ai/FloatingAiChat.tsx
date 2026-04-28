@@ -21,6 +21,7 @@ interface ChatConfig {
 
 const STORAGE_KEY = 'linkai-chat-session-messages'
 const OPEN_KEY = 'linkai-chat-open'
+const URL_REGEX = /(https?:\/\/[^\s]+)/g
 
 function LinkAiIcon() {
   return (
@@ -61,6 +62,10 @@ export function FloatingAiChat() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [config, setConfig] = useState<ChatConfig | null>(null)
+  const [typingMessageId, setTypingMessageId] = useState<number | null>(null)
+  const [typingLength, setTypingLength] = useState(0)
+  const [copiedUrl, setCopiedUrl] = useState('')
+  const [dotCount, setDotCount] = useState(1)
 
   const isLoggedIn = status === 'authenticated' && !!session?.user
   const isCheckoutRoute = pathname ? !shouldShowAiChat(pathname) : false
@@ -134,6 +139,69 @@ export function FloatingAiChat() {
     }
   }, [open, isLoggedIn, isCheckoutRoute])
 
+  useEffect(() => {
+    if (!loading && !sending) return
+    const timer = window.setInterval(() => {
+      setDotCount((prev) => (prev % 3) + 1)
+    }, 380)
+    return () => window.clearInterval(timer)
+  }, [loading, sending])
+
+  useEffect(() => {
+    if (!typingMessageId) return
+    const row = messages.find((m) => m.id === typingMessageId && m.role === 'assistant')
+    if (!row) {
+      setTypingMessageId(null)
+      setTypingLength(0)
+      return
+    }
+
+    setTypingLength(0)
+    const fullLen = row.content.length
+    const timer = setInterval(() => {
+      setTypingLength((prev) => {
+        const next = prev + 2
+        if (next >= fullLen) {
+          clearInterval(timer)
+          return fullLen
+        }
+        return next
+      })
+    }, 16)
+
+    return () => clearInterval(timer)
+  }, [typingMessageId, messages])
+
+  async function copyText(text: string) {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopiedUrl(text)
+      window.setTimeout(() => setCopiedUrl(''), 1200)
+    } catch {
+      setCopiedUrl('')
+    }
+  }
+
+  function renderTextWithLinks(text: string) {
+    const parts = text.split(URL_REGEX)
+    return parts.map((part, idx) => {
+      if (part.match(URL_REGEX)) {
+        return (
+          <a
+            key={`${part}-${idx}`}
+            href={part}
+            target="_blank"
+            rel="noreferrer"
+            className="underline break-all text-sky-700"
+          >
+            {part}
+          </a>
+        )
+      }
+      return <span key={`${idx}-${part.slice(0, 8)}`}>{part}</span>
+    })
+  }
+
   async function sendMessage() {
     if (sending) return
     const text = input.trim()
@@ -157,6 +225,11 @@ export function FloatingAiChat() {
       }
       setInput('')
       setMessages((data.messages ?? []).slice(-20))
+      const latestAssistant = (data.messages ?? [])
+        .slice()
+        .reverse()
+        .find((m) => m.role === 'assistant')
+      setTypingMessageId(latestAssistant?.id ?? null)
     } catch (err) {
       setError(err instanceof Error ? err.message : '訊息送出失敗')
     } finally {
@@ -195,6 +268,11 @@ export function FloatingAiChat() {
 
           <div className="h-80 space-y-2 overflow-y-auto bg-slate-50 px-4 py-3">
             {loading ? <p className="text-xs text-slate-500">載入對話中...</p> : null}
+            {loading || sending ? (
+              <p className="text-xs text-sky-700">
+                ai-在檢索中{'.'.repeat(dotCount)}
+              </p>
+            ) : null}
             {!messages.length && !loading ? (
               <p className="text-xs text-slate-500">
                 歡迎使用 LinkAI，請輸入您想了解的商品或服務問題。
@@ -209,7 +287,27 @@ export function FloatingAiChat() {
                     : 'bg-white text-slate-700 shadow-sm'
                 }`}
               >
-                {m.content}
+                <div className="whitespace-pre-wrap break-words">
+                  {renderTextWithLinks(
+                    m.id === typingMessageId && m.role === 'assistant'
+                      ? m.content.slice(0, typingLength)
+                      : m.content,
+                  )}
+                </div>
+                {m.role === 'assistant' ? (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {(m.content.match(URL_REGEX) ?? []).map((url) => (
+                      <button
+                        key={`${m.id}-${url}`}
+                        type="button"
+                        onClick={() => void copyText(url)}
+                        className="rounded-md border border-sky-200 bg-white/80 px-2 py-1 text-[11px] text-sky-700"
+                      >
+                        {copiedUrl === url ? '已複製' : '複製連結'}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
               </div>
             ))}
           </div>
@@ -266,4 +364,3 @@ export function FloatingAiChat() {
     </>
   )
 }
-

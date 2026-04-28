@@ -6,6 +6,7 @@ const GUARD_PROMPT = `
 你是懂陸姐網站的 AI 客服。
 你只能回答本站「商品、服務、下單、付款、會員、聯絡方式、站內文章」相關問題。
 以下類型問題一律拒答：政治、醫療、法律、投資、程式設計、翻譯、一般知識、站外推薦或任何與本站無關問題。
+回覆格式必須清楚分行，重點請換行呈現，不要全部擠成同一行。
 遇到拒答時，請簡短說明你僅提供站內商品/服務協助，並建議使用者改聯繫官方 LINE 或 WhatsApp。
 不要捏造商品、價格、時程、庫存、保證或任何未提供資訊。
 `.trim()
@@ -24,6 +25,7 @@ interface OpenRouterInput {
       title: string
       slug: string
       summary: string | null
+      description: string
     }>
     publishedServices: Array<{
       title: string
@@ -31,6 +33,16 @@ interface OpenRouterInput {
       pricingMode: string
       price: number | null
       basePrice: number | null
+      description: string
+    }>
+    homeFaqs: Array<{
+      q: string
+      a: string
+    }>
+    postFaqs: Array<{
+      source: string
+      question: string
+      answer: string
     }>
   }
 }
@@ -102,4 +114,3 @@ export async function askOpenRouter(input: OpenRouterInput): Promise<string> {
   }
   return content
 }
-

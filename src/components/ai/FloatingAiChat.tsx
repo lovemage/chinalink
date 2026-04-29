@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { shouldShowAiChat } from '@/lib/ai-chat/visibility'
@@ -25,30 +26,14 @@ const URL_REGEX = /(https?:\/\/[^\s]+)/g
 
 function LinkAiIcon() {
   return (
-    <svg viewBox="0 0 120 120" className="h-9 w-9" aria-hidden="true">
-      <defs>
-        <radialGradient id="linkai-glow" cx="50%" cy="50%" r="60%">
-          <stop offset="0%" stopColor="#7DD3FC" stopOpacity="0.95" />
-          <stop offset="100%" stopColor="#0EA5E9" stopOpacity="0.35" />
-        </radialGradient>
-      </defs>
-      <circle cx="60" cy="60" r="53" fill="url(#linkai-glow)" />
-      <path
-        d="M31 64c0-9 7-16 16-16h11v8H47c-4 0-8 4-8 8s4 8 8 8h11v8H47c-9 0-16-7-16-16Zm30 8h12c4 0 8-4 8-8s-4-8-8-8H61v-8h12c9 0 16 7 16 16s-7 16-16 16H61v-8Zm-7-12h12v8H54v-8Z"
-        fill="#0F172A"
-      />
-      <text
-        x="60"
-        y="35"
-        textAnchor="middle"
-        fontSize="14"
-        fontWeight="700"
-        letterSpacing="1.8"
-        fill="#082F49"
-      >
-        AI
-      </text>
-    </svg>
+    <Image
+      src="/linkai-floating.png"
+      alt="LinkAI 客服"
+      width={64}
+      height={64}
+      priority
+      className="h-full w-full rounded-full object-cover"
+    />
   )
 }
 
@@ -94,6 +79,19 @@ export function FloatingAiChat() {
   useEffect(() => {
     sessionStorage.setItem(OPEN_KEY, open ? '1' : '0')
   }, [open])
+
+  useEffect(() => {
+    if (isCheckoutRoute) return
+    function handleOpen() {
+      if (!isLoggedIn) {
+        router.push('/login')
+        return
+      }
+      setOpen(true)
+    }
+    window.addEventListener('linkai:open', handleOpen)
+    return () => window.removeEventListener('linkai:open', handleOpen)
+  }, [isLoggedIn, isCheckoutRoute, router])
 
   useEffect(() => {
     if (!messages.length) return

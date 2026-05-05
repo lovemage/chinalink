@@ -2,7 +2,14 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { HeroConsultButton } from './HeroConsultButton'
 
-export function HeroSection() {
+interface HeroSectionProps {
+  lineOfficialUrl?: string | null
+}
+
+export function HeroSection({ lineOfficialUrl }: HeroSectionProps) {
+  const servicesHref = lineOfficialUrl || '/services'
+  const isExternalServicesHref = servicesHref.startsWith('http')
+
   return (
     <section className="relative flex min-h-screen items-center overflow-hidden bg-brand-bg pt-24 pb-32">
       {/* Background abstract organic shapes */}
@@ -31,10 +38,12 @@ export function HeroSection() {
               <span className="relative">免費諮詢</span>
             </HeroConsultButton>
             <Link
-              href="/services"
+              href={servicesHref}
+              target={isExternalServicesHref ? '_blank' : undefined}
+              rel={isExternalServicesHref ? 'noreferrer' : undefined}
               className="inline-flex h-14 w-full items-center justify-center rounded-full border border-brand-primary/30 bg-transparent px-10 text-sm font-semibold tracking-widest text-brand-primary transition-colors duration-300 hover:border-brand-primary hover:bg-brand-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-brand-bg sm:w-auto"
             >
-              探索服務項目
+              官方 LINE
             </Link>
           </div>
         </div>

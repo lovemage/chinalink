@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { shouldShowAiChat } from '@/lib/ai-chat/visibility'
 
@@ -39,7 +39,6 @@ function LinkAiIcon() {
 
 export function FloatingAiChat() {
   const pathname = usePathname()
-  const router = useRouter()
   const { data: session, status } = useSession()
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<AiMessage[]>([])
@@ -59,7 +58,7 @@ export function FloatingAiChat() {
   const isCheckoutRoute = pathname ? !shouldShowAiChat(pathname) : false
 
   useEffect(() => {
-    if (!isLoggedIn || isCheckoutRoute) return
+    if (isCheckoutRoute) return
 
     const cachedOpen = sessionStorage.getItem(OPEN_KEY)
     if (cachedOpen === '1') {
@@ -74,7 +73,7 @@ export function FloatingAiChat() {
         sessionStorage.removeItem(STORAGE_KEY)
       }
     }
-  }, [isLoggedIn, isCheckoutRoute])
+  }, [isCheckoutRoute])
 
   useEffect(() => {
     sessionStorage.setItem(OPEN_KEY, open ? '1' : '0')
@@ -83,15 +82,11 @@ export function FloatingAiChat() {
   useEffect(() => {
     if (isCheckoutRoute) return
     function handleOpen() {
-      if (!isLoggedIn) {
-        router.push('/login')
-        return
-      }
       setOpen(true)
     }
     window.addEventListener('linkai:open', handleOpen)
     return () => window.removeEventListener('linkai:open', handleOpen)
-  }, [isLoggedIn, isCheckoutRoute, router])
+  }, [isCheckoutRoute])
 
   useEffect(() => {
     if (!messages.length) return
@@ -104,7 +99,7 @@ export function FloatingAiChat() {
   }, [open, messages, typingLength])
 
   useEffect(() => {
-    if (!open || !isLoggedIn || isCheckoutRoute) return
+    if (!open || isCheckoutRoute) return
 
     let mounted = true
     async function fetchHistory() {
@@ -143,7 +138,7 @@ export function FloatingAiChat() {
     return () => {
       mounted = false
     }
-  }, [open, isLoggedIn, isCheckoutRoute])
+  }, [open, isCheckoutRoute])
 
   useEffect(() => {
     if (!loading && !sending) return
@@ -227,7 +222,10 @@ export function FloatingAiChat() {
       const resp = await fetch('/api/ai-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({
+          message: text,
+          history: isLoggedIn ? undefined : messages,
+        }),
       })
       const data = (await resp.json()) as {
         error?: string
@@ -252,23 +250,19 @@ export function FloatingAiChat() {
 
   if (isCheckoutRoute) return null
 
-  if (isLoggedIn && config && !config.enabled) return null
+  if (config && !config.enabled) return null
 
   return (
     <>
       {!open ? (
-        <div className="fixed bottom-24 right-6 z-40 rounded-full border border-brand-primary/20 bg-white px-3 py-1.5 text-sm text-brand-text shadow-md">
-          我是客服人員，可以解答您的需求～
+        <div className="fixed bottom-24 right-6 z-40 max-w-[min(80vw,320px)] rounded-full border border-brand-primary/30 bg-brand-text px-4 py-2 text-sm font-medium text-white shadow-lg">
+          24小時智能客服，即時回答您的需求～
         </div>
       ) : null}
       <button
         ref={toggleButtonRef}
         type="button"
         onClick={() => {
-          if (!isLoggedIn) {
-            router.push('/login')
-            return
-          }
           setOpen((v) => !v)
         }}
         className={`fixed bottom-5 right-5 z-40 flex h-16 w-16 items-center justify-center rounded-full border border-brand-primary/25 bg-brand-bg shadow-lg transition-all duration-200 ${

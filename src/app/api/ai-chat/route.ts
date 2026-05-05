@@ -10,6 +10,7 @@ import {
 } from '@/lib/queries/ai-chat'
 import { askOpenRouter } from '@/lib/services/openrouter'
 import { buildAllowedLinks, sanitizeAssistantLinks } from '@/lib/ai-chat/sanitize'
+import { buildGuestResponseMessages, normalizeGuestHistory } from '@/lib/ai-chat/guest-history'
 
 function getSessionCustomerId(session: unknown): number | null {
   const id = (session as { customerId?: number } | null)?.customerId
@@ -20,13 +21,17 @@ function getSessionCustomerId(session: unknown): number | null {
 export async function GET() {
   const session = await auth()
   const customerId = getSessionCustomerId(session)
-  if (!session?.user || !customerId) {
-    return NextResponse.json({ error: '請先登入會員' }, { status: 401 })
-  }
 
   const config = await getAiPublicConfig()
   if (!config.enabled) {
     return NextResponse.json({ error: 'AI 客服暫時未啟用' }, { status: 503 })
+  }
+
+  if (!session?.user || !customerId) {
+    return NextResponse.json({
+      messages: [],
+      config,
+    })
   }
 
   const messages = await getMemberAiMessages(customerId, 20)
@@ -39,11 +44,8 @@ export async function GET() {
 export async function POST(req: Request) {
   const session = await auth()
   const customerId = getSessionCustomerId(session)
-  if (!session?.user || !customerId) {
-    return NextResponse.json({ error: '請先登入會員' }, { status: 401 })
-  }
 
-  const body = (await req.json()) as { message?: string }
+  const body = (await req.json()) as { message?: string; history?: unknown }
   const message = String(body.message ?? '').trim()
   if (!message) {
     return NextResponse.json({ error: '訊息不可為空白' }, { status: 400 })
@@ -55,8 +57,10 @@ export async function POST(req: Request) {
   }
 
   try {
+    const isMember = !!session?.user && !!customerId
+    const guestHistory = normalizeGuestHistory(body.history, 20)
     const [history, context] = await Promise.all([
-      getMemberAiMessages(customerId, 20),
+      isMember ? getMemberAiMessages(customerId, 20) : Promise.resolve(guestHistory),
       getAiContextSnapshot(),
     ])
 
@@ -82,6 +86,13 @@ export async function POST(req: Request) {
       siteUrl,
     )
     const safeReply = sanitizeAssistantLinks(reply, allowedLinks, siteUrl)
+
+    if (!isMember) {
+      return NextResponse.json({
+        message: safeReply,
+        messages: buildGuestResponseMessages(history, message, safeReply),
+      })
+    }
 
     await appendMemberAiMessage(customerId, 'user', message)
     await appendMemberAiMessage(customerId, 'assistant', safeReply)

@@ -19,7 +19,7 @@ export const proposalSections: ProposalSection[] = [
   {
     id: 'positioning',
     eyebrow: '01 · 品牌定位',
-    title: '先決定懂陸姐要成為誰',
+    title: '懂陸姐網站未來面貌',
     summary: '新網站需要清楚交代服務對象、篩選價值與收入來源，訪客才能理解這個平台與一般商城或廣告平台的差別。',
     recommendations: [
       '品牌定位可採「台灣市場的大陸商品與供應鏈發現平台」。',
@@ -39,7 +39,7 @@ export const proposalSections: ProposalSection[] = [
   {
     id: 'site-structure',
     eyebrow: '02 · 網站架構',
-    title: '讓三種訪客各自找到入口',
+    title: '三類訪客的網站入口',
     summary: '主選單與首頁需要從舊服務導向，改成好物、供應鏈、內容與合作四條清楚路徑。',
     recommendations: [
       '主選單建議改為「精選好物、供應鏈情報、市場觀察、合作提案、關於懂陸姐」。',
@@ -57,7 +57,7 @@ export const proposalSections: ProposalSection[] = [
   {
     id: 'homepage',
     eyebrow: '03 · 首頁內容',
-    title: '首頁先讓人看懂，再引導下一步',
+    title: '首頁資訊架構',
     summary: '目前首頁仍以門號、付款、開店與平台代營運痛點為主，整段內容需要換成選品與供應鏈價值。',
     recommendations: [
       '首頁依序呈現新定位、本期精選、選品標準、產業帶內容、身分分流、最新觀察與合作說明。',
@@ -75,7 +75,7 @@ export const proposalSections: ProposalSection[] = [
   {
     id: 'products',
     eyebrow: '04 · 商品與供應鏈',
-    title: '把商品頁改成選品情報頁',
+    title: '商品與供應鏈展示方式',
     summary: '第一階段的商品頁應說明推薦理由、適合通路與合作方式，不再預設每件商品都有價格、庫存與購物車。',
     recommendations: [
       '內容可分為精選商品、通路選品、供應鏈專案三種類型。',
@@ -98,7 +98,7 @@ export const proposalSections: ProposalSection[] = [
   {
     id: 'retailers',
     eyebrow: '05 · 台灣店家與通路',
-    title: '讓店家快速判斷能不能賣',
+    title: '台灣店家與通路合作資訊',
     summary: 'B2B 訪客在意的是毛利、起訂量、交期、包裝與責任分工，網站需要提供足夠資料支援初步判斷。',
     recommendations: [
       '建立店家專用入口與供應鏈資料卡。',
@@ -117,7 +117,7 @@ export const proposalSections: ProposalSection[] = [
   {
     id: 'suppliers',
     eyebrow: '06 · 大陸供應商',
-    title: '建立清楚的申請與審核門檻',
+    title: '大陸供應商合作條件',
     summary: '供應商需要知道誰能申請、要準備什麼、平台如何審核，以及合作內容是否收費。',
     recommendations: [
       '新增獨立的供應商合作提案頁與申請表。',
@@ -138,7 +138,7 @@ export const proposalSections: ProposalSection[] = [
   {
     id: 'content-seo',
     eyebrow: '07 · 內容與 SEO',
-    title: '保留有效流量，逐步換掉舊定位',
+    title: '內容規劃與 SEO 延續',
     summary: '舊文章與網址仍可能帶來搜尋價值，需要先盤點，再依新定位更新、轉址或下架。',
     recommendations: [
       '文章分類改為大陸好物觀察、產業帶與工廠、台灣通路趨勢、兩岸消費差異、商品法規與物流。',
@@ -156,7 +156,7 @@ export const proposalSections: ProposalSection[] = [
   {
     id: 'brand-copy',
     eyebrow: '08 · 品牌與文案',
-    title: '決定個人品牌與專業平台的比例',
+    title: '品牌形象與文案風格',
     summary: '懂陸姐具有鮮明人物辨識度，新網站可以保留親近感，同時補足台灣市場判斷與供應鏈專業。',
     recommendations: [
       '關於頁改寫成業主如何篩選商品、理解台灣市場與連接兩岸合作。',
@@ -177,7 +177,7 @@ export const proposalSections: ProposalSection[] = [
   {
     id: 'trust-legal',
     eyebrow: '09 · 信任與責任',
-    title: '每件商品都說清楚誰負責',
+    title: '商品責任與合作邊界',
     summary: '展示、導購、媒合與直接銷售的責任不同，網站需要讓訪客在採取行動前看懂交易與售後對象。',
     recommendations: [
       '每件商品標示懂陸姐直接銷售、合作商家銷售、展示導流或供應鏈媒合。',
@@ -196,7 +196,7 @@ export const proposalSections: ProposalSection[] = [
   {
     id: 'operations',
     eyebrow: '10 · 營運與成效',
-    title: '先把詢問分流，再判斷是否開商城',
+    title: '營運流程與成效評估',
     summary: '第一階段應先追蹤內容與媒合成效，等成交模式穩定後，再決定哪些品類值得加入金流、庫存與訂單功能。',
     recommendations: [
       '追蹤商品瀏覽、外部連結、LINE 詢問、批發詢價、樣品與成交。',

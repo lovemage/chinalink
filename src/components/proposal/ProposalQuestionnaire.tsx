@@ -134,7 +134,7 @@ export function ProposalQuestionnaire() {
           <p className="mt-8 text-xs font-bold tracking-[0.22em] text-[#9f5d35]">SUBMISSION RECEIVED</p>
           <h1 className="mt-3 font-serif text-4xl font-bold leading-tight sm:text-5xl">問卷已送出</h1>
           <p className="mt-6 max-w-xl text-lg leading-8 text-[#6f6257]">
-            完整回答已整理成 JSON，並寄送至指定信箱。感謝您花時間把網站方向說清楚。
+            完整回答已整理成 JSON，並寄送至指定信箱。感謝您提供網站修改方向與補充說明。
           </p>
           <p className="mt-8 text-sm text-[#84766a]">
             送出時間：{new Date(submittedAt).toLocaleString('zh-TW')}
@@ -197,7 +197,7 @@ export function ProposalQuestionnaire() {
           <section className="max-w-4xl border-b border-[#d7c8b5] pb-14">
             <p className="text-xs font-bold tracking-[0.22em] text-[#9f5d35]">建議書問卷 · 可複選</p>
             <h1 className="mt-5 max-w-3xl font-serif text-[clamp(2.6rem,6vw,5.7rem)] font-bold leading-[0.98] tracking-[-0.04em]">
-              下一版網站，先把方向說清楚。
+              網站重新定位
             </h1>
             <p className="mt-8 max-w-2xl text-lg leading-8 text-[#6f6257]">
               每題都可以複選。若選項無法完整表達您的想法，請使用每個主題旁的「加註」補充。
@@ -329,7 +329,7 @@ export function ProposalQuestionnaire() {
 
           <section className="max-w-4xl py-14 sm:py-20">
             <p className="text-xs font-bold tracking-[0.2em] text-[#9f5d35]">最後補充</p>
-            <h2 className="mt-3 font-serif text-3xl font-bold">還有什麼是這份問卷沒問到的？</h2>
+            <h2 className="mt-3 font-serif text-3xl font-bold">整體補充</h2>
             <textarea
               value={draft.overallNote}
               onChange={(event) => setDraft((current) => ({ ...current, overallNote: event.target.value }))}

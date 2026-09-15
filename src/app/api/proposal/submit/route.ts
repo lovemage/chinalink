@@ -3,7 +3,7 @@ import { Resend } from 'resend'
 import { createHash } from 'node:crypto'
 import { db } from '@/lib/db'
 import { inquiries } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, like } from 'drizzle-orm'
 import {
   isProposalAccessTokenValid,
   PROPOSAL_ACCESS_COOKIE,
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
     }
 
     const submissionId = createHash('sha256').update(JSON.stringify({ ...submission, submittedAt: undefined })).digest('hex')
-    const json = JSON.stringify({ submissionId, ...submission }, null, 2)
+    let json = JSON.stringify({ submissionId, ...submission }, null, 2)
     if (Buffer.byteLength(json, 'utf8') > 450_000) {
       return NextResponse.json(
         { success: false, error: '填寫內容過長，請刪減加註後再送出。' },
@@ -150,8 +150,12 @@ export async function POST(request: NextRequest) {
     const resend = new Resend(apiKey)
     const recipient = process.env.PROPOSAL_RECIPIENT_EMAIL || 'lovemage@gmail.com'
     const safeName = escapeHtml(respondentName)
+    const [existing] = await db.select().from(inquiries).where(like(inquiries.message, `%"submissionId": "${submissionId}"%`)).limit(1)
+    if (existing?.status === 'proposal_sent') return NextResponse.json({ success: true, submittedAt: JSON.parse(existing.message).submission.submittedAt, submissionId })
+    if (existing) json = existing.message
+    const sentDate = JSON.parse(json).submittedAt as string
     const safeJson = escapeHtml(json)
-    const [record] = await db.insert(inquiries).values({ name: respondentName, contactMethod: cleanText(body.respondent?.contact, 200) || recipient, message: json, status: 'proposal_pending' }).returning({ id: inquiries.id })
+    const record = existing || (await db.insert(inquiries).values({ name: respondentName, contactMethod: cleanText(body.respondent?.contact, 200) || recipient, message: json, status: 'proposal_pending' }).returning({ id: inquiries.id }))[0]
     const { error, data } = await resend.emails.send({
       from,
       to: recipient,
@@ -166,7 +170,7 @@ export async function POST(request: NextRequest) {
       `,
       attachments: [
         {
-          filename: `chinalink-proposal-${submittedAt.slice(0, 10)}.json`,
+          filename: `chinalink-proposal-${sentDate.slice(0, 10)}.json`,
           content: Buffer.from(json, 'utf8'),
         },
       ],

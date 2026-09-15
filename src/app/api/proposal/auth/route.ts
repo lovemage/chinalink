@@ -6,7 +6,14 @@ import {
   PROPOSAL_PATH,
 } from '@/lib/proposal/access'
 
+const attempts = new Map<string, { count: number; expires: number }>()
 export async function POST(request: Request) {
+  const key = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
+  const now = Date.now()
+  for (const [id, entry] of attempts) if (entry.expires < now) attempts.delete(id)
+  const entry = attempts.get(key) || { count: 0, expires: now + 15 * 60 * 1000 }
+  if (++entry.count > 10) return NextResponse.json({ success: false, error: '嘗試次數過多，請於 15 分鐘後再試。' }, { status: 429 })
+  attempts.set(key, entry)
   try {
     const body = (await request.json()) as { password?: unknown }
     const password = typeof body.password === 'string' ? body.password : ''
@@ -18,6 +25,7 @@ export async function POST(request: Request) {
       )
     }
 
+    attempts.delete(key)
     const response = NextResponse.json({ success: true, redirectTo: PROPOSAL_PATH })
     response.cookies.set(PROPOSAL_ACCESS_COOKIE, getProposalAccessToken(), {
       httpOnly: true,

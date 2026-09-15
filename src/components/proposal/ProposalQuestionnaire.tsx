@@ -14,6 +14,7 @@ import {
 import {
   proposalQuestionCount,
   proposalSections,
+  exclusiveOption,
 } from '@/lib/proposal/questionnaire'
 
 type Draft = {
@@ -21,6 +22,9 @@ type Draft = {
   selections: Record<string, string[]>
   notes: Record<string, string>
   overallNote: string
+  others: Record<string, string>
+  decisions: Record<string, string>
+  priorities: Record<string, string>
 }
 
 const storageKey = 'chinalink-website-proposal-draft-v1'
@@ -29,6 +33,7 @@ const emptyDraft: Draft = {
   selections: {},
   notes: {},
   overallNote: '',
+  others: {}, decisions: {}, priorities: {},
 }
 
 export function ProposalQuestionnaire() {
@@ -38,11 +43,20 @@ export function ProposalQuestionnaire() {
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState('')
   const [submittedAt, setSubmittedAt] = useState('')
+  const [saveStatus, setSaveStatus] = useState('草稿載入中')
+  const [review, setReview] = useState(false)
+  const [partial, setPartial] = useState(false)
 
   useEffect(() => {
     try {
       const saved = window.localStorage.getItem(storageKey)
-      if (saved) setDraft({ ...emptyDraft, ...JSON.parse(saved) })
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        const textMap = (value: unknown): Record<string, string> => value && typeof value === 'object' ? Object.fromEntries(Object.entries(value).filter(([, v]) => typeof v === 'string')) : {}
+        setDraft({ ...emptyDraft, respondent: { ...emptyDraft.respondent, ...textMap(parsed.respondent) },
+          selections: Object.fromEntries(Object.entries(parsed.selections || {}).filter((entry): entry is [string, string[]] => Array.isArray(entry[1]) && entry[1].every(x => typeof x === 'string'))),
+          notes: textMap(parsed.notes), others: textMap(parsed.others), decisions: textMap(parsed.decisions), priorities: textMap(parsed.priorities), overallNote: typeof parsed.overallNote === 'string' ? parsed.overallNote : '' })
+      }
     } catch {
       // A corrupt or unavailable local draft should not block the questionnaire.
     } finally {
@@ -52,12 +66,14 @@ export function ProposalQuestionnaire() {
 
   useEffect(() => {
     if (!ready || submittedAt) return
-    window.localStorage.setItem(storageKey, JSON.stringify(draft))
+    setReview(false)
+    try { window.localStorage.setItem(storageKey, JSON.stringify(draft)); setSaveStatus('草稿已儲存於這台裝置') }
+    catch { setSaveStatus('無法自動儲存，請下載回答備份') }
   }, [draft, ready, submittedAt])
 
   const answeredCount = useMemo(
-    () => Object.values(draft.selections).filter((answers) => answers.length > 0).length,
-    [draft.selections],
+    () => proposalSections.flatMap(s => s.questions).filter(q => draft.selections[q.id]?.length || draft.others[q.id]?.trim()).length,
+    [draft.selections, draft.others],
   )
   const completion = Math.round((answeredCount / proposalQuestionCount) * 100)
 
@@ -66,7 +82,7 @@ export function ProposalQuestionnaire() {
       const selected = current.selections[questionId] || []
       const next = selected.includes(option)
         ? selected.filter((item) => item !== option)
-        : [...selected, option]
+        : exclusiveOption(option) || questionId === 'first-priority' ? [option] : [...selected.filter(item => !exclusiveOption(item)), option]
 
       return {
         ...current,
@@ -94,6 +110,9 @@ export function ProposalQuestionnaire() {
       return
     }
 
+    if (!review) { setReview(true); return }
+    if (answeredCount < proposalQuestionCount && !partial) { setSubmitError('請確認部分提交，或完成剩餘題目。'); return }
+
     setSubmitting(true)
     try {
       const response = await fetch('/api/proposal/submit', {
@@ -111,7 +130,7 @@ export function ProposalQuestionnaire() {
         return
       }
 
-      window.localStorage.removeItem(storageKey)
+      try { window.localStorage.removeItem(storageKey) } catch { /* Submission succeeded even if storage is unavailable. */ }
       setSubmittedAt(result.submittedAt || new Date().toISOString())
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch {
@@ -178,7 +197,8 @@ export function ProposalQuestionnaire() {
           <div className="mt-5 h-1.5 overflow-hidden bg-[#d7c8b5]" aria-hidden="true">
             <div className="h-full bg-[#9f5d35] transition-[width] duration-300" style={{ width: `${completion}%` }} />
           </div>
-          <p className="mt-3 text-xs leading-5 text-[#75675b]">內容會自動暫存在這台裝置。</p>
+          <p role="status" className="mt-3 text-xs leading-5 text-[#75675b]">{saveStatus}</p>
+          <label className="mt-4 block lg:hidden">問卷主題<select className="mt-2 w-full p-3" defaultValue="" onChange={e => document.getElementById(e.target.value)?.scrollIntoView()}><option value="" disabled>選擇主題</option>{proposalSections.map(s => <option key={s.id} value={s.id}>{s.eyebrow}</option>)}</select></label>
 
           <nav aria-label="問卷主題" className="mt-7 hidden border-t border-[#d7c8b5] pt-5 lg:block">
             {proposalSections.map((section) => (
@@ -237,7 +257,7 @@ export function ProposalQuestionnaire() {
 
           <div className="max-w-4xl">
             {proposalSections.map((section) => {
-              const noteOpen = openNotes[section.id] || Boolean(draft.notes[section.id])
+              const noteOpen = openNotes[section.id] ?? Boolean(draft.notes[section.id])
               return (
                 <section key={section.id} id={section.id} className="scroll-mt-8 border-b border-[#d7c8b5] py-14 sm:py-20">
                   <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
@@ -254,7 +274,7 @@ export function ProposalQuestionnaire() {
                       className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 border border-[#bda98f] px-4 text-sm font-bold text-[#70472f] transition-colors hover:bg-[#ede2d3] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9f5d35]"
                     >
                       <MessageSquarePlus className="size-4" aria-hidden="true" />
-                      加註
+                      {draft.notes[section.id] ? '已有加註' : '加註'}
                       <ChevronDown className={`size-4 transition-transform ${noteOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
                     </button>
                   </div>
@@ -263,10 +283,11 @@ export function ProposalQuestionnaire() {
                     id={`${section.id}-note`}
                     className={`grid transition-[grid-template-rows,opacity] duration-300 ${noteOpen ? 'mt-7 grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}
                   >
-                    <div className="overflow-hidden">
+                    <div className="overflow-hidden" inert={!noteOpen}>
                       <label className="block bg-[#f4ecdf] p-5">
                         <span className="text-sm font-bold">本主題補充說明</span>
                         <textarea
+                          maxLength={8000}
                           value={draft.notes[section.id] || ''}
                           onChange={(event) => setDraft((current) => ({
                             ...current,
@@ -276,6 +297,7 @@ export function ProposalQuestionnaire() {
                           className="mt-3 w-full resize-y border border-[#cdbda9] bg-[#fffcf6] p-4 leading-7 outline-none transition-colors focus:border-[#9f5d35] focus:ring-2 focus:ring-[#9f5d35]/20"
                           placeholder="可補充偏好、限制、實際做法，或選項中沒有涵蓋的內容。"
                         />
+                        <p className="text-sm">{(draft.notes[section.id] || '').length} / 8000 字</p>
                       </label>
                     </div>
                   </div>
@@ -293,6 +315,8 @@ export function ProposalQuestionnaire() {
                   </div>
 
                   <div className="mt-10 space-y-10">
+                    <p>已回答 {section.questions.filter(q => draft.selections[q.id]?.length || draft.others[q.id]?.trim()).length} / {section.questions.length} 題</p>
+                    <div className="grid gap-4 sm:grid-cols-2">{(['decisions', 'priorities'] as const).map(field => <label key={field}>{field === 'decisions' ? '本主題建議採納' : '實作優先順序'}<select value={draft[field][section.id] || ''} onChange={e => setDraft(current => ({ ...current, [field]: { ...current[field], [section.id]: e.target.value } }))} className="mt-2 w-full border p-3"><option value="">請選擇</option>{(field === 'decisions' ? ['採用', '部分調整', '暫緩', '需討論'] : ['本期必要', '後續考慮', '暫不需要']).map(v => <option key={v}>{v}</option>)}</select></label>)}</div>
                     {section.questions.map((question, questionIndex) => (
                       <fieldset key={question.id}>
                         <legend className="max-w-3xl text-lg font-bold leading-7">
@@ -319,6 +343,7 @@ export function ProposalQuestionnaire() {
                             )
                           })}
                         </div>
+                        <label className="mt-3 block text-sm">其他說明<input maxLength={2000} value={draft.others[question.id] || ''} onChange={e => setDraft(current => ({ ...current, others: { ...current.others, [question.id]: e.target.value } }))} className="mt-2 w-full border border-[#cdbda9] bg-transparent p-3" /></label>
                       </fieldset>
                     ))}
                   </div>
@@ -331,12 +356,17 @@ export function ProposalQuestionnaire() {
             <p className="text-xs font-bold tracking-[0.2em] text-[#9f5d35]">最後補充</p>
             <h2 className="mt-3 font-serif text-3xl font-bold">整體補充</h2>
             <textarea
+              aria-label="整體補充"
+              maxLength={12000}
               value={draft.overallNote}
               onChange={(event) => setDraft((current) => ({ ...current, overallNote: event.target.value }))}
               rows={7}
               className="mt-7 w-full resize-y border border-[#cdbda9] bg-[#fffcf6] p-5 leading-7 outline-none transition-colors focus:border-[#9f5d35] focus:ring-2 focus:ring-[#9f5d35]/20"
               placeholder="例如：預算、時程、不能碰的品類、希望保留的既有內容，或對首頁文案的想法。"
             />
+            <p className="text-sm">{draft.overallNote.length} / 12000 字</p>
+            <button type="button" className="my-5 border p-3" onClick={() => { const url = URL.createObjectURL(new Blob([JSON.stringify({ ...draft, sections: proposalSections }, null, 2)], { type: 'application/json' })); const a = document.createElement('a'); a.href = url; a.download = 'chinalink-questionnaire.json'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000) }}>下載回答備份</button>
+            {review && <section className="my-5 border p-5"><h3 className="text-xl font-bold">送出前確認</h3><p>已回答 {answeredCount} 題，未答 {proposalQuestionCount - answeredCount} 題。</p>{proposalSections.map(s => <details key={s.id} className="my-3"><summary>{s.eyebrow}</summary><p>建議採納：{draft.decisions[s.id] || '未選擇'}；優先順序：{draft.priorities[s.id] || '未選擇'}</p>{s.questions.map(q => <p key={q.id} className="my-2">{q.prompt}：{draft.selections[q.id]?.join('、') || '未勾選'} {draft.others[q.id]}</p>)}<p>加註：{draft.notes[s.id] || '無'}</p></details>)}{answeredCount < proposalQuestionCount && <label className="block p-3"><input type="checkbox" checked={partial} onChange={e => setPartial(e.target.checked)} /> 我確認先提交目前回答，未答題留待討論。</label>}</section>}
 
             <div className="mt-8 border-t border-[#d7c8b5] pt-8">
               <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -350,7 +380,7 @@ export function ProposalQuestionnaire() {
                   disabled={submitting}
                   className="inline-flex min-h-14 shrink-0 items-center justify-center gap-3 bg-[#9f5d35] px-8 font-bold text-[#fffaf2] transition-colors hover:bg-[#82482a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9f5d35] focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-60"
                 >
-                  {submitting ? '寄送中' : '送出完整問卷'}
+                  {submitting ? '寄送中' : review ? '確認送出問卷' : '檢視回答與送出'}
                   <Send className="size-5" aria-hidden="true" />
                 </button>
               </div>

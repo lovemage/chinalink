@@ -9,11 +9,13 @@ function getPassword() {
   return process.env.PROPOSAL_ACCESS_PASSWORD || 'china123'
 }
 function getSigningSecret() {
-  return (
+  const secret = (
     process.env.AUTH_SECRET ||
     process.env.NEXTAUTH_SECRET ||
-    'chinalink-proposal-access-v1'
+    process.env.PROPOSAL_SIGNING_SECRET
   )
+  if (!secret) throw new Error('Proposal signing secret is not configured')
+  return secret
 }
 
 function safeEqual(left: string, right: string) {
@@ -31,11 +33,13 @@ export function isProposalPasswordValid(password: string) {
 }
 
 export function getProposalAccessToken() {
-  return createHmac('sha256', getSigningSecret())
-    .update(`proposal-access:${getPassword()}`)
-    .digest('hex')
+  const expires = String(Date.now() + 7 * 24 * 60 * 60 * 1000)
+  return `${expires}.${createHmac('sha256', getSigningSecret()).update(`${expires}:${getPassword()}`).digest('hex')}`
 }
 
 export function isProposalAccessTokenValid(token?: string) {
-  return typeof token === 'string' && safeEqual(token, getProposalAccessToken())
+  if (!token) return false
+  const [expires, signature] = token.split('.')
+  if (!signature || !/^\d+$/.test(expires) || Number(expires) <= Date.now()) return false
+  return safeEqual(signature, createHmac('sha256', getSigningSecret()).update(`${expires}:${getPassword()}`).digest('hex'))
 }

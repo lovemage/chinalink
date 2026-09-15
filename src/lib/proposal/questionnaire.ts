@@ -216,6 +216,23 @@ export const proposalSections: ProposalSection[] = [
   },
 ]
 
+proposalSections.push({
+  id: 'delivery', eyebrow: '11 · 執行規劃', title: '預算、時程與上架準備',
+  summary: '第一階段工作範圍與素材準備狀態。日期及金額可填寫於其他說明。',
+  recommendations: ['優先完成內容展示、合作詢問與基本追蹤。', '依素材準備狀態安排上線時程。'],
+  questions: [
+    { id: 'first-priority', prompt: '第一優先客群（請選一項）', options: ['台灣消費者', '台灣店家與通路', '大陸供應商', undecided] },
+    { id: 'budget', prompt: '第一階段預算狀態', options: ['已有預算，於其他說明填寫金額', '希望依功能分階段報價', '需先確認範圍再決定', undecided] },
+    { id: 'launch-date', prompt: '希望上線時程', options: ['一個月內', '一至三個月', '尚無固定期限', '已有指定日期，於其他說明填寫'] },
+    { id: 'catalog-size', prompt: '首批商品與供應鏈總數', options: ['1 至 5 件', '6 至 15 件', '16 至 30 件', '30 件以上', undecided] },
+    { id: 'assets-ready', prompt: '目前已備妥哪些素材？', options: ['商品圖片', '商品文案', '供應商資料', '品牌照片', '合作案例', '尚未準備'] },
+  ],
+})
+
+export function exclusiveOption(option: string) {
+  return /尚未|不需要|全部先隱藏|完全不保留|三者同等|只引導真人|目前沒有/.test(option)
+}
+
 export const proposalQuestionCount = proposalSections.reduce(
   (total, section) => total + section.questions.length,
   0,

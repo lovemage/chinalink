@@ -150,12 +150,12 @@ export async function POST(request: NextRequest) {
     const resend = new Resend(apiKey)
     const recipient = process.env.PROPOSAL_RECIPIENT_EMAIL || 'lovemage@gmail.com'
     const safeName = escapeHtml(respondentName)
-    const [existing] = await db.select().from(inquiries).where(like(inquiries.message, `%"submissionId": "${submissionId}"%`)).limit(1)
-    if (existing?.status === 'proposal_sent') return NextResponse.json({ success: true, submittedAt: JSON.parse(existing.message).submission.submittedAt, submissionId })
+    const [existing] = await db.select({ id: inquiries.id, message: inquiries.message }).from(inquiries).where(like(inquiries.message, `%"submissionId": "${submissionId}"%`)).limit(1)
+    if (existing && JSON.parse(existing.message).deliveryStatus === 'accepted') return NextResponse.json({ success: true, submittedAt: JSON.parse(existing.message).submission.submittedAt, submissionId })
     if (existing) json = existing.message
     const sentDate = JSON.parse(json).submittedAt as string
     const safeJson = escapeHtml(json)
-    const record = existing || (await db.insert(inquiries).values({ name: respondentName, contactMethod: cleanText(body.respondent?.contact, 200) || recipient, message: json, status: 'proposal_pending' }).returning({ id: inquiries.id }))[0]
+    const record = existing || (await db.insert(inquiries).values({ name: respondentName, contactMethod: cleanText(body.respondent?.contact, 200) || recipient, message: json, status: 'new' }).returning({ id: inquiries.id }))[0]
     const { error, data } = await resend.emails.send({
       from,
       to: recipient,
@@ -181,7 +181,7 @@ export async function POST(request: NextRequest) {
       throw new Error('Failed to send proposal submission')
     }
 
-    await db.update(inquiries).set({ status: 'proposal_sent', message: JSON.stringify({ submissionId, emailId: data?.id, deliveryStatus: 'accepted', submission }, null, 2) }).where(eq(inquiries.id, record.id))
+    await db.update(inquiries).set({ message: JSON.stringify({ submissionId, emailId: data?.id, deliveryStatus: 'accepted', submission }, null, 2) }).where(eq(inquiries.id, record.id))
     return NextResponse.json({ success: true, submittedAt, submissionId })
   } catch (error) {
     if (error instanceof Error && /字數限制|選項互相衝突/.test(error.message)) return NextResponse.json({ success: false, error: error.message }, { status: 400 })

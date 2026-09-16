@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { ProposalQuestionnaire } from '@/components/proposal/ProposalQuestionnaire'
+import { ProposalDirectionPlan } from '@/components/proposal/ProposalDirectionPlan'
 import {
   isProposalAccessTokenValid,
   PROPOSAL_ACCESS_COOKIE,
@@ -14,5 +14,5 @@ export default async function WebsiteRepositioningSurveyPage() {
     redirect('/website-repositioning-survey/login')
   }
 
-  return <ProposalQuestionnaire />
+  return <ProposalDirectionPlan />
 }

@@ -64,7 +64,7 @@ export function ProposalLoginForm() {
           disabled={submitting || !password}
           className="inline-flex h-14 items-center justify-center gap-3 bg-[#9f5d35] px-7 font-bold text-[#fffaf2] transition-colors hover:bg-[#82482a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#9f5d35] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {submitting ? '驗證中' : '進入問卷'}
+          {submitting ? '驗證中' : '查看方向確認書'}
           {!submitting && <ArrowRight aria-hidden="true" className="size-5" />}
         </button>
       </div>

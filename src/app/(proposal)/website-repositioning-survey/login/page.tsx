@@ -20,10 +20,10 @@ export default async function ProposalLoginPage() {
           <p className="text-xs font-bold tracking-[0.24em] text-[#dca77f]">CHINALINK · CONFIDENTIAL BRIEF</p>
           <h1 className="mt-6 font-serif text-[clamp(3rem,7vw,7.4rem)] font-bold leading-[0.92] tracking-[-0.045em]">
             網站重新定位
-            <span className="mt-2 block text-[#dca77f]">建議書問卷</span>
+            <span className="mt-2 block text-[#dca77f]">方向確認書</span>
           </h1>
           <p className="mt-8 max-w-xl text-base leading-8 text-[#dfd4c8] sm:text-lg">
-            這份問卷整理了網站改版建議與需要確認的方向。完成後，系統會將勾選內容及加註整理成 JSON 寄出。
+            這份文件整理了網站接下來的定位、修改範圍、素材需求與待確認項目，作為正式開發前的方向依據。
           </p>
         </div>
       </section>
@@ -33,7 +33,7 @@ export default async function ProposalLoginPage() {
           <p className="text-xs font-bold tracking-[0.2em] text-[#9f5d35]">PRIVATE ACCESS</p>
           <h2 className="mt-4 font-serif text-3xl font-bold sm:text-4xl">請先輸入密碼</h2>
           <p className="mt-4 max-w-md leading-7 text-[#6f6257]">
-            本頁僅供業主與專案相關人員檢視。密碼驗證後可開始填寫，內容會自動暫存在這台裝置。
+            本頁僅供本次網站專案相關人員檢視。通過密碼驗證後，即可查看完整方向與準備清單。
           </p>
           <ProposalLoginForm />
         </div>

@@ -17,8 +17,8 @@ const notoSerifTC = Noto_Serif_TC({
 })
 
 export const metadata: Metadata = {
-  title: '懂陸姐網站重新定位｜建議書問卷',
-  description: '懂陸姐網站重新定位建議與需求確認問卷。',
+  title: '懂陸姐網站重新定位｜方向確認書',
+  description: '懂陸姐網站重新定位方向、修改範圍與素材準備清單。',
   robots: { index: false, follow: false },
 }
 export default function ProposalLayout({ children }: { children: React.ReactNode }) {

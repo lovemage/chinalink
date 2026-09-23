@@ -10,7 +10,7 @@ import { ProposalLogoutButton } from './ProposalLogoutButton'
 
 const chapters = [
   { id: 'direction', label: '01　新站方向' },
-  { id: 'experience', label: '02　內容架構' },
+  { id: 'experience', label: '02　內容轉換漏斗' },
   { id: 'implementation', label: '03　我會處理的修改' },
   { id: 'materials', label: '04　請您準備的資料' },
   { id: 'decisions', label: '05　需要確認的項目' },
@@ -18,54 +18,79 @@ const chapters = [
 ]
 
 const directionPoints = [
-  '網站以內容、觀點、文章與市場觀察為核心，先建立長期可閱讀、可搜尋的內容基礎。',
-  '產業帶與供應鏈內容由文章自然延伸，讓讀者先理解背景、特色與判斷依據，再接觸合作資訊。',
-  '「供應鏈推薦」是一個由您篩選與整理的推薦目錄，可以介紹企業、團隊、產業帶、工廠、檔口或具體商品。',
-  '商品與合作功能依實際需求逐步發展，第一階段保留彈性，不預設每個頁面都能下單或一定要走相同流程。',
+  '網站以內容、觀點、文章與市場觀察為核心，持續累積可閱讀、可搜尋，也能支撐專業判斷的內容。',
+  '每篇內容都要承接下一步行動，讓有實際需求的讀者能透過官方 LINE 進入顧問諮詢。',
+  '諮詢後再依需求進行服務報價、產業鏈接觸或供應鏈連接，不把所有讀者導向同一種交易流程。',
+  '內容要逐步形成兩岸產業知識脈絡，提升搜尋曝光與 AI 理解、索引及引用的機會。',
 ]
 
 const editorialFlow = [
-  { number: '01', title: '內容與觀點', description: '文章、市場觀察、產業判斷與長期主題。' },
-  { number: '02', title: '產業帶與供應鏈', description: '從內容延伸到企業、團隊、工廠與合作來源。' },
-  { number: '03', title: '商品與合作', description: '依實際條件決定展示、詢問、B2B 或直接購買。' },
+  { number: '01', title: '內容與觀點', description: '用文章、市場觀察與產業判斷建立搜尋入口。' },
+  { number: '02', title: '持續閱讀', description: '以主題頁、相關文章與供應鏈內容延長閱讀路徑。' },
+  { number: '03', title: 'LINE 顧問接觸', description: '在關鍵段落及文章結尾提供清楚的官方 LINE 聯繫入口。' },
+  { number: '04', title: '需求與報價', description: '先了解問題、預算及合作條件，再提出適合的服務與報價。' },
+  { number: '05', title: '產業鏈連接', description: '依實際需求安排企業、產業帶、工廠或供應鏈的下一步接觸。' },
+]
+
+const outcomeGoals = [
+  {
+    eyebrow: 'CONSULTING CONVERSION',
+    title: '讓內容帶來顧問接觸',
+    description: '讀者先從文章建立信任，有明確需求時再透過 LINE 聯繫。後續由您進行需求判斷、服務報價及產業鏈連接。',
+  },
+  {
+    eyebrow: 'AI & SEARCH VISIBILITY',
+    title: '建立兩岸產業參考價值',
+    description: '以清楚的主題架構、作者經驗、資料來源及持續更新，讓搜尋引擎與 AI 更容易理解網站內容，逐步累積引用與被找到的機會。',
+  },
 ]
 
 const implementationGroups = [
   {
-    eyebrow: 'EDITORIAL & HOME',
-    title: '內容首頁與品牌訊息',
+    eyebrow: 'CONTENT ENGINE',
+    title: '文章與流量內容架構',
     items: [
-      '重寫首頁主標與說明文字，先讓訪客看見最新觀點、文章與市場觀察。',
-      '首頁以主題內容帶出產業帶與供應鏈推薦，聯絡合作放在閱讀之後，避免一進站就像商城或媒合平台。',
-      '保留「懂陸姐」的品牌辨識度，讓每篇推薦都能看出篩選理由、資料來源與適合的合作方向。',
+      '首頁先呈現最新觀點、重點市場觀察與主題專題，讓文章成為主要流量入口。',
+      '建立主題頁、文章分類、標籤、相關內容與內部連結，讓讀者能沿著同一個產業問題持續閱讀。',
+      '每篇文章保留作者、更新日期、資料來源與延伸閱讀，長期累積「懂陸姐」在兩岸產業議題上的專業辨識度。',
+    ],
+  },
+  {
+    eyebrow: 'CONSULTING FUNNEL',
+    title: 'LINE 顧問轉換模組',
+    items: [
+      '沿用現有聯絡模組，改成可重複放入文章關鍵段落及文末的官方 LINE 行動區塊。',
+      '依文章主題調整聯繫文案，例如顧問諮詢、評估合作、索取資料或供應鏈接洽。',
+      '記錄聯繫入口來自哪篇文章、哪個主題及哪個位置，後續可判斷哪些內容真的帶來有效詢問。',
+      '把接觸流程整理為文章閱讀、LINE 諮詢、需求釐清、提出報價及產業鏈連接。',
+    ],
+  },
+  {
+    eyebrow: 'ADMIN RESTRUCTURE',
+    title: '後台改為內容經營導向',
+    items: [
+      '調整後台導覽與操作順序，將原本以服務、商品為主的管理方式，改成文章、專題、主題分類與供應鏈推薦優先。',
+      '文章編輯新增搜尋摘要、主題關聯、資料來源、常見問題、LINE 行動模組與更新日期等欄位。',
+      '原有服務與商品資料先保留，依內容性質轉成顧問服務、供應鏈推薦或文章延伸資料，避免直接刪除既有內容。',
+    ],
+  },
+  {
+    eyebrow: 'AI DISCOVERY',
+    title: '搜尋與 AI 索引基礎',
+    items: [
+      '保留有搜尋價值的舊文章與網址，補齊標題、摘要、分類、內部連結、網站地圖及結構化資料。',
+      '內容以台海、兩岸產業鏈、產業帶、企業觀察及供應鏈案例形成可持續擴充的主題架構。',
+      '定期更新重要文章並清楚標示作者、日期與資料依據，增加搜尋引擎及 AI 理解內容的條件。',
+      '以收錄、曝光、文章停留、LINE 點擊及有效諮詢追蹤成果；AI 是否引用由各平台決定，不作保證。',
     ],
   },
   {
     eyebrow: 'SUPPLY DIRECTORY',
-    title: '供應鏈推薦目錄',
+    title: '供應鏈推薦與合作延伸',
     items: [
-      '建立共用內容架構，同時支援企業、團隊、產業帶、工廠、檔口、商品與專案介紹。',
-      '每一頁可自由組合企業介紹、照片、影片、文字說明、推薦理由與合作方向，不強迫填寫商品價格或庫存。',
-      '依內容個別設定「純展示、LINE 詢問、索取合作資料、B2B 合作、直接購買」等狀態。',
-      '推薦內容由您整理後發布，前台清楚標示資料更新日期與目前可提供的合作方式。',
-    ],
-  },
-  {
-    eyebrow: 'FLEXIBLE COMMERCE',
-    title: '保留未來商務彈性',
-    items: [
-      '第一階段不使用「商城」作為主要名稱，也不把結帳、庫存與訂單當成每筆內容的必要條件。',
-      '系統保留商品、價格與購買功能的擴充位置，未來可針對適合直接販售的供應鏈個別啟用。',
-      '適合 B2B 的內容可改用合作詢問；仍在觀察的內容只做展示，不會把後續流程綁死。',
-    ],
-  },
-  {
-    eyebrow: 'CONTACT & INSIGHT',
-    title: '聯絡、追蹤與搜尋延續',
-    items: [
-      '台灣端若有實際需求，先透過 LINE 或其他聯絡方式詢問，再由您判斷是否協助連結。',
-      '後台記錄詢問來自哪篇文章或哪筆供應鏈推薦，方便了解哪些內容真的帶來合作。',
-      '保留有搜尋價值的舊文章與網址，未來內容持續聚焦市場觀察、產業帶、企業訪談與供應鏈案例。',
+      '建立共用內容架構，支援企業、團隊、產業帶、工廠、檔口、商品與合作專案介紹。',
+      '每一頁可組合照片、影片、文字說明、推薦理由與合作方向，不強迫填寫價格、庫存或下單資訊。',
+      '依內容個別設定純展示、LINE 詢問、顧問評估、B2B 合作或直接購買，保留未來發展彈性。',
     ],
   },
 ]
@@ -73,50 +98,55 @@ const implementationGroups = [
 const materialGroups = [
   {
     number: '01',
-    title: '內容主題與既有文章',
-    description: '先確認新站要持續累積的觀點與市場觀察主題。',
-    items: ['現有文章的保留與分類清單', '未來三個月預計撰寫的主題', '希望長期追蹤的市場或產業', '可公開的個人觀點與判斷', '停止服務但仍需保留的舊內容'],
+    title: '內容主題與發布計畫',
+    description: '內容量與更新節奏會直接影響搜尋流量及顧問詢問的累積速度。',
+    items: ['現有文章的保留與分類清單', '未來三個月的文章題目與發布頻率', '希望長期追蹤的兩岸市場或產業', '可公開的個人觀點、經驗與判斷', '每個主題希望吸引的讀者與常見問題'],
   },
   {
     number: '02',
-    title: '首批供應鏈推薦',
-    description: '建議先準備 3 筆不同類型的內容，測試新架構是否足夠彈性。',
-    items: ['一個產業帶或區域介紹', '一家企業、團隊、工廠或檔口', '一項具體商品或合作專案', '每筆內容的推薦理由', '目前適合的合作方向與公開範圍'],
+    title: '顧問服務與報價流程',
+    description: '讀者加入 LINE 後，需要有清楚的詢問、判斷與回覆方式。',
+    items: ['希望承接的顧問需求類型', '初次詢問需要蒐集的資料', '可公開的服務範圍與不承接項目', '報價前的評估方式與預計回覆時間', '何種條件下會進一步安排產業鏈連接'],
   },
   {
     number: '03',
-    title: '圖片、影片與說明素材',
-    description: '供應鏈推薦需要真實素材，才能呈現您整理與判斷的過程。',
-    items: ['企業、產業帶或現場照片', '商品照片與介紹影片', '企業或團隊基本資料', '訪談內容與可公開引述', '素材授權與可公開範圍'],
+    title: '專業資料與首批案例',
+    description: 'AI 與搜尋曝光需要穩定、具來源且能持續更新的內容基礎。',
+    items: ['作者介紹、經歷與專業領域', '可公開的產業資料與資料來源', '企業、產業帶或現場照片與影片', '首批供應鏈推薦及篩選理由', '可公開的合作案例、訪談或常見問題'],
   },
   {
     number: '04',
-    title: '聯絡與合作設定',
-    description: '每筆內容只需提供目前已確定的合作方式，未確定的欄位可以留白。',
-    items: ['LINE 與其他聯絡方式', '是否接受一般詢問', '是否開放 B2B 合作', '是否已有可直接購買的商品', '哪些資訊需詢問後才能提供'],
+    title: 'LINE 與成效追蹤設定',
+    description: '聯絡入口會沿用目前模組，再依不同文章與行動目的調整。',
+    items: ['官方 LINE 連結與顯示名稱', '加入好友後的歡迎訊息', '各類文章適用的聯繫文案', '需要追蹤的點擊與詢問來源', '聯繫資料的保存方式與使用範圍'],
   },
 ]
 
 const decisions = [
   {
-    title: '首頁最先呈現哪些內容',
-    context: '新站會以觀點與市場觀察為核心，需要決定首頁第一屏及前半段優先呈現的主題。',
-    recommendation: '我的建議是先放最新觀點、重點市場觀察與精選專題，供應鏈推薦放在內容之後承接閱讀興趣。',
+    title: '第一階段要集中經營哪些主題',
+    context: '內容要累積到足以形成搜尋入口，需要先選定少數主題持續更新，避免文章彼此沒有關聯。',
+    recommendation: '我的建議是先選定三個與台海、兩岸產業鏈直接相關的主題，每個主題先規劃一篇核心文章與數篇延伸內容。',
   },
   {
-    title: '首批推薦內容的組合',
-    context: '供應鏈推薦可以介紹企業、團隊、產業帶、工廠、檔口或商品，第一批內容會決定訪客如何理解這個區域。',
-    recommendation: '我的建議是先各準備一筆產業帶、企業或團隊、具體商品內容，確認版型能涵蓋不同情況。',
+    title: '文章中的 LINE 入口放在哪裡',
+    context: '聯絡模組需要有足夠曝光，也要避免過度打斷閱讀。不同長度與目的的文章可以採用不同配置。',
+    recommendation: '我的建議是短文放在文末；長文可放在關鍵章節後方及文末。每個入口都要配合該段內容說明讀者可以詢問什麼。',
   },
   {
-    title: '前台使用什麼分類名稱',
-    context: '「商城」容易讓訪客預期每一頁都有價格、庫存與直接購買功能，與目前規劃不符。',
-    recommendation: '我的建議是統一使用「供應鏈推薦」，頁面內再以企業、產業帶、工廠、檔口、商品或合作專案分類。',
+    title: '顧問諮詢如何進入報價',
+    context: 'LINE 聯繫後需要先判斷需求內容、時程及可行性，才適合提出顧問服務或產業鏈連接的報價。',
+    recommendation: '我的建議是先建立一份簡短的需求確認項目，資料足夠後再安排進一步討論與正式報價。',
   },
   {
-    title: '何時啟用購買功能',
-    context: '部分供應鏈未來可能適合直接購買，部分只適合 B2B 合作，目前不需要先決定完整商城規模。',
-    recommendation: '我的建議是先完成內容展示與 LINE 詢問；遇到供貨、價格、付款及售後都已確認的品項，再逐筆開啟購買功能。',
+    title: '舊有服務與商品如何轉換',
+    context: '後台會改成文章經營優先，原有服務與商品仍可能具有內容、搜尋或合作價值。',
+    recommendation: '我的建議是逐筆盤點並分類為顧問服務、供應鏈推薦、文章延伸資料或保留項目，再決定前台呈現方式。',
+  },
+  {
+    title: 'AI 索引先聚焦哪些知識範圍',
+    context: 'AI 能否理解及引用網站，會受到主題一致性、資料品質、技術結構與持續更新影響。',
+    recommendation: '我的建議是先聚焦台海與兩岸產業鏈相關的市場觀察、產業帶介紹、企業案例及供應鏈問答，逐步建立清楚的主題關係。',
   },
 ]
 
@@ -176,10 +206,10 @@ export function ProposalDirectionPlan() {
           <section className="max-w-4xl border-b border-[#d7c8b5] pb-14 sm:pb-20">
             <p className="text-xs font-bold tracking-[0.22em] text-[#9f5d35]">網站重新定位 · 執行前確認</p>
             <h1 className="mt-5 max-w-3xl font-serif text-[clamp(2.8rem,6vw,5.8rem)] font-bold leading-[0.98] tracking-[-0.04em]">
-              先建立觀點<br />再延伸供應鏈
+              用內容累積流量<br />把需求帶進顧問服務
             </h1>
             <p className="mt-8 max-w-2xl text-lg leading-8 text-[#6f6257]">
-              我已依照最新需求重新整理新站方向。網站會先累積內容、觀點、文章與市場觀察，再由這些內容延伸到產業帶、供應鏈推薦及可能的商品合作。第一階段不把網站定義成商城，也不預設所有推薦內容都要直接交易。
+              我已將新站方向補上完整的內容轉換路徑。網站會持續發布觀點、文章與市場觀察，讓搜尋流量先進入內容，再透過官方 LINE 接觸顧問服務。確認實際需求後，才進一步提供報價、產業鏈接觸或供應鏈連接。
             </p>
             <a
               href="#direction"
@@ -196,7 +226,7 @@ export function ProposalDirectionPlan() {
             <div className="mt-8 bg-[#28231f] p-6 text-[#fffaf2] sm:p-9">
               <p className="text-xs font-bold tracking-[0.18em] text-[#dca77f]">建議定位</p>
               <p className="mt-5 max-w-3xl font-serif text-2xl font-bold leading-relaxed sm:text-3xl">
-                以內容與市場觀察建立判斷，再從文章延伸到中國大陸產業帶、供應鏈與合作機會。
+                以文章建立搜尋流量與專業信任，讓有需求的讀者進入顧問諮詢，再延伸到報價及兩岸產業鏈合作。
               </p>
             </div>
             <ul className="mt-8 grid gap-px border border-[#d7c8b5] bg-[#d7c8b5] sm:grid-cols-2">
@@ -211,15 +241,25 @@ export function ProposalDirectionPlan() {
 
           <section id="experience" className="scroll-mt-8 border-b border-[#d7c8b5] py-14 sm:py-20">
             <p className="text-xs font-bold tracking-[0.2em] text-[#9f5d35]">02 · EXPERIENCE</p>
-            <h2 className="mt-3 font-serif text-3xl font-bold sm:text-4xl">內容如何一路延伸到合作</h2>
-            <p className="mt-5 max-w-2xl leading-7 text-[#6f6257]">訪客先透過文章理解市場與產業，再進入供應鏈推薦。商品與合作是內容累積後的延伸，不會搶走首頁的主角位置。</p>
-            <div className="mt-9 grid border border-[#d7c8b5] md:grid-cols-3">
+            <h2 className="mt-3 font-serif text-3xl font-bold sm:text-4xl">從閱讀流量到顧問合作的完整路徑</h2>
+            <p className="mt-5 max-w-2xl leading-7 text-[#6f6257]">這條路徑需要足夠的文章量、穩定更新及清楚的主題關係。每篇內容都要能回答讀者的實際問題，並在適當位置提供下一步聯繫方式。</p>
+            <div className="mt-9 grid border border-[#d7c8b5] md:grid-cols-2 xl:grid-cols-5">
               {editorialFlow.map((step, index) => (
-                <article key={step.number} className="relative border-b border-[#d7c8b5] p-6 last:border-b-0 md:border-b-0 md:border-r md:last:border-r-0 sm:p-8">
+                <article key={step.number} className="relative border-b border-[#d7c8b5] p-6 last:border-b-0 md:border-r md:[&:nth-child(even)]:border-r-0 xl:border-b-0 xl:border-r xl:[&:nth-child(even)]:border-r xl:last:border-r-0 sm:p-7">
                   <p className="font-serif text-3xl font-bold text-[#b88a67]">{step.number}</p>
                   <h3 className="mt-6 font-serif text-2xl font-bold">{step.title}</h3>
                   <p className="mt-3 text-sm leading-6 text-[#66594e]">{step.description}</p>
-                  {index < editorialFlow.length - 1 && <span aria-hidden="true" className="mt-5 block text-xl text-[#9f5d35] md:absolute md:right-[-9px] md:top-1/2 md:z-10 md:mt-0 md:-translate-y-1/2 md:bg-[#fffcf6] md:px-1">→</span>}
+                  {index < editorialFlow.length - 1 && <span aria-hidden="true" className="mt-5 block text-xl text-[#9f5d35] xl:absolute xl:right-[-9px] xl:top-1/2 xl:z-10 xl:mt-0 xl:-translate-y-1/2 xl:bg-[#fffcf6] xl:px-1">→</span>}
+                </article>
+              ))}
+            </div>
+            <p className="mt-12 text-xs font-bold tracking-[0.18em] text-[#9f5d35]">兩個長期成果</p>
+            <div className="mt-5 grid gap-px border border-[#d7c8b5] bg-[#d7c8b5] md:grid-cols-2">
+              {outcomeGoals.map((goal) => (
+                <article key={goal.title} className="bg-[#28231f] p-6 text-[#fffaf2] sm:p-8">
+                  <p className="text-xs font-bold tracking-[0.16em] text-[#dca77f]">{goal.eyebrow}</p>
+                  <h3 className="mt-4 font-serif text-2xl font-bold">{goal.title}</h3>
+                  <p className="mt-4 leading-7 text-[#e7dacc]">{goal.description}</p>
                 </article>
               ))}
             </div>
@@ -237,12 +277,12 @@ export function ProposalDirectionPlan() {
               <div className="bg-[#ede2d3] p-6 sm:p-8">
                 <p className="text-xs font-bold tracking-[0.18em] text-[#9f5d35]">首頁主要入口</p>
                 <h3 className="mt-3 font-serif text-2xl font-bold">閱讀最新觀點</h3>
-                <p className="mt-3 leading-7 text-[#66594e]">讓訪客先從近期市場觀察、專題與文章開始認識網站。</p>
+                <p className="mt-3 leading-7 text-[#66594e]">讓訪客從近期市場觀察、專題與文章進站，並沿著相關內容持續閱讀。</p>
               </div>
               <div className="bg-[#ede2d3] p-6 sm:p-8">
                 <p className="text-xs font-bold tracking-[0.18em] text-[#9f5d35]">內容延伸入口</p>
                 <h3 className="mt-3 font-serif text-2xl font-bold">查看供應鏈推薦</h3>
-                <p className="mt-3 leading-7 text-[#66594e]">閱讀企業、產業帶、工廠、檔口與商品的整理內容，有需求時再透過 LINE 詢問。</p>
+                <p className="mt-3 leading-7 text-[#66594e]">閱讀企業、產業帶、工廠、檔口與商品的整理內容，有實際需求時再透過 LINE 進入顧問諮詢。</p>
               </div>
             </div>
           </section>
@@ -273,7 +313,7 @@ export function ProposalDirectionPlan() {
           <section id="materials" className="scroll-mt-8 border-b border-[#d7c8b5] py-14 sm:py-20">
             <p className="text-xs font-bold tracking-[0.2em] text-[#9f5d35]">04 · MATERIALS</p>
             <h2 className="mt-3 font-serif text-3xl font-bold sm:text-4xl">需要請您準備的資料</h2>
-            <p className="mt-5 max-w-2xl leading-7 text-[#6f6257]">網站架構可以先進行，真正決定新站內容厚度的仍是觀點文章與第一批供應鏈推薦。建議先集中準備以下四組資料。</p>
+            <p className="mt-5 max-w-2xl leading-7 text-[#6f6257]">網站架構可以先進行，內容數量、專業資料與顧問接洽流程會決定這條轉換路徑能否持續運作。建議先集中準備以下四組資料。</p>
             <div className="mt-10 grid gap-px border border-[#d7c8b5] bg-[#d7c8b5] lg:grid-cols-2">
               {materialGroups.map((group) => (
                 <article key={group.number} className="bg-[#f8f1e7] p-6 sm:p-8">
@@ -293,7 +333,7 @@ export function ProposalDirectionPlan() {
 
           <section id="decisions" className="scroll-mt-8 border-b border-[#d7c8b5] py-14 sm:py-20">
             <p className="text-xs font-bold tracking-[0.2em] text-[#9f5d35]">05 · DECISIONS</p>
-            <h2 className="mt-3 font-serif text-3xl font-bold sm:text-4xl">正式修改前，還需要確認四件事</h2>
+            <h2 className="mt-3 font-serif text-3xl font-bold sm:text-4xl">正式修改前，還需要確認五件事</h2>
             <div className="mt-10 space-y-5">
               {decisions.map((decision, index) => (
                 <article key={decision.title} className="border border-[#d7c8b5] bg-[#fffcf6] p-6 sm:p-8">
@@ -316,14 +356,15 @@ export function ProposalDirectionPlan() {
           <section id="next-step" className="scroll-mt-8 py-14 sm:py-20">
             <p className="text-xs font-bold tracking-[0.2em] text-[#9f5d35]">06 · NEXT STEP</p>
             <h2 className="mt-3 font-serif text-3xl font-bold sm:text-4xl">請確認這個方向是否正確</h2>
-            <p className="mt-5 max-w-2xl leading-7 text-[#6f6257]">如果整體方向符合預期，請回覆是否同意下列五項。需要調整的地方，也可以直接逐項註明。</p>
+            <p className="mt-5 max-w-2xl leading-7 text-[#6f6257]">如果整體方向符合預期，請回覆是否同意下列六項。需要調整的地方，也可以直接逐項註明。</p>
             <ol className="mt-9 border-y border-[#d7c8b5]">
               {[
                 '以內容、觀點、文章與市場觀察作為網站核心。',
-                '內容自然延伸到產業帶與供應鏈推薦，再依實際需求發展合作。',
-                '前台使用「供應鏈推薦」，不以「商城」作為第一階段定位。',
-                '推薦目錄可同時收錄企業、團隊、產業帶、工廠、檔口、商品與合作專案。',
-                '第一階段以內容展示及 LINE 詢問為主，購買與 B2B 功能保留彈性。',
+                '文章透過適當的官方 LINE 入口，把有需求的讀者帶入顧問諮詢。',
+                '顧問接觸後先釐清需求，再進行報價、產業鏈接觸或供應鏈連接。',
+                '後台改成文章、專題、主題分類與供應鏈推薦優先的內容管理方式。',
+                '前台保留「供應鏈推薦」，購買與 B2B 功能依個別案例彈性啟用。',
+                '網站持續建立兩岸產業知識內容，提升搜尋曝光及 AI 理解與引用的機會。',
               ].map((item, index) => (
                 <li key={item} className="flex gap-4 border-b border-[#d7c8b5] py-5 last:border-b-0">
                   <FileCheck2 className="mt-0.5 size-5 shrink-0 text-[#9f5d35]" aria-hidden="true" />
@@ -333,7 +374,7 @@ export function ProposalDirectionPlan() {
             </ol>
             <div className="mt-10 bg-[#28231f] p-7 text-[#fffaf2] sm:p-10">
               <p className="text-xs font-bold tracking-[0.18em] text-[#dca77f]">確認後即可開始</p>
-              <p className="mt-4 max-w-2xl font-serif text-2xl font-bold leading-relaxed">收到確認與第一批素材後，我會先完成內容首頁、文章分類與供應鏈推薦的共用版型，再依實際案例補上詢問及合作功能。</p>
+              <p className="mt-4 max-w-2xl font-serif text-2xl font-bold leading-relaxed">收到確認與第一批素材後，我會先完成內容首頁、文章分類、後台內容欄位與 LINE 顧問模組，再建立供應鏈推薦及成效追蹤方式。</p>
             </div>
           </section>
         </div>

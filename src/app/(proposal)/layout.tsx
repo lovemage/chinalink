@@ -18,7 +18,7 @@ const notoSerifTC = Noto_Serif_TC({
 
 export const metadata: Metadata = {
   title: '懂陸姐網站重新定位｜方向確認書',
-  description: '以內容與市場觀察為核心，延伸至產業帶、供應鏈推薦與合作機會的新站方向提案。',
+  description: '以文章與市場觀察累積搜尋流量，延伸至顧問諮詢、服務報價、產業鏈連接與 AI 索引的新站方向提案。',
   robots: { index: false, follow: false },
 }
 export default function ProposalLayout({ children }: { children: React.ReactNode }) {

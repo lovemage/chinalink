@@ -19,6 +19,7 @@ import {
 const navItems = [
   { label: '首頁', href: '/' },
   { label: '服務項目', href: '/services' },
+  { label: '供應鏈案例', href: '/supply-chain' },
   { label: '商品專區', href: '/products' },
   { label: '專欄文章', href: '/blog' },
 ]
@@ -52,7 +53,7 @@ export function Navbar() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden items-center gap-10 md:flex">
+        <nav className="hidden items-center gap-6 lg:flex lg:gap-8">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -120,7 +121,7 @@ export function Navbar() {
         </nav>
 
         {/* Mobile nav */}
-        <div className="md:hidden">
+        <div className="lg:hidden">
           <MobileNav navItems={navItems} />
         </div>
       </div>

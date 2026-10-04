@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { ServiceAccordion } from '@/components/services/ServiceAccordion'
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { getPublishedServicesWithDetails } from '@/lib/queries/services'
 import { getSetting } from '@/lib/queries/settings'
 
@@ -30,6 +31,15 @@ export default async function ServicesPage() {
           </h1>
           <p className="mt-6 max-w-xl text-lg font-light leading-relaxed text-brand-muted">
             從帳號辦理到公司註冊，懂陸姐幫你搞定大陸經營的大小事。點擊展開了解每項服務的完整介紹。
+          </p>
+        </div>
+
+        <div className="mb-10 border-y border-brand-text/15 py-5">
+          <p className="text-sm leading-7 text-brand-text/75">
+            想了解在地貨源如何串接？
+            <Link href="/supply-chain" className="ml-2 font-semibold text-brand-text underline underline-offset-4">
+              看供應鏈串接案例
+            </Link>
           </p>
         </div>
 

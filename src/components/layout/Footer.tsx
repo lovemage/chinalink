@@ -3,6 +3,7 @@ import Image from 'next/image'
 
 const quickLinks = [
   { label: '服務項目', href: '/services' },
+  { label: '供應鏈案例', href: '/supply-chain' },
   { label: '商品專區', href: '/products' },
   { label: 'Blog', href: '/blog' },
   { label: '關於懂陸姐', href: '/about' },

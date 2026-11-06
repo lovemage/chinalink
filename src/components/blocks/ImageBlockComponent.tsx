@@ -22,7 +22,7 @@ export function ImageBlockComponent({ image, caption, alignment }: ImageBlockCom
 
   return (
     <figure className={`my-6 ${align === 'full' ? 'w-full' : 'max-w-2xl'} ${alignmentClasses[align] || ''}`}>
-      <div className="overflow-hidden rounded-xl">
+      <div className="overflow-hidden ">
         <Image
           src={media.url}
           alt={media.alt || ''}

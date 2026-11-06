@@ -27,12 +27,12 @@ export default async function ProductsPage({ searchParams }: PageProps) {
   ])
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-4 md:p-6 space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">產品管理</h1>
+        <h1 className="text-2xl font-bold text-brand-text">產品管理</h1>
         <Link
           href="/admin/products/new"
-          className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          className="px-4 py-2 bg-brand-primary text-white text-sm font-medium hover:bg-brand-deep transition-colors"
         >
           新增產品
         </Link>

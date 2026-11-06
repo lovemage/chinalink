@@ -73,7 +73,7 @@ function paymentStatusSelectClass(status: string): string {
     case 'failed':
       return 'bg-rose-50 text-rose-700 border-rose-200 focus:ring-rose-400'
     case 'expired':
-      return 'bg-gray-100 text-gray-600 border-gray-200 focus:ring-gray-400'
+      return 'bg-gray-100 text-brand-muted border-brand-rule focus:ring-gray-400'
     default:
       return 'bg-amber-50 text-amber-700 border-amber-200 focus:ring-amber-400'
   }
@@ -154,7 +154,7 @@ export default function OrdersTable({
         return (
           <Link
             href={`/admin/orders/${order.id}`}
-            className="font-mono font-medium text-blue-600 hover:text-blue-800"
+            className="font-mono font-medium text-brand-primary hover:text-blue-800"
           >
             {order.orderNumber}
           </Link>
@@ -175,17 +175,17 @@ export default function OrdersTable({
             {order.customerId != null ? (
               <Link
                 href={`/admin/members/${order.customerId}`}
-                className="text-gray-700 hover:text-blue-700 hover:underline"
+                className="text-brand-muted hover:text-brand-deep hover:underline"
               >
                 {name}
               </Link>
             ) : (
-              <span className="text-gray-500">{name}</span>
+              <span className="text-brand-muted">{name}</span>
             )}
             {count > 1 && (
               <span
                 title={`此會員共有 ${count} 筆訂單`}
-                className="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-600"
+                className="inline-flex items-center bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-brand-muted"
               >
                 {count} 筆
               </span>
@@ -198,7 +198,7 @@ export default function OrdersTable({
       key: 'amount',
       label: '金額',
       render: (row: Record<string, unknown>) => (
-        <span className="text-gray-900">
+        <span className="text-brand-text">
           NT$ {((row.amount as number) ?? 0).toLocaleString()}
         </span>
       ),
@@ -215,7 +215,7 @@ export default function OrdersTable({
             disabled={isSaving}
             onClick={(e) => e.stopPropagation()}
             onChange={(e) => handleOrderStatusChange(order.id, e.target.value)}
-            className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-semibold outline-none transition-colors focus:ring-2 disabled:opacity-60 ${orderStatusSelectClass(order.orderStatus)}`}
+            className={`cursor-pointer border px-3 py-1 text-xs font-semibold outline-none transition-colors focus:ring-2 disabled:opacity-60 ${orderStatusSelectClass(order.orderStatus)}`}
           >
             {ORDER_STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -242,7 +242,7 @@ export default function OrdersTable({
               disabled={isSaving}
               onClick={(e) => e.stopPropagation()}
               onChange={(e) => handlePaymentStatusChange(order.id, e.target.value)}
-              className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-semibold outline-none transition-colors focus:ring-2 disabled:opacity-60 ${paymentStatusSelectClass(order.paymentStatus)}`}
+              className={`cursor-pointer border px-3 py-1 text-xs font-semibold outline-none transition-colors focus:ring-2 disabled:opacity-60 ${paymentStatusSelectClass(order.paymentStatus)}`}
             >
               {PAYMENT_STATUS_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -251,7 +251,7 @@ export default function OrdersTable({
               ))}
             </select>
             {method && (
-              <span className="text-[11px] text-gray-400">{method}</span>
+              <span className="text-[11px] text-brand-muted">{method}</span>
             )}
           </div>
         )
@@ -261,7 +261,7 @@ export default function OrdersTable({
       key: 'createdAt',
       label: '日期',
       render: (row: Record<string, unknown>) => (
-        <span className="text-gray-400 text-xs">
+        <span className="text-brand-muted text-xs">
           {row.createdAt
             ? new Date(row.createdAt as string).toLocaleDateString('zh-TW')
             : '—'}
@@ -286,10 +286,10 @@ export default function OrdersTable({
           <button
             key={tab.value}
             onClick={() => handleTabClick(tab.value)}
-            className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+            className={`px-3 py-1 text-xs border transition-colors ${
               initialOrderStatus === tab.value
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-blue-400'
+                ? 'bg-brand-primary text-white border-brand-primary'
+                : 'bg-white text-brand-muted border-brand-rule hover:border-brand-primary'
             }`}
           >
             {tab.label}

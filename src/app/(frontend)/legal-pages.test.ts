@@ -9,8 +9,8 @@ test('footer includes privacy policy and terms links', () => {
 
   assert.match(footer, /隱私權政策/)
   assert.match(footer, /服務條款/)
-  assert.match(footer, /href: '\/privacy-policy'/)
-  assert.match(footer, /href: '\/terms-of-service'/)
+  assert.match(footer, /href="\/privacy-policy"/)
+  assert.match(footer, /href="\/terms-of-service"/)
 })
 
 test('privacy policy page includes core privacy sections', () => {

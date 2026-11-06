@@ -17,7 +17,7 @@ const ToastContext = createContext<ToastContextType | null>(null)
 const typeClasses: Record<Toast['type'], string> = {
   success: 'bg-green-600 text-white',
   error: 'bg-red-600 text-white',
-  info: 'bg-blue-600 text-white',
+  info: 'bg-brand-primary text-white',
 }
 
 const typeIcons: Record<Toast['type'], string> = {
@@ -46,7 +46,7 @@ function ToastItem({ toast, onRemove }: { toast: Toast; onRemove: (id: string) =
 
   return (
     <div
-      className={`flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg text-sm font-medium max-w-sm transition-all duration-300 ${
+      className={`flex items-center gap-2 px-4 py-3 text-sm font-medium max-w-sm transition-all duration-300 ${
         typeClasses[toast.type]
       } ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}`}
     >

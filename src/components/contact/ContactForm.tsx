@@ -42,7 +42,7 @@ export function ContactForm() {
 
   if (status === 'success') {
     return (
-      <div className="rounded-2xl bg-green-50 p-8 text-center">
+      <div className="bg-green-50 p-8 text-center">
         <p className="text-lg font-semibold text-green-700">訊息已送出！</p>
         <p className="mt-2 text-sm text-green-600">我們會盡快回覆您，感謝您的聯繫。</p>
       </div>

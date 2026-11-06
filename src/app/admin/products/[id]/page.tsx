@@ -24,18 +24,18 @@ export default async function EditProductPage({ params }: PageProps) {
   if (!product) notFound()
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-4 md:p-6 space-y-4">
       <div className="flex items-center justify-between">
         <Link
           href="/admin/products"
-          className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+          className="text-sm text-brand-muted hover:text-brand-muted transition-colors"
         >
           ← 返回產品管理
         </Link>
         <DeleteProductButton productId={productId} productTitle={product.title} />
       </div>
 
-      <h1 className="text-2xl font-bold text-gray-900">編輯產品：{product.title}</h1>
+      <h1 className="text-2xl font-bold text-brand-text">編輯產品：{product.title}</h1>
 
       <ProductForm
         product={product}

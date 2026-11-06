@@ -8,8 +8,8 @@ test('frontend has products list and detail pages backed by products collection'
   const listPage = read('app/(frontend)/products/page.tsx')
   const detailPage = read('app/(frontend)/products/[slug]/page.tsx')
 
-  assert.match(listPage, /collection:\s*'products'/)
-  assert.match(detailPage, /collection:\s*'products'/)
+  assert.match(listPage, /getPublishedProductsWithDetails/)
+  assert.match(detailPage, /@\/lib\/queries\/products/)
   assert.match(detailPage, /params:\s*Promise<\{\s*slug:\s*string\s*\}>/)
 })
 

@@ -32,10 +32,10 @@ export function ServiceFilters({ categories }: ServiceFiltersProps) {
       <button
         type="button"
         onClick={() => handleClick('')}
-        className={`rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
+        className={`border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
           !currentCategory
-            ? 'border-brand-primary bg-brand-primary text-white shadow-lg shadow-brand-primary/20'
-            : 'border-brand-primary/15 bg-white/80 text-brand-text hover:border-brand-primary/40 hover:bg-white'
+            ? 'bg-brand-tint font-bold text-brand-text border-brand-tint'
+            : 'border-brand-rule bg-brand-raised text-brand-text hover:bg-brand-tint'
         }`}
       >
         全部
@@ -45,10 +45,10 @@ export function ServiceFilters({ categories }: ServiceFiltersProps) {
           key={cat.id}
           type="button"
           onClick={() => handleClick(cat.slug)}
-          className={`rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
+          className={`border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
             currentCategory === cat.slug
-              ? 'border-brand-primary bg-brand-primary text-white shadow-lg shadow-brand-primary/20'
-              : 'border-brand-primary/15 bg-white/80 text-brand-text hover:border-brand-primary/40 hover:bg-white'
+              ? 'bg-brand-tint font-bold text-brand-text border-brand-tint'
+              : 'border-brand-rule bg-brand-raised text-brand-text hover:bg-brand-tint'
           }`}
         >
           {cat.name}

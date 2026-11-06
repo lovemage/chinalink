@@ -45,15 +45,15 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link
       href={`/products/${product.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-[2.5rem] border border-brand-primary/10 bg-white shadow-xl shadow-brand-primary/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
+      className="group flex h-full flex-col overflow-hidden border border-brand-primary/10 bg-brand-raised transition-all duration-300 "
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-brand-bg m-2 rounded-[2rem]">
+      <div className="relative aspect-[16/10] overflow-hidden bg-brand-bg m-2 ">
         {cover?.url ? (
           <Image
             src={cover.cardUrl || cover.url}
             alt={cover.alt || product.title}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 "
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
         ) : (
@@ -71,12 +71,12 @@ export function ProductCard({ product }: ProductCardProps) {
 
         <div className="mt-auto flex items-end justify-between gap-4 pt-6">
           <div>
-            <p className="text-xs tracking-wider text-brand-muted uppercase">起始價格</p>
+            <p className="text-xs text-brand-muted">起始價格</p>
             <p className="mt-1 font-serif text-xl font-medium text-brand-cta">
               {startingPrice !== null ? `NT$ ${startingPrice.toLocaleString()}` : '待上架'}
             </p>
           </div>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-cta/10 px-4 py-2 text-sm font-medium text-brand-cta transition-all duration-200 group-hover:bg-brand-cta group-hover:text-white">
+          <span className="inline-flex items-center gap-1.5 bg-brand-cta/10 px-4 py-2 text-sm font-medium text-brand-cta transition-all duration-200 group-hover:bg-brand-cta group-hover:text-white">
             <ShoppingCart className="h-4 w-4" />
             加入購物車
           </span>

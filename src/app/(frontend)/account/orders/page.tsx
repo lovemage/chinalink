@@ -66,9 +66,9 @@ export default async function AccountOrdersPage() {
   const ordersList = await getCustomerOrders(customerId)
 
   return (
-    <section className="mx-auto max-w-4xl px-4 py-16 pt-32">
+    <section className="mx-auto max-w-4xl px-4 py-12">
       <div className="mb-8 flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-primary/10">
+        <div className="flex h-10 w-10 items-center justify-center bg-brand-primary/10">
           <Receipt className="h-5 w-5 text-brand-primary" />
         </div>
         <div>
@@ -78,11 +78,11 @@ export default async function AccountOrdersPage() {
       </div>
 
       {ordersList.length === 0 ? (
-        <div className="rounded-2xl border border-brand-primary/10 bg-white p-12 text-center shadow-sm">
+        <div className="border border-brand-primary/10 bg-brand-raised p-12 text-center ">
           <p className="text-brand-muted">目前尚無訂單紀錄</p>
           <Link
             href="/products"
-            className="mt-6 inline-block rounded-2xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-primary/90"
+            className="mt-6 inline-block bg-brand-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-primary/90"
           >
             前往商品專區
           </Link>
@@ -97,7 +97,7 @@ export default async function AccountOrdersPage() {
             return (
               <li
                 key={order.id}
-                className="rounded-2xl border border-brand-primary/10 bg-white p-6 shadow-sm"
+                className="border border-brand-primary/10 bg-brand-raised p-6 "
               >
                 <div className="flex flex-wrap items-start justify-between gap-4 border-b border-brand-primary/8 pb-4">
                   <div>
@@ -111,7 +111,7 @@ export default async function AccountOrdersPage() {
                   </div>
                   <div className="flex flex-col items-end gap-2">
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${status.className}`}
+                      className={`px-3 py-1 text-xs font-semibold ${status.className}`}
                     >
                       {status.label}
                     </span>
@@ -131,7 +131,7 @@ export default async function AccountOrdersPage() {
 
                       return (
                         <li key={item.id} className="flex items-center gap-3 py-3">
-                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-primary/8">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center bg-brand-primary/8">
                             {isProduct ? (
                               <Package className="h-4 w-4 text-brand-primary" />
                             ) : (

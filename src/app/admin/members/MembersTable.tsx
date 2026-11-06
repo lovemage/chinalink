@@ -39,14 +39,14 @@ export default function MembersTable({ members, initialSearch }: MembersTablePro
       key: 'name',
       label: '姓名',
       render: (row: Record<string, unknown>) => (
-        <span className="font-medium text-gray-900">{row.name as string}</span>
+        <span className="font-medium text-brand-text">{row.name as string}</span>
       ),
     },
     {
       key: 'email',
       label: 'Email',
       render: (row: Record<string, unknown>) => (
-        <span className="text-gray-700">{row.email as string}</span>
+        <span className="text-brand-muted">{row.email as string}</span>
       ),
     },
     {
@@ -55,7 +55,7 @@ export default function MembersTable({ members, initialSearch }: MembersTablePro
       render: (row: Record<string, unknown>) => {
         const provider = row.authProvider as string
         return (
-          <span className="text-gray-600">
+          <span className="text-brand-muted">
             {AUTH_PROVIDER_LABELS[provider] ?? provider}
           </span>
         )
@@ -65,7 +65,7 @@ export default function MembersTable({ members, initialSearch }: MembersTablePro
       key: 'lastLoginAt',
       label: '最後登入',
       render: (row: Record<string, unknown>) => (
-        <span className="text-gray-400 text-xs">
+        <span className="text-brand-muted text-xs">
           {row.lastLoginAt
             ? new Date(row.lastLoginAt as string).toLocaleDateString('zh-TW')
             : '—'}
@@ -76,7 +76,7 @@ export default function MembersTable({ members, initialSearch }: MembersTablePro
       key: 'createdAt',
       label: '註冊日期',
       render: (row: Record<string, unknown>) => (
-        <span className="text-gray-400 text-xs">
+        <span className="text-brand-muted text-xs">
           {row.createdAt
             ? new Date(row.createdAt as string).toLocaleDateString('zh-TW')
             : '—'}

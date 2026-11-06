@@ -23,20 +23,14 @@ export function LegalPageLayout({
 }: LegalPageLayoutProps) {
   return (
     <>
-      <section className="relative overflow-hidden bg-brand-bg pt-32 pb-18 sm:pt-36 sm:pb-24">
-        <div className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-[28rem] w-[72rem] max-w-[92vw] rounded-full bg-brand-primary/6 blur-3xl" />
-        <div className="pointer-events-none absolute right-0 top-20 h-56 w-56 rounded-full bg-brand-cta/6 blur-3xl" />
+      <section className="relative overflow-hidden bg-brand-bg pt-10 pb-16 sm:pt-14 sm:pb-20">
 
         <div className="relative mx-auto max-w-5xl px-6">
           <div className="max-w-3xl">
-            <div className="mb-6 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-brand-primary">
-              <span className="h-px w-8 bg-brand-primary" />
-              {eyebrow}
-            </div>
-            <h1 className="font-serif text-5xl font-medium tracking-tight text-brand-text sm:text-6xl">
+            <h1 className="font-serif text-[2rem] font-bold leading-tight text-brand-text sm:text-[2.75rem]">
               {title}
             </h1>
-            <p className="mt-6 max-w-2xl text-lg font-light leading-relaxed text-brand-muted sm:text-xl">
+            <p className="mt-4 max-w-2xl text-base leading-8 text-brand-muted">
               {intro}
             </p>
             <p className="mt-8 text-sm text-brand-muted">最後更新：{updatedAt}</p>
@@ -44,11 +38,11 @@ export function LegalPageLayout({
         </div>
       </section>
 
-      <section className="bg-white py-16 sm:py-24">
+      <section className="bg-brand-raised py-16 sm:py-24">
         <div className="mx-auto grid max-w-6xl gap-14 px-6 lg:grid-cols-[18rem_minmax(0,1fr)]">
           <aside className="lg:sticky lg:top-28 lg:self-start">
             <div className="border-l border-brand-primary/20 pl-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-primary">
+              <p className="text-sm font-bold text-brand-text">
                 本頁重點
               </p>
               <nav className="mt-5">

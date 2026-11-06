@@ -17,7 +17,7 @@ interface VariantEditorProps {
 }
 
 const cellClass =
-  'px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 w-full'
+  'px-2 py-1.5 text-sm border border-brand-rule focus:outline-none focus:ring-1 focus:ring-brand-primary w-full'
 
 export default function VariantEditor({ variants, onChange }: VariantEditorProps) {
   function updateVariant(index: number, field: keyof Variant, value: string | number | boolean) {
@@ -60,37 +60,37 @@ export default function VariantEditor({ variants, onChange }: VariantEditorProps
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="bg-gray-50 border border-gray-200">
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 border-r border-gray-200 min-w-[90px]">
+              <tr className="bg-brand-bg border border-brand-rule">
+                <th className="px-3 py-2 text-left text-xs font-medium text-brand-muted border-r border-brand-rule min-w-[90px]">
                   SKU
                 </th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 border-r border-gray-200 min-w-[110px]">
+                <th className="px-3 py-2 text-left text-xs font-medium text-brand-muted border-r border-brand-rule min-w-[110px]">
                   名稱
                 </th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 border-r border-gray-200 min-w-[90px]">
+                <th className="px-3 py-2 text-left text-xs font-medium text-brand-muted border-r border-brand-rule min-w-[90px]">
                   價格
                 </th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 border-r border-gray-200 min-w-[90px]">
+                <th className="px-3 py-2 text-left text-xs font-medium text-brand-muted border-r border-brand-rule min-w-[90px]">
                   原價
                 </th>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 border-r border-gray-200 min-w-[80px]">
+                <th className="px-3 py-2 text-left text-xs font-medium text-brand-muted border-r border-brand-rule min-w-[80px]">
                   庫存
                 </th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 border-r border-gray-200 w-14">
+                <th className="px-3 py-2 text-center text-xs font-medium text-brand-muted border-r border-brand-rule w-14">
                   預設
                 </th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 border-r border-gray-200 w-14">
+                <th className="px-3 py-2 text-center text-xs font-medium text-brand-muted border-r border-brand-rule w-14">
                   啟用
                 </th>
-                <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 w-12">
+                <th className="px-3 py-2 text-center text-xs font-medium text-brand-muted w-12">
                   操作
                 </th>
               </tr>
             </thead>
             <tbody>
               {variants.map((v, i) => (
-                <tr key={i} className="border border-gray-200 hover:bg-gray-50 transition-colors">
-                  <td className="px-2 py-1.5 border-r border-gray-200">
+                <tr key={i} className="border border-brand-rule hover:bg-brand-bg transition-colors">
+                  <td className="px-2 py-1.5 border-r border-brand-rule">
                     <input
                       type="text"
                       value={v.sku}
@@ -99,7 +99,7 @@ export default function VariantEditor({ variants, onChange }: VariantEditorProps
                       className={cellClass}
                     />
                   </td>
-                  <td className="px-2 py-1.5 border-r border-gray-200">
+                  <td className="px-2 py-1.5 border-r border-brand-rule">
                     <input
                       type="text"
                       value={v.name}
@@ -108,7 +108,7 @@ export default function VariantEditor({ variants, onChange }: VariantEditorProps
                       className={cellClass}
                     />
                   </td>
-                  <td className="px-2 py-1.5 border-r border-gray-200">
+                  <td className="px-2 py-1.5 border-r border-brand-rule">
                     <input
                       type="number"
                       min="0"
@@ -118,7 +118,7 @@ export default function VariantEditor({ variants, onChange }: VariantEditorProps
                       className={cellClass}
                     />
                   </td>
-                  <td className="px-2 py-1.5 border-r border-gray-200">
+                  <td className="px-2 py-1.5 border-r border-brand-rule">
                     <input
                       type="number"
                       min="0"
@@ -131,7 +131,7 @@ export default function VariantEditor({ variants, onChange }: VariantEditorProps
                       className={cellClass}
                     />
                   </td>
-                  <td className="px-2 py-1.5 border-r border-gray-200">
+                  <td className="px-2 py-1.5 border-r border-brand-rule">
                     <input
                       type="number"
                       min="0"
@@ -141,21 +141,21 @@ export default function VariantEditor({ variants, onChange }: VariantEditorProps
                       className={cellClass}
                     />
                   </td>
-                  <td className="px-2 py-1.5 border-r border-gray-200 text-center">
+                  <td className="px-2 py-1.5 border-r border-brand-rule text-center">
                     <input
                       type="radio"
                       name="defaultVariant"
                       checked={v.isDefault}
                       onChange={() => setDefault(i)}
-                      className="w-4 h-4 text-blue-600 cursor-pointer"
+                      className="w-4 h-4 text-brand-primary cursor-pointer"
                     />
                   </td>
-                  <td className="px-2 py-1.5 border-r border-gray-200 text-center">
+                  <td className="px-2 py-1.5 border-r border-brand-rule text-center">
                     <input
                       type="checkbox"
                       checked={v.isActive}
                       onChange={(e) => updateVariant(i, 'isActive', e.target.checked)}
-                      className="w-4 h-4 rounded border-gray-300 text-blue-600 cursor-pointer"
+                      className="w-4 h-4 border-brand-rule text-brand-primary cursor-pointer"
                     />
                   </td>
                   <td className="px-2 py-1.5 text-center">
@@ -176,13 +176,13 @@ export default function VariantEditor({ variants, onChange }: VariantEditorProps
       )}
 
       {variants.length === 0 && (
-        <p className="text-sm text-gray-400">尚無規格，請至少新增一個規格</p>
+        <p className="text-sm text-brand-muted">尚無規格，請至少新增一個規格</p>
       )}
 
       <button
         type="button"
         onClick={addVariant}
-        className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+        className="text-xs text-brand-primary hover:text-brand-deep font-medium"
       >
         + 新增規格
       </button>

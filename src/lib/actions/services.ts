@@ -1,5 +1,6 @@
 'use server'
 
+import { getAdminFromCookies } from '@/lib/auth-admin'
 import { db } from '@/lib/db'
 import { services, serviceAddons, serviceFeatures, media } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -38,6 +39,7 @@ async function findOrCreateMedia(url: string): Promise<number> {
 export async function createService(
   formData: FormData
 ): Promise<{ success: true; id: number } | { error: string }> {
+  if (!(await getAdminFromCookies())) return { error: '登入已過期，請重新登入' }
   try {
     const title = (formData.get('title') as string)?.trim()
     if (!title) return { error: '服務名稱為必填' }
@@ -156,6 +158,7 @@ export async function createService(
 export async function updateService(
   formData: FormData
 ): Promise<{ success: true } | { error: string }> {
+  if (!(await getAdminFromCookies())) return { error: '登入已過期，請重新登入' }
   try {
     const idRaw = formData.get('id') as string
     if (!idRaw) return { error: '缺少服務 ID' }
@@ -282,6 +285,7 @@ export async function updateService(
 }
 
 export async function deleteService(id: number): Promise<{ success: true } | { error: string }> {
+  if (!(await getAdminFromCookies())) return { error: '登入已過期，請重新登入' }
   try {
     await db.delete(services).where(eq(services.id, id))
     revalidatePath('/admin/services')

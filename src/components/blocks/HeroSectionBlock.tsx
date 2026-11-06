@@ -11,7 +11,7 @@ export function HeroSectionBlock({ heading, subheading, backgroundImage }: HeroS
 
   return (
     <section
-      className="relative flex min-h-[320px] items-center justify-center rounded-2xl bg-brand-primary/10 px-6 py-16 text-center"
+      className="relative flex min-h-[320px] items-center justify-center bg-brand-primary/10 px-6 py-16 text-center"
       style={
         bgImage?.url
           ? {

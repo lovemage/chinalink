@@ -31,26 +31,26 @@ const chainSteps = ['看料', '設計', '雕刻', '拋光', '檢測', '批發與
 export default function SihuiJadeCasePage() {
   return (
     <article className="bg-brand-bg text-brand-text">
-      <header className="mx-auto max-w-7xl px-6 pb-14 pt-32 sm:pb-20 sm:pt-40">
+      <header className="mx-auto max-w-7xl px-6 pb-14 pt-8 sm:pb-20 sm:pt-10">
         <nav aria-label="麵包屑" className="mb-10 flex flex-wrap items-center gap-2 text-sm text-brand-text/70">
           <Link href="/">首頁</Link>
           <span aria-hidden="true">/</span>
-          <Link href="/supply-chain">供應鏈案例</Link>
+          <Link href="/supply-chain">供應鏈推薦</Link>
           <span aria-hidden="true">/</span>
           <span aria-current="page">四會翡翠</span>
         </nav>
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_1.05fr] lg:gap-16">
           <div>
-            <p className="text-sm font-semibold tracking-widest text-[#3e5948]">供應鏈串接案例 · {sihuiJadeCase.location}</p>
-            <h1 className="mt-5 font-serif text-4xl leading-[1.35] tracking-tight sm:text-5xl lg:text-6xl">
+            <p className="text-sm font-semibold  text-[var(--color-brand-primary)]">供應鏈串接案例 · {sihuiJadeCase.location}</p>
+            <h1 className="mt-5 font-serif text-4xl leading-[1.35]  sm:text-5xl lg:text-6xl">
               廣東四會<br />翡翠供應鏈
             </h1>
-            <p className="mt-5 font-serif text-xl leading-relaxed text-[#3e5948] sm:text-2xl">熟門熟路的在地人脈</p>
+            <p className="mt-5 font-serif text-xl leading-relaxed text-[var(--color-brand-primary)] sm:text-2xl">熟門熟路的在地人脈</p>
             <p className="mt-6 max-w-xl text-base leading-8 text-brand-text/75 sm:text-lg">
               翡翠是高單價、非標準化的商品。從台灣找貨源，除了看商品，也需要了解對方的看料經驗、加工判斷，以及在當地長期累積的信用。
             </p>
             <p className="mt-6 text-sm text-brand-text/70">懂陸姐 · 在地人脈與產業觀察</p>
-            <Link href="#connection" className="mt-8 inline-flex min-h-11 items-center gap-3 border-b border-[#3e5948] text-sm font-semibold text-[#3e5948]">
+            <Link href="#connection" className="mt-8 inline-flex min-h-11 items-center gap-3 border-b border-[var(--color-brand-primary)] text-sm font-semibold text-[var(--color-brand-primary)]">
               看懂這條供應鏈
               <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
@@ -70,10 +70,10 @@ export default function SihuiJadeCasePage() {
         </div>
       </header>
 
-      <nav aria-label="案例章節" className="border-y border-brand-text/15 bg-[#eef1e8]">
+      <nav aria-label="案例章節" className="border-y border-brand-text/15 bg-[var(--color-brand-tint)]">
         <div className="mx-auto flex max-w-7xl flex-wrap gap-x-7 gap-y-1 px-6 py-4">
           {sections.map((section) => (
-            <Link key={section.id} href={`#${section.id}`} className="inline-flex min-h-11 items-center text-sm font-medium text-[#3e5948] underline-offset-8 hover:underline">
+            <Link key={section.id} href={`#${section.id}`} className="inline-flex min-h-11 items-center text-sm font-medium text-[var(--color-brand-primary)] underline-offset-8 hover:underline">
               {section.label}
             </Link>
           ))}
@@ -83,18 +83,18 @@ export default function SihuiJadeCasePage() {
       <div className="mx-auto max-w-6xl px-6 py-16 sm:py-24">
         <section id="connection" aria-labelledby="connection-heading" className="scroll-mt-28 grid gap-8 md:grid-cols-[1fr_2fr] md:gap-16">
           <div>
-            <p className="text-xs font-semibold tracking-widest text-[#3e5948]">在地連結</p>
+            <p className="text-xs font-semibold  text-[var(--color-brand-primary)]">在地連結</p>
             <h2 id="connection-heading" className="mt-4 font-serif text-2xl leading-relaxed sm:text-3xl">這條人脈<br className="hidden md:block" />怎麼接起來</h2>
           </div>
           <div className="space-y-5 text-base leading-8 text-brand-text/80 sm:text-lg">
             <p>我在大陸生活十多年，有香港朋友長期在四會做翡翠加工、經營工廠，也做了十多年。英姐與芬姐，都是透過這些熟人關係認識、實際接觸過的在地從業者。</p>
             <p>這些關係讓我能了解她們從哪裡做起、在當地經營了多久，以及她們和加工端、客商之間的往來。台灣買家可以先認識合作對象，再評估具體貨源與加工需求。</p>
-            <div className="bg-[#eef1e8] p-6 sm:p-8">
-              <p className="mb-4 text-sm font-semibold text-[#3e5948]">本案例的串接關係</p>
+            <div className="bg-[var(--color-brand-tint)] p-6 sm:p-8">
+              <p className="mb-4 text-sm font-semibold text-[var(--color-brand-primary)]">本案例的串接關係</p>
               <ol className="flex flex-wrap items-center gap-x-3 gap-y-3 text-sm font-medium leading-7 text-brand-text">
                 {['台灣買家', '懂陸姐', '長期在四會經營的香港朋友', '英姐、芬姐等在地從業者'].map((item, index) => (
                   <li key={item} className="inline-flex items-center gap-3">
-                    {index > 0 && <ArrowRight className="size-4 shrink-0 text-[#3e5948]" aria-hidden="true" />}
+                    {index > 0 && <ArrowRight className="size-4 shrink-0 text-[var(--color-brand-primary)]" aria-hidden="true" />}
                     {item}
                   </li>
                 ))}
@@ -107,7 +107,7 @@ export default function SihuiJadeCasePage() {
         <section id="industry" aria-labelledby="industry-heading" className="mt-16 scroll-mt-28 border-t border-brand-text/15 pt-12 sm:mt-24 sm:pt-16">
           <div className="grid gap-8 md:grid-cols-[1fr_2fr] md:gap-16">
             <div>
-              <p className="text-xs font-semibold tracking-widest text-[#3e5948]">產業背景</p>
+              <p className="text-xs font-semibold  text-[var(--color-brand-primary)]">產業背景</p>
               <h2 id="industry-heading" className="mt-4 font-serif text-2xl leading-relaxed sm:text-3xl">認識四會<br className="hidden md:block" />翡翠產業帶</h2>
             </div>
             <div className="space-y-5 text-base leading-8 text-brand-text/80 sm:text-lg">
@@ -116,11 +116,11 @@ export default function SihuiJadeCasePage() {
               <p>改革開放前後到 1990 年代，珠三角珠寶產業成長，廣州、香港與周邊城市的人才、訂單與資金往來增加。四會原有的玉雕工匠與加工基礎，逐步吸引加工、交易及配套資源聚集。</p>
               <p>到了 1990 年代至 2000 年代，天光墟、玉器街與玉器城等專業市場逐漸成熟。香港、台灣及其他地區的客商前來找加工、看貨、做貨，當地也發展出更完整的產業鏈。</p>
               <div className="pt-3">
-                <h3 className="text-sm font-semibold text-[#3e5948]">原料進入四會後的加工與交易環節</h3>
+                <h3 className="text-sm font-semibold text-[var(--color-brand-primary)]">原料進入四會後的加工與交易環節</h3>
                 <ol className="mt-4 grid grid-cols-2 border-t border-brand-text/15 sm:grid-cols-3">
                   {chainSteps.map((step, index) => (
                     <li key={step} className="flex items-center gap-3 border-b border-brand-text/15 py-4 text-sm">
-                      <span className="font-playfair text-lg text-[#3e5948]">{String(index + 1).padStart(2, '0')}</span>
+                      <span className="text-lg text-[var(--color-brand-primary)]">{String(index + 1).padStart(2, '0')}</span>
                       <span>{step}</span>
                     </li>
                   ))}
@@ -137,7 +137,7 @@ export default function SihuiJadeCasePage() {
               <figcaption className="mt-3 text-xs leading-6 text-brand-text/70">拜訪英姐時的照片，由懂陸姐提供。</figcaption>
             </figure>
             <div>
-              <p className="text-xs font-semibold tracking-widest text-[#3e5948]">在地從業者 · 英姐</p>
+              <p className="text-xs font-semibold  text-[var(--color-brand-primary)]">在地從業者 · 英姐</p>
               <h2 id="ying-heading" className="mt-4 font-serif text-2xl leading-relaxed sm:text-3xl">從看料、管貨<br />到自己的店鋪與設計</h2>
               <div className="mt-6 space-y-5 text-base leading-8 text-brand-text/80 sm:text-lg">
                 <p>英姐是四會本地人。我透過長期在四會做翡翠的香港朋友認識她，也實際拜訪過她。</p>
@@ -152,7 +152,7 @@ export default function SihuiJadeCasePage() {
         <section id="fen" aria-labelledby="fen-heading" className="mt-16 scroll-mt-28 border-t border-brand-text/15 pt-12 sm:mt-24 sm:pt-16">
           <div className="grid gap-8 md:grid-cols-[1fr_2fr] md:gap-16">
             <div>
-              <p className="text-xs font-semibold tracking-widest text-[#3e5948]">在地從業者 · 芬姐</p>
+              <p className="text-xs font-semibold  text-[var(--color-brand-primary)]">在地從業者 · 芬姐</p>
               <h2 id="fen-heading" className="mt-4 font-serif text-2xl leading-relaxed sm:text-3xl">從工廠第一線<br />到文寶齋翡翠博物館</h2>
             </div>
             <div className="space-y-5 text-base leading-8 text-brand-text/80 sm:text-lg">
@@ -164,8 +164,8 @@ export default function SihuiJadeCasePage() {
           </div>
         </section>
 
-        <section aria-labelledby="trust-heading" className="mt-16 bg-[#eef1e8] p-6 sm:mt-24 sm:p-12">
-          <p className="text-xs font-semibold tracking-widest text-[#3e5948]">懂陸姐的觀察</p>
+        <section aria-labelledby="trust-heading" className="mt-16 bg-[var(--color-brand-tint)] p-6 sm:mt-24 sm:p-12">
+          <p className="text-xs font-semibold  text-[var(--color-brand-primary)]">懂陸姐的觀察</p>
           <h2 id="trust-heading" className="mt-4 font-serif text-2xl leading-relaxed sm:text-3xl">為什麼看重長期留在產業裡的人</h2>
           <div className="mt-6 max-w-3xl space-y-5 text-base leading-8 text-brand-text/80 sm:text-lg">
             <p>近十多年，直播與短影音帶來新的客群，也吸引許多外地團隊進入四會。高單價商品的交易環節增加後，借貨、貨款糾紛與誇大宣傳等問題，都讓合作對象的信用更受重視。</p>
@@ -177,7 +177,7 @@ export default function SihuiJadeCasePage() {
         <section id="cooperation" aria-labelledby="cooperation-heading" className="mt-16 scroll-mt-28 sm:mt-24">
           <div className="grid gap-8 md:grid-cols-[1fr_2fr] md:gap-16">
             <div>
-              <p className="text-xs font-semibold tracking-widest text-[#3e5948]">合作評估</p>
+              <p className="text-xs font-semibold  text-[var(--color-brand-primary)]">合作評估</p>
               <h2 id="cooperation-heading" className="mt-4 font-serif text-2xl leading-relaxed sm:text-3xl">先了解人<br />再逐件確認條件</h2>
             </div>
             <div>
@@ -190,7 +190,7 @@ export default function SihuiJadeCasePage() {
               <div className="mt-10">
                 <h3 className="font-serif text-xl">想找四會翡翠貨源或加工資源？</h3>
                 <p className="mt-3 text-base leading-8 text-brand-text/75">聯繫時可以先說明想找的品類，以及採購或加工需求，讓懂陸姐了解你的方向，再討論是否有合適的在地資源。</p>
-                <Link href="/contact" className="mt-6 inline-flex min-h-12 items-center gap-3 bg-[#3e5948] px-6 py-3 text-sm font-semibold text-[#fff7ed] transition-colors hover:bg-[#2f4537]">
+                <Link href="/contact" className="mt-6 inline-flex min-h-12 items-center gap-3 bg-[var(--color-brand-primary)] px-6 py-3 text-sm font-semibold text-[var(--color-brand-raised)] transition-colors hover:bg-[var(--color-brand-deep)]">
                   和懂陸姐聊聊供應鏈需求
                   <ArrowRight className="size-4" aria-hidden="true" />
                 </Link>
@@ -199,7 +199,7 @@ export default function SihuiJadeCasePage() {
           </div>
         </section>
         <div className="mt-16 border-t border-brand-text/15 pt-6">
-          <Link href="/supply-chain" className="inline-flex min-h-11 items-center text-sm font-semibold text-[#3e5948] underline underline-offset-4">返回供應鏈案例</Link>
+          <Link href="/supply-chain" className="inline-flex min-h-11 items-center text-sm font-semibold text-[var(--color-brand-primary)] underline underline-offset-4">返回供應鏈案例</Link>
         </div>
       </div>
     </article>

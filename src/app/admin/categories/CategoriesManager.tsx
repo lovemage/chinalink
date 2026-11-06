@@ -21,7 +21,6 @@ interface Props {
 const TABS: { label: string; type: CategoryType }[] = [
   { label: '服務分類', type: 'service' },
   { label: '商品分類', type: 'product' },
-  { label: '文章分類', type: 'blog' },
 ]
 
 export function CategoriesManager({ blogCategories, serviceCategories, productCategories }: Props) {
@@ -63,7 +62,7 @@ export function CategoriesManager({ blogCategories, serviceCategories, productCa
   return (
     <div className="mt-6">
       {/* Tabs */}
-      <div className="flex border-b border-gray-200">
+      <div className="flex border-b border-brand-rule">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.type
           return (
@@ -77,7 +76,7 @@ export function CategoriesManager({ blogCategories, serviceCategories, productCa
                 'px-5 py-2.5 text-sm font-medium border-b-2 transition-colors',
                 isActive
                   ? 'border-[#F4845F] text-[#F4845F]'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                  : 'border-transparent text-brand-muted hover:text-brand-muted hover:border-brand-rule',
               ].join(' ')}
             >
               {tab.label}
@@ -99,12 +98,12 @@ export function CategoriesManager({ blogCategories, serviceCategories, productCa
             name="name"
             placeholder="輸入新分類名稱"
             required
-            className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F4845F] focus:border-transparent"
+            className="flex-1 border border-brand-rule px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#F4845F] focus:border-transparent"
           />
           <button
             type="submit"
             disabled={isPending}
-            className="rounded-lg bg-[#F4845F] px-4 py-2 text-sm font-medium text-white hover:bg-[#e07550] disabled:opacity-50 transition-colors"
+            className="bg-[#F4845F] px-4 py-2 text-sm font-medium text-white hover:bg-[#e07550] disabled:opacity-50 transition-colors"
           >
             新增
           </button>
@@ -112,9 +111,9 @@ export function CategoriesManager({ blogCategories, serviceCategories, productCa
 
         {/* Category list */}
         {cats.length === 0 ? (
-          <p className="text-sm text-gray-400 py-4 text-center">尚無分類</p>
+          <p className="text-sm text-brand-muted py-4 text-center">尚無分類</p>
         ) : (
-          <ul className="divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white">
+          <ul className="divide-y divide-gray-100 border border-brand-rule bg-white">
             {cats.map((cat) => (
               <li key={cat.id} className="flex items-center gap-3 px-4 py-3">
                 {editingId === cat.id ? (
@@ -129,19 +128,19 @@ export function CategoriesManager({ blogCategories, serviceCategories, productCa
                       defaultValue={cat.name}
                       required
                       autoFocus
-                      className="flex-1 rounded border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#F4845F]"
+                      className="flex-1 border border-brand-rule px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#F4845F]"
                     />
                     <button
                       type="submit"
                       disabled={isPending}
-                      className="rounded bg-[#F4845F] px-3 py-1 text-xs font-medium text-white hover:bg-[#e07550] disabled:opacity-50"
+                      className="bg-[#F4845F] px-3 py-1 text-xs font-medium text-white hover:bg-[#e07550] disabled:opacity-50"
                     >
                       儲存
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditingId(null)}
-                      className="rounded border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:bg-gray-50"
+                      className="border border-brand-rule px-3 py-1 text-xs text-brand-muted hover:bg-brand-bg"
                     >
                       取消
                     </button>
@@ -149,20 +148,20 @@ export function CategoriesManager({ blogCategories, serviceCategories, productCa
                 ) : (
                   <>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-800 truncate">{cat.name}</p>
-                      <p className="text-xs text-gray-400 truncate">{cat.slug}</p>
+                      <p className="text-sm font-medium text-brand-text truncate">{cat.name}</p>
+                      <p className="text-xs text-brand-muted truncate">{cat.slug}</p>
                     </div>
                     <button
                       onClick={() => setEditingId(cat.id)}
                       disabled={isPending}
-                      className="rounded border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                      className="border border-brand-rule px-3 py-1 text-xs text-brand-muted hover:bg-brand-bg disabled:opacity-50"
                     >
                       編輯
                     </button>
                     <button
                       onClick={() => handleDelete(cat.id, cat.name)}
                       disabled={isPending}
-                      className="rounded border border-red-200 px-3 py-1 text-xs text-red-500 hover:bg-red-50 disabled:opacity-50"
+                      className="border border-red-200 px-3 py-1 text-xs text-red-500 hover:bg-red-50 disabled:opacity-50"
                     >
                       刪除
                     </button>

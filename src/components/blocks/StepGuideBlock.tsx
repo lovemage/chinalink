@@ -23,7 +23,7 @@ export function StepGuideBlock({ steps }: StepGuideBlockProps) {
 
         return (
           <div key={step.id || index} className="flex gap-4">
-            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-brand-primary text-sm font-bold text-white">
+            <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center bg-brand-primary text-sm font-bold text-white">
               {index + 1}
             </div>
             <div className="flex-1">
@@ -32,7 +32,7 @@ export function StepGuideBlock({ steps }: StepGuideBlockProps) {
                 <RichText data={step.description} />
               </div>
               {screenshot?.url && (
-                <div className="mt-4 overflow-hidden rounded-xl border border-gray-200">
+                <div className="mt-4 overflow-hidden border border-gray-200">
                   <Image
                     src={screenshot.url}
                     alt={screenshot.alt || step.title}

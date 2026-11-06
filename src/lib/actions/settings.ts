@@ -1,5 +1,6 @@
 'use server'
 
+import { getAdminFromCookies } from '@/lib/auth-admin'
 import { db } from '@/lib/db'
 import { siteSettings } from '@/lib/db/schema'
 import { revalidatePath } from 'next/cache'
@@ -8,6 +9,7 @@ import { desc, eq } from 'drizzle-orm'
 export async function updateSettings(
   formData: FormData
 ): Promise<{ success: true } | { error: string }> {
+  if (!(await getAdminFromCookies())) return { error: '登入已過期，請重新登入' }
   try {
     const lineOfficialUrl = String(formData.get('lineOfficialUrl') ?? '')
     const lineOfficialId = String(formData.get('lineOfficialId') ?? '')

@@ -7,6 +7,7 @@ import {
   Briefcase,
   Package,
   FileText,
+  MessageCircleQuestion,
   ShoppingCart,
   Users,
   FolderOpen,
@@ -18,9 +19,10 @@ import { logoutAction } from '@/app/admin/actions'
 
 const navItems = [
   { label: '儀表板', href: '/admin', icon: LayoutDashboard, exact: true },
+  { label: '文章管理', href: '/admin/posts', icon: FileText, exact: false },
+  { label: '問題與交流', href: '/admin/questions', icon: MessageCircleQuestion, exact: false },
   { label: '服務管理', href: '/admin/services', icon: Briefcase, exact: false },
   { label: '商品管理', href: '/admin/products', icon: Package, exact: false },
-  { label: '文章管理', href: '/admin/posts', icon: FileText, exact: false },
   { label: '訂單管理', href: '/admin/orders', icon: ShoppingCart, exact: false },
   { label: '會員管理', href: '/admin/members', icon: Users, exact: false },
   { label: '分類管理', href: '/admin/categories', icon: FolderOpen, exact: false },
@@ -31,11 +33,11 @@ export default function AdminSidebar() {
   const pathname = usePathname()
 
   return (
-    <aside className="hidden md:flex md:flex-col md:fixed md:inset-y-0 md:w-60 bg-[#1C1917] text-white">
+    <aside className="hidden md:flex md:flex-col md:fixed md:inset-y-0 md:w-60 bg-brand-deep text-white">
       {/* Logo / Title */}
       <div className="flex flex-col justify-center h-14 px-5 border-b border-white/10">
-        <span className="text-base font-bold tracking-wide text-white">ChinaLink</span>
-        <span className="text-[10px] text-white/40">後台管理</span>
+        <span className="text-base font-bold text-white">懂陸姐</span>
+        <span className="text-[10px] text-white/70">後台管理</span>
       </div>
 
       {/* Navigation */}
@@ -49,10 +51,10 @@ export default function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors ${
+              className={`flex items-center gap-3 px-3 py-2.5 text-sm font-medium transition-colors ${
                 isActive
-                  ? 'bg-white/10 text-[#F4845F]'
-                  : 'text-white/60 hover:text-white hover:bg-white/5'
+                  ? 'bg-white/15 font-bold text-white'
+                  : 'text-white/80 hover:text-white hover:bg-white/5'
               }`}
             >
               <Icon className="w-5 h-5 shrink-0" />
@@ -68,7 +70,7 @@ export default function AdminSidebar() {
           href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-3 w-full rounded-md px-3 py-2.5 text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 transition-colors"
+          className="flex items-center gap-3 w-full px-3 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:bg-white/5 transition-colors"
         >
           <ExternalLink className="w-5 h-5 shrink-0" />
           前往網站
@@ -79,7 +81,7 @@ export default function AdminSidebar() {
         <form action={logoutAction}>
           <button
             type="submit"
-            className="flex items-center gap-3 w-full rounded-md px-3 py-2.5 text-sm font-medium text-white/50 hover:text-white hover:bg-white/5 transition-colors"
+            className="flex items-center gap-3 w-full px-3 py-2.5 text-sm font-medium text-white/80 hover:text-white hover:bg-white/5 transition-colors"
           >
             <LogOut className="w-5 h-5 shrink-0" />
             登出

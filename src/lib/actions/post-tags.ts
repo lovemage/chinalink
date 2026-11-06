@@ -1,5 +1,6 @@
 'use server'
 
+import { getAdminFromCookies } from '@/lib/auth-admin'
 import { db } from '@/lib/db'
 import { postTags, postTagRelations } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -10,6 +11,7 @@ function slugify(name: string): string {
 }
 
 export async function createPostTag(formData: FormData): Promise<{ success: true } | { error: string }> {
+  if (!(await getAdminFromCookies())) return { error: '登入已過期，請重新登入' }
   try {
     const name = String(formData.get('name') ?? '').trim()
     if (!name) return { error: '標籤名稱為必填' }
@@ -35,6 +37,7 @@ export async function createPostTag(formData: FormData): Promise<{ success: true
 }
 
 export async function updatePostTag(formData: FormData): Promise<{ success: true } | { error: string }> {
+  if (!(await getAdminFromCookies())) return { error: '登入已過期，請重新登入' }
   try {
     const id = Number(formData.get('id'))
     const name = String(formData.get('name') ?? '').trim()
@@ -59,6 +62,7 @@ export async function updatePostTag(formData: FormData): Promise<{ success: true
 }
 
 export async function deletePostTag(id: number): Promise<{ success: true } | { error: string }> {
+  if (!(await getAdminFromCookies())) return { error: '登入已過期，請重新登入' }
   try {
     await db.delete(postTagRelations).where(eq(postTagRelations.tagId, id))
     await db.delete(postTags).where(eq(postTags.id, id))

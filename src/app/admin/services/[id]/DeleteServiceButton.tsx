@@ -32,18 +32,18 @@ export default function DeleteServiceButton({
   if (confirming) {
     return (
       <div className="flex items-center gap-2">
-        <span className="text-sm text-gray-600">確定刪除「{serviceTitle}」？</span>
+        <span className="text-sm text-brand-muted">確定刪除「{serviceTitle}」？</span>
         <button
           onClick={handleDelete}
           disabled={deleting}
-          className="px-3 py-1.5 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
+          className="px-3 py-1.5 bg-red-600 text-white text-sm font-medium hover:bg-red-700 disabled:opacity-50 transition-colors"
         >
           {deleting ? '刪除中...' : '確認刪除'}
         </button>
         <button
           onClick={() => setConfirming(false)}
           disabled={deleting}
-          className="px-3 py-1.5 bg-white text-gray-600 text-sm font-medium rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+          className="px-3 py-1.5 bg-white text-brand-muted text-sm font-medium border border-brand-rule hover:bg-brand-bg transition-colors"
         >
           取消
         </button>
@@ -54,7 +54,7 @@ export default function DeleteServiceButton({
   return (
     <button
       onClick={() => setConfirming(true)}
-      className="px-3 py-1.5 text-red-600 text-sm font-medium rounded-lg border border-red-200 hover:bg-red-50 transition-colors"
+      className="px-3 py-1.5 text-red-600 text-sm font-medium border border-red-200 hover:bg-red-50 transition-colors"
     >
       刪除服務
     </button>

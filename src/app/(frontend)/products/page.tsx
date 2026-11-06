@@ -2,11 +2,13 @@ export const dynamic = 'force-dynamic'
 
 import { ProductCard } from '@/components/products/ProductCard'
 import Link from 'next/link'
+import { PageHeader } from '@/components/site/PageHeader'
 import { getProductCategoriesAll, getPublishedProductsWithDetails } from '@/lib/queries/products'
 
 export const metadata = {
-  title: '商品專區 - 懂陸姐 ChinaLink',
+  title: '商品專區｜懂陸姐 ChinaLink',
   description: '懂陸姐提供可直接下單的顧問商品方案，包含採購、帳號與內容營運等主題。',
+  alternates: { canonical: '/products' },
 }
 
 export default async function ProductsPage({
@@ -22,31 +24,17 @@ export default async function ProductsPage({
   ])
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-brand-bg pt-32 pb-24">
-      <div className="pointer-events-none absolute -top-20 left-0 h-[600px] w-[600px] rounded-[60%_40%_70%_30%_/_40%_40%_60%_60%] bg-brand-cta/5 blur-3xl opacity-60" />
-
-      <div className="relative z-10 mx-auto max-w-7xl px-6">
-        <div className="max-w-2xl">
-          <div className="mb-6 inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-brand-cta uppercase">
-            <span className="h-px w-8 bg-brand-cta" />
-            Product Center
-          </div>
-          <h1 className="font-serif text-5xl font-medium tracking-tight text-brand-text sm:text-6xl">
-            商品專區 <span className="font-playfair italic text-brand-cta">Collection</span>
-          </h1>
-          <p className="mt-6 max-w-xl text-lg font-light leading-relaxed text-brand-muted">
-            將高頻需求整理為可直接下單的商品方案，適合需要快速起步的大陸市場經營者。
-          </p>
-        </div>
-
+    <section className="pb-20">
+      <PageHeader title="商品專區" description="將常見需求整理成可直接下單的商品方案，適合需要快速起步的大陸市場經營者。" />
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
         {categories.length > 0 && (
           <div className="mt-12 flex flex-wrap gap-3">
             <Link
               href="/products"
-              className={`rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
+              className={`border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
                 !category
-                  ? 'border-brand-cta bg-brand-cta text-white shadow-lg shadow-brand-cta/20'
-                  : 'border-brand-primary/15 bg-white/80 text-brand-text hover:border-brand-cta/40 hover:bg-white'
+                  ? 'bg-brand-tint font-bold text-brand-text border-brand-tint'
+                  : 'border-brand-rule bg-brand-raised text-brand-text hover:bg-brand-tint'
               }`}
             >
               全部商品
@@ -55,10 +43,10 @@ export default async function ProductsPage({
               <Link
                 key={item.id}
                 href={`/products?category=${encodeURIComponent(item.slug)}`}
-                className={`rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
+                className={`border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
                   category === item.slug
-                    ? 'border-brand-cta bg-brand-cta text-white shadow-lg shadow-brand-cta/20'
-                    : 'border-brand-primary/15 bg-white/80 text-brand-text hover:border-brand-cta/40 hover:bg-white'
+                    ? 'bg-brand-tint font-bold text-brand-text border-brand-tint'
+                    : 'border-brand-rule bg-brand-raised text-brand-text hover:bg-brand-tint'
                 }`}
               >
                 {item.name}

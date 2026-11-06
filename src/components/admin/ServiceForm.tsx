@@ -210,14 +210,14 @@ export default function ServiceForm({ service, categories, mode }: ServiceFormPr
   }
 
   const inputClass =
-    'w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+    'w-full px-3 py-2 text-sm border border-brand-rule focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent'
   const selectClass = inputClass
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 max-w-3xl">
       {/* Section 1: Basic Info */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-800 border-b border-gray-100 pb-2">基本資訊</h2>
+      <section className="bg-white p-4 md:p-6 space-y-4">
+        <h2 className="text-base font-semibold text-brand-text border-b border-brand-rule pb-2">基本資訊</h2>
 
         <AdminFormField label="服務名稱" name="title" required error={errors.title}>
           <input
@@ -283,16 +283,16 @@ export default function ServiceForm({ service, categories, mode }: ServiceFormPr
       </section>
 
       {/* Section 2: Cover Image */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-800 border-b border-gray-100 pb-2">封面圖片</h2>
+      <section className="bg-white p-4 md:p-6 space-y-4">
+        <h2 className="text-base font-semibold text-brand-text border-b border-brand-rule pb-2">封面圖片</h2>
         <AdminFormField label="封面圖片" name="coverImage">
           <ImageUploader images={coverImages} onChange={setCoverImages} single />
         </AdminFormField>
       </section>
 
       {/* Section 3: Description */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-800 border-b border-gray-100 pb-2">服務說明</h2>
+      <section className="bg-white p-4 md:p-6 space-y-4">
+        <h2 className="text-base font-semibold text-brand-text border-b border-brand-rule pb-2">服務說明</h2>
         <AdminFormField label="詳細說明" name="description">
           <TiptapEditor
             content={description}
@@ -303,8 +303,8 @@ export default function ServiceForm({ service, categories, mode }: ServiceFormPr
       </section>
 
       {/* Section 4: Status & Visibility */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-800 border-b border-gray-100 pb-2">狀態與可見性</h2>
+      <section className="bg-white p-4 md:p-6 space-y-4">
+        <h2 className="text-base font-semibold text-brand-text border-b border-brand-rule pb-2">狀態與可見性</h2>
 
         <div className="grid grid-cols-2 gap-4">
           <AdminFormField label="發布狀態" name="status">
@@ -340,16 +340,16 @@ export default function ServiceForm({ service, categories, mode }: ServiceFormPr
               type="checkbox"
               checked={cartEnabled}
               onChange={(e) => setCartEnabled(e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="w-4 h-4 border-brand-rule text-brand-primary focus:ring-brand-primary"
             />
-            <span className="text-sm text-gray-700">啟用購物車（允許線上購買）</span>
+            <span className="text-sm text-brand-muted">啟用購物車（允許線上購買）</span>
           </label>
         </AdminFormField>
       </section>
 
       {/* Section 5: Pricing */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-800 border-b border-gray-100 pb-2">定價</h2>
+      <section className="bg-white p-4 md:p-6 space-y-4">
+        <h2 className="text-base font-semibold text-brand-text border-b border-brand-rule pb-2">定價</h2>
 
         <AdminFormField label="定價模式" name="pricingMode">
           <select
@@ -394,28 +394,28 @@ export default function ServiceForm({ service, categories, mode }: ServiceFormPr
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">加購項目</span>
+                <span className="text-sm font-medium text-brand-muted">加購項目</span>
                 <button
                   type="button"
                   onClick={addAddon}
-                  className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-xs text-brand-primary hover:text-brand-deep font-medium"
                 >
                   + 新增項目
                 </button>
               </div>
 
               {addons.length === 0 && (
-                <p className="text-sm text-gray-400">尚無加購項目</p>
+                <p className="text-sm text-brand-muted">尚無加購項目</p>
               )}
 
               {addons.map((addon, i) => (
-                <div key={i} className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+                <div key={i} className="flex items-center gap-2 p-3 bg-brand-bg ">
                   <input
                     type="text"
                     value={addon.name}
                     onChange={(e) => updateAddon(i, 'name', e.target.value)}
                     placeholder="項目名稱"
-                    className="flex-1 px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="flex-1 px-2 py-1.5 text-sm border border-brand-rule focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
                   <input
                     type="number"
@@ -423,9 +423,9 @@ export default function ServiceForm({ service, categories, mode }: ServiceFormPr
                     value={addon.price}
                     onChange={(e) => updateAddon(i, 'price', e.target.value)}
                     placeholder="價格"
-                    className="w-24 px-2 py-1.5 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-24 px-2 py-1.5 text-sm border border-brand-rule focus:outline-none focus:ring-1 focus:ring-brand-primary"
                   />
-                  <label className="flex items-center gap-1 text-xs text-gray-600 shrink-0">
+                  <label className="flex items-center gap-1 text-xs text-brand-muted shrink-0">
                     <input
                       type="checkbox"
                       checked={addon.required}
@@ -449,30 +449,30 @@ export default function ServiceForm({ service, categories, mode }: ServiceFormPr
         )}
 
         {pricingMode === 'custom' && (
-          <p className="text-sm text-gray-500 bg-gray-50 rounded-lg p-3">
+          <p className="text-sm text-brand-muted bg-brand-bg p-3">
             洽談訂製模式：不顯示固定價格，客戶需聯繫詢價。
           </p>
         )}
       </section>
 
       {/* Section 6: Features */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-800 border-b border-gray-100 pb-2">服務特點</h2>
+      <section className="bg-white p-4 md:p-6 space-y-4">
+        <h2 className="text-base font-semibold text-brand-text border-b border-brand-rule pb-2">服務特點</h2>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">特點列表</span>
+            <span className="text-sm font-medium text-brand-muted">特點列表</span>
             <button
               type="button"
               onClick={addFeature}
-              className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+              className="text-xs text-brand-primary hover:text-brand-deep font-medium"
             >
               + 新增特點
             </button>
           </div>
 
           {features.length === 0 && (
-            <p className="text-sm text-gray-400">尚無服務特點</p>
+            <p className="text-sm text-brand-muted">尚無服務特點</p>
           )}
 
           {features.map((feature, i) => (
@@ -482,7 +482,7 @@ export default function ServiceForm({ service, categories, mode }: ServiceFormPr
                 value={feature.text}
                 onChange={(e) => updateFeature(i, e.target.value)}
                 placeholder={`特點 ${i + 1}`}
-                className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="flex-1 px-3 py-2 text-sm border border-brand-rule focus:outline-none focus:ring-1 focus:ring-brand-primary"
               />
               <button
                 type="button"
@@ -498,8 +498,8 @@ export default function ServiceForm({ service, categories, mode }: ServiceFormPr
       </section>
 
       {/* Section 7: SEO */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-800 border-b border-gray-100 pb-2">SEO 設定</h2>
+      <section className="bg-white p-4 md:p-6 space-y-4">
+        <h2 className="text-base font-semibold text-brand-text border-b border-brand-rule pb-2">SEO 設定</h2>
 
         <AdminFormField label="SEO 標題" name="seoTitle" description="留空則使用服務名稱">
           <input
@@ -529,14 +529,14 @@ export default function ServiceForm({ service, categories, mode }: ServiceFormPr
         <button
           type="submit"
           disabled={submitting}
-          className="px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-6 py-2.5 bg-brand-primary text-white text-sm font-medium hover:bg-brand-deep disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {submitting ? '儲存中...' : mode === 'create' ? '建立服務' : '儲存變更'}
         </button>
         <button
           type="button"
           onClick={() => router.push('/admin/services')}
-          className="px-6 py-2.5 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+          className="px-6 py-2.5 bg-white text-brand-muted text-sm font-medium border border-brand-rule hover:bg-brand-bg transition-colors"
         >
           取消
         </button>

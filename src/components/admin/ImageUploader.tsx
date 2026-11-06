@@ -17,6 +17,8 @@ export default function ImageUploader({
 }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false)
   const [dragging, setDragging] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const failedFiles = useRef<File[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const canAddMore = single ? images.length === 0 : images.length < max
@@ -31,8 +33,8 @@ export default function ImageUploader({
     })
 
     if (!res.ok) {
-      const data: { error?: string } = await res.json()
-      throw new Error(data.error || '上傳失敗')
+      const data: { error?: string } = await res.json().catch(() => ({}))
+      throw new Error(data.error || `上傳失敗（${res.status}）`)
     }
 
     const data: { url: string } = await res.json()
@@ -50,6 +52,7 @@ export default function ImageUploader({
     const toUpload = fileArray.slice(0, remaining)
 
     setUploading(true)
+    setUploadError(null)
     try {
       const urls = await Promise.all(toUpload.map(uploadFile))
       const validUrls = urls.filter((u): u is string => u !== null)
@@ -58,8 +61,10 @@ export default function ImageUploader({
       } else {
         onChange([...images, ...validUrls])
       }
+      failedFiles.current = []
     } catch (err) {
-      alert(err instanceof Error ? err.message : '上傳失敗，請稍後再試')
+      failedFiles.current = toUpload
+      setUploadError(err instanceof Error ? err.message : '上傳失敗，請稍後再試')
     } finally {
       setUploading(false)
       if (fileInputRef.current) {
@@ -103,14 +108,14 @@ export default function ImageUploader({
           {images.map((url, i) => (
             <div
               key={i}
-              className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100"
+              className="relative group aspect-square overflow-hidden bg-gray-100"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={url} alt="" className="w-full h-full object-cover" />
               <button
                 type="button"
                 onClick={() => removeImage(i)}
-                className="absolute top-1 right-1 w-6 h-6 bg-red-600 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute top-0 right-0 size-9 bg-brand-text/80 text-white text-lg flex items-center justify-center"
                 aria-label="移除圖片"
               >
                 &times;
@@ -130,12 +135,12 @@ export default function ImageUploader({
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={[
-            'w-full min-h-[80px] border-2 border-dashed rounded-lg',
+            'w-full min-h-[80px] border-2 border-dashed ',
             'flex flex-col items-center justify-center gap-1',
             'text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed',
             dragging
               ? 'border-brand-cta text-brand-cta bg-brand-cta/5'
-              : 'border-gray-300 text-gray-500 hover:border-brand-cta hover:text-brand-cta',
+              : 'border-brand-rule text-brand-muted hover:border-brand-cta hover:text-brand-cta',
           ].join(' ')}
         >
           {uploading ? (
@@ -177,6 +182,19 @@ export default function ImageUploader({
             </>
           )}
         </button>
+      )}
+
+      {uploadError && (
+        <p className="mt-2 flex flex-wrap items-center gap-3 text-sm text-brand-alert" role="alert">
+          圖片上傳失敗：{uploadError}
+          <button
+            type="button"
+            className="text-brand-text underline"
+            onClick={() => handleFiles(failedFiles.current)}
+          >
+            重試
+          </button>
+        </p>
       )}
 
       <input

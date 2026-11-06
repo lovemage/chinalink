@@ -505,44 +505,31 @@ export function ServiceCartClient({
   const currentCategories = activeTab === 'services' ? categories : productCategories
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-brand-bg pt-32 pb-24">
-      {/* Background decoration */}
-      <div className="pointer-events-none absolute -top-20 right-0 h-[600px] w-[600px] rounded-[60%_40%_30%_70%_/_60%_30%_70%_40%] bg-brand-primary/5 blur-3xl opacity-60" />
-      <div className="pointer-events-none absolute bottom-0 -left-40 h-[400px] w-[400px] rounded-full bg-brand-cta/3 blur-3xl" />
-
-      <div className="relative z-10 mx-auto max-w-7xl px-6">
-        {/* Header */}
-        <div className="max-w-2xl">
-          <div className="mb-6 inline-flex items-center gap-2 text-xs font-semibold tracking-widest text-brand-primary uppercase">
-            <span className="h-px w-8 bg-brand-primary" />
-            Shopping Cart
-          </div>
-          <h1 className="font-serif text-5xl font-medium tracking-tight text-brand-text sm:text-6xl">
-            選購專區 <span className="font-playfair italic text-brand-primary">Select</span>
-          </h1>
-          <p className="mt-6 max-w-xl text-lg font-light leading-relaxed text-brand-muted">
-            挑選您需要的服務與商品，加入購物車後一次完成預約。
-          </p>
-        </div>
+    <section className="relative min-h-screen overflow-hidden bg-brand-bg pt-8 pb-20">
+      <div className="relative z-10 mx-auto max-w-[1200px] px-4 sm:px-6">
+        <h1 className="font-serif text-[2rem] font-bold leading-tight sm:text-[2.75rem]">選購專區</h1>
+        <p className="mt-4 max-w-xl text-base leading-8 text-brand-muted">
+          挑選需要的服務與商品，加入購物車後一次完成預約。
+        </p>
 
         {/* Tab Switch: Services / Products */}
         <div className="mt-10 flex gap-2">
           <button
             onClick={() => setActiveTab('services')}
-            className={`rounded-full border px-6 py-2.5 text-sm font-semibold transition-all duration-200 ${
+            className={`border px-6 py-2.5 text-sm font-semibold transition-all duration-200 ${
               activeTab === 'services'
-                ? 'border-brand-text bg-brand-text text-white shadow-lg'
-                : 'border-brand-primary/15 bg-white/80 text-brand-text hover:border-brand-text/40 hover:bg-white'
+                ? 'bg-brand-tint font-bold text-brand-text border-brand-tint'
+                : 'border-brand-rule bg-brand-raised text-brand-text hover:bg-brand-tint'
             }`}
           >
             服務項目
           </button>
           <button
             onClick={() => setActiveTab('products')}
-            className={`rounded-full border px-6 py-2.5 text-sm font-semibold transition-all duration-200 ${
+            className={`border px-6 py-2.5 text-sm font-semibold transition-all duration-200 ${
               activeTab === 'products'
-                ? 'border-brand-text bg-brand-text text-white shadow-lg'
-                : 'border-brand-primary/15 bg-white/80 text-brand-text hover:border-brand-text/40 hover:bg-white'
+                ? 'bg-brand-tint font-bold text-brand-text border-brand-tint'
+                : 'border-brand-rule bg-brand-raised text-brand-text hover:bg-brand-tint'
             }`}
           >
             商品專區
@@ -554,10 +541,10 @@ export function ServiceCartClient({
           <div className="mt-6 flex flex-wrap gap-3">
             <button
               onClick={() => setActiveCategory(null)}
-              className={`rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
+              className={`border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
                 !activeCategory
-                  ? 'border-brand-cta bg-brand-cta text-white shadow-lg shadow-brand-cta/20'
-                  : 'border-brand-primary/15 bg-white/80 text-brand-text hover:border-brand-cta/40 hover:bg-white'
+                  ? 'bg-brand-tint font-bold text-brand-text border-brand-tint'
+                  : 'border-brand-rule bg-brand-raised text-brand-text hover:bg-brand-tint'
               }`}
             >
               全部
@@ -566,10 +553,10 @@ export function ServiceCartClient({
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.slug)}
-                className={`rounded-full border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
+                className={`border px-5 py-2.5 text-sm font-medium transition-all duration-200 ${
                   activeCategory === cat.slug
-                    ? 'border-brand-cta bg-brand-cta text-white shadow-lg shadow-brand-cta/20'
-                    : 'border-brand-primary/15 bg-white/80 text-brand-text hover:border-brand-cta/40 hover:bg-white'
+                    ? 'bg-brand-tint font-bold text-brand-text border-brand-tint'
+                    : 'border-brand-rule bg-brand-raised text-brand-text hover:bg-brand-tint'
                 }`}
               >
                 {cat.name}
@@ -635,7 +622,7 @@ export function ServiceCartClient({
       {fabVisible && !isPanelOpen && (
         <button
           onClick={openPanel}
-          className={`fixed bottom-8 right-8 z-40 hidden items-center gap-3 rounded-2xl bg-brand-cta px-6 py-4 text-white shadow-2xl shadow-brand-cta/30 transition-all duration-300 md:inline-flex ${
+          className={`fixed bottom-8 right-8 z-40 hidden items-center gap-3 bg-brand-cta px-6 py-4 text-white transition-all duration-300 md:inline-flex ${
             fabAnimating
               ? 'translate-y-0 scale-100 opacity-100'
               : 'translate-y-4 scale-95 opacity-0'
@@ -652,7 +639,7 @@ export function ServiceCartClient({
       {fabVisible && !isPanelOpen && (
         <button
           onClick={openPanel}
-          className={`fixed inset-x-0 bottom-0 z-40 flex items-center justify-between bg-brand-cta px-6 py-4 text-white shadow-[0_-4px_24px_rgba(0,0,0,0.1)] transition-all duration-300 md:hidden ${
+          className={`fixed inset-x-0 bottom-0 z-40 flex items-center justify-between bg-brand-cta px-6 py-4 text-white transition-all duration-300 md:hidden ${
             fabAnimating
               ? 'translate-y-0 opacity-100'
               : 'translate-y-full opacity-0'
@@ -680,7 +667,7 @@ export function ServiceCartClient({
 
       {/* Cart Panel */}
       <div
-        className={`fixed inset-y-0 right-0 z-50 flex w-full flex-col bg-white shadow-2xl transition-transform duration-300 ease-out md:w-[420px] ${
+        className={`fixed inset-y-0 right-0 z-50 flex w-full flex-col bg-brand-raised transition-transform duration-300 ease-out md:w-[420px] ${
           isPanelOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -692,7 +679,7 @@ export function ServiceCartClient({
           </div>
           <button
             onClick={closePanel}
-            className="flex h-9 w-9 items-center justify-center rounded-xl text-brand-muted transition-colors hover:bg-brand-primary/5 hover:text-brand-text"
+            className="flex h-9 w-9 items-center justify-center text-brand-muted transition-colors hover:bg-brand-primary/5 hover:text-brand-text"
           >
             <X className="h-[22px] w-[22px]" />
           </button>
@@ -714,7 +701,7 @@ export function ServiceCartClient({
                 return (
                   <li
                     key={key}
-                    className="flex items-start gap-4 rounded-2xl border border-brand-primary/8 bg-brand-bg/50 p-4"
+                    className="flex items-start gap-4 border border-brand-primary/8 bg-brand-bg/50 p-4"
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -731,7 +718,7 @@ export function ServiceCartClient({
                     <div className="flex items-center gap-1 shrink-0">
                       <button
                         onClick={() => updateQuantity(key, -1)}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
+                        className="flex h-8 w-8 items-center justify-center border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
                       >
                         <Minus className="h-[18px] w-[18px]" />
                       </button>
@@ -740,7 +727,7 @@ export function ServiceCartClient({
                       </span>
                       <button
                         onClick={() => updateQuantity(key, 1)}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
+                        className="flex h-8 w-8 items-center justify-center border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
                       >
                         <Plus className="h-[18px] w-[18px]" />
                       </button>
@@ -748,7 +735,7 @@ export function ServiceCartClient({
 
                     <button
                       onClick={() => removeFromCart(key)}
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-brand-muted/60 transition-colors hover:bg-brand-cta/10 hover:text-brand-cta"
+                      className="flex h-8 w-8 shrink-0 items-center justify-center text-brand-muted/60 transition-colors hover:bg-brand-cta/10 hover:text-brand-cta"
                     >
                       <Trash2 className="h-[18px] w-[18px]" />
                     </button>
@@ -774,7 +761,7 @@ export function ServiceCartClient({
             <button
               onClick={handleSubmitOrder}
               disabled={isSubmitting}
-              className="w-full rounded-2xl bg-brand-cta py-4 text-center font-semibold text-white shadow-lg shadow-brand-cta/20 transition-all duration-200 hover:bg-brand-cta/90 hover:shadow-xl hover:shadow-brand-cta/25 active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none"
+              className="w-full bg-brand-cta py-4 text-center font-semibold text-white transition-all duration-200 hover:bg-brand-cta/90 active:scale-[0.98] disabled:opacity-60 disabled:pointer-events-none"
             >
               {isSubmitting ? '處理中...' : '確認預約'}
             </button>
@@ -803,20 +790,20 @@ function ServiceItemCard({ service, inCart, quantity, onAdd, onUpdateQuantity }:
   const isCustomPrice = service.pricingMode === 'custom'
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-[2rem] border border-brand-primary/8 bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-brand-primary/8">
+    <div className="group flex flex-col overflow-hidden border border-brand-primary/8 bg-brand-raised transition-all duration-300 ">
       {/* Image */}
-      <div className="relative aspect-[16/10] overflow-hidden bg-brand-bg m-2 rounded-[1.5rem]">
+      <div className="relative aspect-[16/10] overflow-hidden bg-brand-bg m-2 ">
         {cover?.url ? (
           <Image
             src={cover.cardUrl || cover.url}
             alt={cover.alt || service.title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 "
           />
         ) : (
           <div className="flex h-full items-center justify-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white/80 text-brand-primary/40 shadow-sm ring-1 ring-brand-primary/8">
+            <div className="flex h-20 w-20 items-center justify-center bg-brand-raised text-brand-primary/40 ring-1 ring-brand-primary/8">
               <MaterialSymbol
                 name={service.iconName || defaultServiceIconName}
                 className="text-[40px]"
@@ -825,7 +812,7 @@ function ServiceItemCard({ service, inCart, quantity, onAdd, onUpdateQuantity }:
           </div>
         )}
         {category && (
-          <span className="absolute top-3 left-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-brand-text backdrop-blur-sm">
+          <span className="absolute top-3 left-3 bg-white/90 px-3 py-1 text-xs font-medium text-brand-text backdrop-blur-sm">
             {category.name}
           </span>
         )}
@@ -839,7 +826,7 @@ function ServiceItemCard({ service, inCart, quantity, onAdd, onUpdateQuantity }:
 
         <div className="mt-auto flex items-end justify-between gap-4 pt-5">
           <div>
-            <p className="text-xs tracking-wider text-brand-muted uppercase">
+            <p className="text-xs text-brand-muted">
               {service.pricingMode === 'addons' ? '基本價格' : '價格'}
             </p>
             <p className="mt-1 font-serif text-xl font-semibold text-brand-primary">
@@ -854,7 +841,7 @@ function ServiceItemCard({ service, inCart, quantity, onAdd, onUpdateQuantity }:
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => onUpdateQuantity(-1)}
-                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
+                    className="flex h-9 w-9 items-center justify-center border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
                   >
                     <Minus className="h-[18px] w-[18px]" />
                   </button>
@@ -863,7 +850,7 @@ function ServiceItemCard({ service, inCart, quantity, onAdd, onUpdateQuantity }:
                   </span>
                   <button
                     onClick={() => onUpdateQuantity(1)}
-                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
+                    className="flex h-9 w-9 items-center justify-center border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
                   >
                     <Plus className="h-[18px] w-[18px]" />
                   </button>
@@ -871,7 +858,7 @@ function ServiceItemCard({ service, inCart, quantity, onAdd, onUpdateQuantity }:
               ) : (
                 <button
                   onClick={onAdd}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-brand-primary/10 px-4 py-2.5 text-sm font-medium text-brand-primary transition-all duration-200 hover:bg-brand-primary hover:text-white active:scale-95"
+                  className="inline-flex items-center gap-1.5 bg-brand-primary/10 px-4 py-2.5 text-sm font-medium text-brand-primary transition-all duration-200 hover:bg-brand-primary hover:text-white active:scale-95"
                 >
                   <Plus className="h-[18px] w-[18px]" />
                   加入
@@ -915,26 +902,26 @@ function ProductItemCard({
   const category = product.productCategory ?? null
 
   return (
-    <div className="group flex flex-col overflow-hidden rounded-[2rem] border border-brand-primary/8 bg-white shadow-sm transition-all duration-300 hover:shadow-xl hover:shadow-brand-primary/8">
+    <div className="group flex flex-col overflow-hidden border border-brand-primary/8 bg-brand-raised transition-all duration-300 ">
       {/* Image */}
-      <div className="relative aspect-[16/10] overflow-hidden bg-brand-bg m-2 rounded-[1.5rem]">
+      <div className="relative aspect-[16/10] overflow-hidden bg-brand-bg m-2 ">
         {cover?.url ? (
           <Image
             src={cover.cardUrl || cover.url}
             alt={cover.alt || product.title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 "
           />
         ) : (
           <div className="flex h-full items-center justify-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white/80 text-brand-primary/40 shadow-sm ring-1 ring-brand-primary/8">
+            <div className="flex h-20 w-20 items-center justify-center bg-brand-raised text-brand-primary/40 ring-1 ring-brand-primary/8">
               <Package className="h-10 w-10" />
             </div>
           </div>
         )}
         {category && (
-          <span className="absolute top-3 left-3 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-brand-text backdrop-blur-sm">
+          <span className="absolute top-3 left-3 bg-white/90 px-3 py-1 text-xs font-medium text-brand-text backdrop-blur-sm">
             {category.name}
           </span>
         )}
@@ -960,7 +947,7 @@ function ProductItemCard({
             return (
               <div
                 key={variant.sku}
-                className="flex items-center justify-between gap-3 rounded-xl border border-brand-primary/8 px-4 py-3"
+                className="flex items-center justify-between gap-3 border border-brand-primary/8 px-4 py-3"
               >
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-brand-text truncate">{variant.name}</p>
@@ -981,7 +968,7 @@ function ProductItemCard({
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => onUpdateVariantQuantity(variant.sku, -1)}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
+                        className="flex h-8 w-8 items-center justify-center border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
                       >
                         <Minus className="h-4 w-4" />
                       </button>
@@ -990,7 +977,7 @@ function ProductItemCard({
                       </span>
                       <button
                         onClick={() => onUpdateVariantQuantity(variant.sku, 1)}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
+                        className="flex h-8 w-8 items-center justify-center border border-brand-primary/15 text-brand-muted transition-colors hover:border-brand-primary/30 hover:text-brand-text"
                       >
                         <Plus className="h-4 w-4" />
                       </button>
@@ -998,7 +985,7 @@ function ProductItemCard({
                   ) : (
                     <button
                       onClick={() => onAddVariant(variant.sku, variant.name)}
-                      className="inline-flex items-center gap-1 rounded-lg bg-brand-primary/10 px-3 py-2 text-xs font-medium text-brand-primary transition-all duration-200 hover:bg-brand-primary hover:text-white active:scale-95"
+                      className="inline-flex items-center gap-1 bg-brand-primary/10 px-3 py-2 text-xs font-medium text-brand-primary transition-all duration-200 hover:bg-brand-primary hover:text-white active:scale-95"
                     >
                       <Plus className="h-4 w-4" />
                       加入

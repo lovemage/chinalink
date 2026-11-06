@@ -1,11 +1,11 @@
 'use client'
 
-import Link from 'next/link'
 import Image from 'next/image'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
-import { LogOut, Receipt } from 'lucide-react'
+import { LogOut, Receipt, ShoppingCart } from 'lucide-react'
 import { MobileNav } from './MobileNav'
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -16,113 +16,105 @@ import {
   DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu'
 
-const navItems = [
-  { label: '首頁', href: '/' },
-  { label: '服務項目', href: '/services' },
-  { label: '供應鏈案例', href: '/supply-chain' },
-  { label: '商品專區', href: '/products' },
-  { label: '專欄文章', href: '/blog' },
+export const primaryNav = [
+  { label: '陸姐觀點', href: '/blog' },
+  { label: '供應鏈觀察', href: '/observations' },
+  { label: '問題與交流', href: '/questions' },
+  { label: '顧問服務', href: '/services' },
 ]
 
+export const secondaryNav = [
+  { label: '供應鏈推薦', href: '/supply-chain' },
+  { label: '商品專區', href: '/products' },
+  { label: '關於懂陸姐', href: '/about' },
+  { label: '聯絡我們', href: '/contact' },
+]
+
+function isCurrent(pathname: string, href: string) {
+  // An article can belong to either column, so /blog/[slug] highlights neither.
+  if (href === '/blog') return pathname === '/blog'
+  return pathname === href || pathname.startsWith(`${href}/`)
+}
+
 export function Navbar() {
+  const pathname = usePathname()
   const { data: session, status } = useSession()
   const isLoggedIn = status === 'authenticated' && !!session?.user
 
   return (
-    <header className="fixed top-0 z-50 w-full border-b border-white/20 bg-brand-bg/80 backdrop-blur-xl transition-all duration-300">
-      <div className="mx-auto flex h-24 max-w-7xl items-center justify-between px-6">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-4 transition-colors hover:text-brand-primary">
-          <div className="relative h-14 w-14 overflow-hidden rounded-full border-2 border-brand-primary/20 bg-brand-bg shadow-sm">
-            <Image
-              src="/Chinalink_logo.png"
-              alt="懂陸姐 Logo"
-              fill
-              sizes="56px"
-              className="object-contain"
-            />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-serif text-2xl font-bold tracking-tight text-brand-text leading-none">
-              懂陸姐
-            </span>
-            <span className="font-playfair text-[11px] font-bold uppercase tracking-widest text-brand-muted italic mt-0.5">
-              ChinaLink
-            </span>
-          </div>
-        </Link>
-
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-6 lg:flex lg:gap-8">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm font-medium text-brand-text/80 transition-colors hover:text-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-brand-bg"
-            >
+    <header className="sticky top-0 z-40 border-b border-brand-rule bg-brand-bg">
+      <div className="hidden border-b border-brand-rule lg:block">
+        <div className="mx-auto flex h-9 max-w-[1200px] items-center justify-end gap-6 px-6 text-[13px] text-brand-muted">
+          {secondaryNav.map((item) => (
+            <Link key={item.href} href={item.href} className="hover:text-brand-text" aria-current={isCurrent(pathname, item.href) ? 'page' : undefined}>
               {item.label}
             </Link>
           ))}
-
-          <div className="h-6 w-px bg-brand-muted/20"></div>
-
+          <Link href="/service-cart" className="inline-flex items-center gap-1.5 hover:text-brand-text">
+            <ShoppingCart className="size-3.5" aria-hidden="true" />
+            購物車
+          </Link>
           {isLoggedIn && session?.user ? (
             <DropdownMenu>
               <DropdownMenuTrigger
                 render={
-                  <button className="flex items-center gap-2 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-brand-primary transition-colors">
-                    <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
-                      {session.user.image ? (
-                        <AvatarImage src={session.user.image} alt={session.user.name || ''} />
-                      ) : null}
-                      <AvatarFallback className="bg-brand-primary/10 text-brand-primary font-bold">
-                        {session.user.name?.charAt(0) || '?'}
-                      </AvatarFallback>
-                    </Avatar>
+                  <button type="button" className="hover:text-brand-text">
+                    {session.user.name || session.user.email}
                   </button>
                 }
               />
-              <DropdownMenuContent align="end" sideOffset={8} className="w-48 rounded-2xl p-2">
+              <DropdownMenuContent align="end" sideOffset={8} className="w-48 p-1">
                 <DropdownMenuGroup>
-                  <DropdownMenuLabel className="font-bold">
-                    {session.user.name || session.user.email}
-                  </DropdownMenuLabel>
+                  <DropdownMenuLabel>{session.user.name || session.user.email}</DropdownMenuLabel>
                 </DropdownMenuGroup>
-                <DropdownMenuSeparator className="bg-brand-muted/10" />
-                <DropdownMenuItem
-                  render={
-                    <Link
-                      href="/account/orders"
-                      className="rounded-xl font-medium cursor-pointer"
-                    />
-                  }
-                >
-                  <Receipt className="mr-2 size-4" />
+                <DropdownMenuSeparator />
+                <DropdownMenuItem render={<Link href="/account/orders" className="cursor-pointer" />}>
+                  <Receipt className="mr-2 size-4" aria-hidden="true" />
                   付款紀錄
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-brand-muted/10" />
-                <DropdownMenuItem
-                  onClick={() => signOut({ callbackUrl: '/' })}
-                  className="rounded-xl text-brand-cta focus:bg-brand-cta/10 focus:text-brand-cta font-medium cursor-pointer"
-                >
-                  <LogOut className="mr-2 size-4" />
+                <DropdownMenuItem onClick={() => signOut({ callbackUrl: '/' })} className="cursor-pointer">
+                  <LogOut className="mr-2 size-4" aria-hidden="true" />
                   登出帳號
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Link
-              href="/login"
-              className="group relative inline-flex h-11 items-center justify-center overflow-hidden rounded-full bg-brand-primary px-8 text-sm font-semibold tracking-wider text-brand-text shadow-md transition-colors duration-300 hover:bg-brand-primary/90 hover:text-brand-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-text focus-visible:ring-offset-4 focus-visible:ring-offset-brand-bg"
-            >
-              <span className="relative">會員登入</span>
+            <Link href="/login" className="hover:text-brand-text">
+              會員登入
             </Link>
           )}
+        </div>
+      </div>
+
+      <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-6 px-4 sm:px-6 lg:h-[76px]">
+        <Link href="/" className="flex items-center gap-3" aria-label="懂陸姐 ChinaLink 首頁">
+          <Image src="/Chinalink_logo.png" alt="" width={52} height={52} className="size-11 lg:size-[52px]" priority />
+          <span className="font-serif text-xl font-bold leading-none text-brand-text lg:text-[1.625rem]">懂陸姐</span>
+        </Link>
+
+        <nav aria-label="主要欄目" className="hidden items-stretch gap-1 lg:flex">
+          {primaryNav.map((item) => {
+            const current = isCurrent(pathname, item.href)
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={current ? 'page' : undefined}
+                className={`px-4 py-2.5 text-[15px] transition-colors ${
+                  current ? 'bg-brand-tint font-bold text-brand-text' : 'text-brand-text hover:bg-brand-tint/60'
+                }`}
+              >
+                {item.label}
+              </Link>
+            )
+          })}
         </nav>
 
-        {/* Mobile nav */}
-        <div className="lg:hidden">
-          <MobileNav navItems={navItems} />
+        <div className="flex items-center gap-1 lg:hidden">
+          <Link href="/service-cart" aria-label="購物車" className="flex size-11 items-center justify-center text-brand-text">
+            <ShoppingCart className="size-5" aria-hidden="true" />
+          </Link>
+          <MobileNav />
         </div>
       </div>
     </header>

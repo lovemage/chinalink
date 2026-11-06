@@ -20,7 +20,7 @@ export default async function AdminLayout({
   const content = !admin ? (
     children
   ) : (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-brand-bg">
       {/* Desktop sidebar */}
       <AdminSidebar />
 
@@ -28,7 +28,7 @@ export default async function AdminLayout({
       <AdminHeader username={admin.username} />
 
       {/* Main content */}
-      <main className="md:ml-60 pb-20 md:pb-0 pt-14 md:pt-0 min-h-screen bg-gray-50">
+      <main className="md:ml-60 pb-20 md:pb-0 pt-14 md:pt-0 min-h-screen bg-brand-bg">
         {children}
       </main>
 
@@ -39,7 +39,7 @@ export default async function AdminLayout({
 
   return (
     <html lang="zh-Hant">
-      <body className="min-h-screen bg-brand-bg font-sans">
+      <body className="admin-shell min-h-screen bg-brand-bg font-sans text-brand-text">
         <ToastProvider>{content}</ToastProvider>
       </body>
     </html>

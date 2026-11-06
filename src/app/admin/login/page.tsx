@@ -8,7 +8,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-brand-bg px-4">
-      <div className="w-full max-w-sm bg-white rounded-xl shadow-md p-8">
+      <div className="w-full max-w-sm bg-white p-8">
         <h1 className="text-2xl font-bold text-center text-brand-text mb-2">
           ChinaLink 後台管理
         </h1>
@@ -30,7 +30,7 @@ export default function AdminLoginPage() {
               type="text"
               required
               autoComplete="username"
-              className="w-full rounded-md border border-stone-200 px-3 py-2 text-sm text-brand-text placeholder-brand-muted focus:border-brand-primary focus:ring-1 focus:ring-brand-primary focus:outline-none"
+              className="w-full border border-stone-200 px-3 py-2 text-sm text-brand-text placeholder-brand-muted focus:border-brand-primary focus:ring-1 focus:ring-brand-primary focus:outline-none"
               placeholder="管理員帳號"
             />
           </div>
@@ -48,7 +48,7 @@ export default function AdminLoginPage() {
               type="password"
               required
               autoComplete="current-password"
-              className="w-full rounded-md border border-stone-200 px-3 py-2 text-sm text-brand-text placeholder-brand-muted focus:border-brand-primary focus:ring-1 focus:ring-brand-primary focus:outline-none"
+              className="w-full border border-stone-200 px-3 py-2 text-sm text-brand-text placeholder-brand-muted focus:border-brand-primary focus:ring-1 focus:ring-brand-primary focus:outline-none"
               placeholder="管理員密碼"
             />
           </div>
@@ -60,7 +60,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={isPending}
-            className="w-full rounded-md bg-brand-cta px-4 py-2.5 text-sm font-semibold text-white hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-brand-cta focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full bg-brand-cta px-4 py-2.5 text-sm font-semibold text-white hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-brand-cta focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isPending ? '登入中...' : '登入'}
           </button>

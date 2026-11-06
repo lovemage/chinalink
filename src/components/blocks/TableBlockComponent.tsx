@@ -22,7 +22,7 @@ export function TableBlockComponent({ headers, rows }: TableBlockComponentProps)
   if (!headers || headers.length === 0) return null
 
   return (
-    <div className="my-6 overflow-x-auto rounded-xl border border-gray-200">
+    <div className="my-6 overflow-x-auto border border-gray-200">
       <table className="w-full text-left text-sm">
         <thead className="bg-brand-primary/10">
           <tr>

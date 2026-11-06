@@ -43,20 +43,20 @@ export function ServiceCard({ service, lineUrl }: ServiceCardProps) {
   return (
     <Link
       href={`/services/${service.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-[2.5rem] border border-brand-primary/10 bg-white shadow-xl shadow-brand-primary/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl"
+      className="group flex h-full flex-col overflow-hidden border border-brand-primary/10 bg-brand-raised transition-all duration-300 "
     >
-      <div className="relative aspect-[16/10] overflow-hidden bg-brand-bg m-2 rounded-[2rem]">
+      <div className="relative aspect-[16/10] overflow-hidden bg-brand-bg m-2 ">
         {cover?.url ? (
           <Image
             src={cover.cardUrl || cover.url}
             alt={cover.alt || service.title}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 "
           />
         ) : (
           <div className="flex h-full items-center justify-center opacity-30">
-            <div className="flex h-[105px] w-[105px] items-center justify-center rounded-[2rem] bg-white/80 text-brand-text shadow-sm ring-1 ring-brand-primary/10">
+            <div className="flex h-[105px] w-[105px] items-center justify-center bg-brand-raised text-brand-text ring-1 ring-brand-primary/10">
               <MaterialSymbol name={service.iconName || defaultServiceIconName} className="text-[56px]" />
             </div>
           </div>
@@ -65,7 +65,7 @@ export function ServiceCard({ service, lineUrl }: ServiceCardProps) {
 
       <div className="flex flex-1 flex-col p-6 sm:p-8">
         {category && (
-          <span className="mb-4 w-fit rounded-full border border-brand-primary/20 bg-white px-4 py-1 text-xs font-semibold tracking-wider text-brand-primary">
+          <span className="mb-4 w-fit border border-brand-primary/20 bg-brand-raised px-4 py-1 text-xs font-semibold tracking-wider text-brand-primary">
             {category.name}
           </span>
         )}

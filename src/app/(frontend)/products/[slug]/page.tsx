@@ -42,8 +42,7 @@ export default async function ProductDetailPage({
   const lowestPrice = sortedPrices.length > 0 ? sortedPrices[0] : null
 
   return (
-    <article className="relative min-h-screen overflow-hidden bg-brand-bg pt-32 pb-24">
-      <div className="pointer-events-none absolute top-0 left-0 h-[50vh] w-full bg-gradient-to-b from-brand-cta/5 to-transparent" />
+    <article className="relative min-h-screen overflow-hidden bg-brand-bg pt-8 pb-20">
 
       <div className="relative z-10 mx-auto max-w-5xl px-6">
         {/* Back link */}
@@ -56,7 +55,7 @@ export default async function ProductDetailPage({
         </Link>
 
         {cover?.url && (
-          <div className="relative mb-12 aspect-[2/1] overflow-hidden rounded-[2.5rem] border border-white/50 shadow-2xl shadow-brand-text/5">
+          <div className="relative mb-12 aspect-[2/1] overflow-hidden border border-white/50 ">
             <Image
               src={cover.heroUrl || cover.url}
               alt={cover.alt || product.title}
@@ -69,14 +68,14 @@ export default async function ProductDetailPage({
 
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {category && (
-            <span className="inline-block rounded-full border border-brand-cta/20 bg-white/50 px-5 py-1.5 text-xs font-semibold tracking-widest text-brand-cta uppercase backdrop-blur-md shadow-sm">
+            <span className="inline-block border border-brand-cta/20 bg-brand-raised px-5 py-1.5 text-xs font-semibold text-brand-cta backdrop-blur-md ">
               {category.name}
             </span>
           )}
           {tags.map((tag) => (
             <span
               key={tag.id}
-              className="inline-block rounded-full border border-brand-primary/20 bg-white/50 px-3 py-1 text-xs font-medium text-brand-muted"
+              className="inline-block border border-brand-primary/20 bg-brand-raised px-3 py-1 text-xs font-medium text-brand-muted"
             >
               #{tag.name}
             </span>
@@ -92,9 +91,9 @@ export default async function ProductDetailPage({
         )}
 
         <div className="mt-16 grid gap-12 lg:grid-cols-[1fr_360px]">
-          <div className="rounded-[2.5rem] border border-brand-primary/10 bg-white p-8 shadow-xl shadow-brand-primary/5 sm:p-12">
+          <div className="border border-brand-primary/10 bg-brand-raised p-8 sm:p-12">
             {!!product.description && (
-              <div className="prose prose-stone prose-lg max-w-none font-light leading-relaxed text-brand-muted prose-headings:font-serif prose-headings:font-medium prose-headings:text-brand-text">
+              <div className="prose prose-stone prose-lg max-w-none leading-relaxed text-brand-muted prose-headings:font-serif prose-headings:font-medium prose-headings:text-brand-text">
                 <BlockRenderer blocks={product.description as BlockRendererBlocks} />
               </div>
             )}
@@ -105,7 +104,7 @@ export default async function ProductDetailPage({
                 <ul className="space-y-3">
                   {product.features.map((feature) => (
                     <li key={feature.id} className="flex items-start gap-3 text-brand-muted">
-                      <span className="mt-2 inline-block h-2 w-2 shrink-0 rounded-full bg-brand-cta" />
+                      <span className="mt-2 inline-block h-2 w-2 shrink-0 bg-brand-cta" />
                       <span>{feature.text}</span>
                     </li>
                   ))}
@@ -114,7 +113,7 @@ export default async function ProductDetailPage({
             )}
           </div>
 
-          <aside className="self-start rounded-[2.5rem] border border-brand-primary/10 bg-white p-6 shadow-xl shadow-brand-primary/5 lg:sticky lg:top-32">
+          <aside className="self-start border border-brand-primary/10 bg-brand-raised p-6 lg:sticky lg:top-32">
             <p className="text-sm text-brand-muted">方案價格</p>
             <p className="mt-1 text-3xl font-semibold text-brand-cta">
               {lowestPrice !== null ? `NT$ ${lowestPrice.toLocaleString()} 起` : '尚未定價'}
@@ -123,7 +122,7 @@ export default async function ProductDetailPage({
             {variants.length > 0 && (
               <div className="mt-6 space-y-3">
                 {variants.map((variant) => (
-                  <div key={variant.id} className="rounded-2xl border border-brand-primary/10 p-4">
+                  <div key={variant.id} className="border border-brand-primary/10 p-4">
                     <p className="font-medium text-brand-text">{variant.name}</p>
                     <p className="mt-1 text-sm text-brand-muted">SKU: {variant.sku}</p>
                     <p className="mt-2 font-medium text-brand-cta">NT$ {variant.price.toLocaleString()}</p>
@@ -134,7 +133,7 @@ export default async function ProductDetailPage({
 
             <Link
               href={`/service-cart?addProduct=${product.slug}`}
-              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand-cta px-6 py-3 font-semibold text-white transition-colors hover:bg-brand-cta/90 active:scale-[0.98]"
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 bg-brand-cta px-6 py-3 font-semibold text-white transition-colors hover:bg-brand-cta/90 active:scale-[0.98]"
             >
               <ShoppingCart className="h-5 w-5" />
               加入購物車

@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { getPost } from '@/lib/queries/posts'
+import { getPost, getPublishedPostRefs } from '@/lib/queries/posts'
 import { getBlogCategories } from '@/lib/queries/categories'
 import { getPostTagsAll } from '@/lib/queries/post-tags'
+import { getSiteUrl } from '@/lib/posts/constants'
 import PostForm from '@/components/admin/PostForm'
 import DeletePostButton from './DeletePostButton'
 
@@ -16,33 +17,31 @@ export default async function EditPostPage({ params }: PageProps) {
 
   if (isNaN(postId)) notFound()
 
-  const [post, categories, tags] = await Promise.all([
+  const [post, categories, tags, allPosts] = await Promise.all([
     getPost(postId),
     getBlogCategories(),
     getPostTagsAll(),
+    getPublishedPostRefs(),
   ])
 
   if (!post) notFound()
 
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex items-center justify-between">
-        <Link
-          href="/admin/posts"
-          className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
-        >
-          ← 返回文章管理
+    <div className="space-y-3 p-3 md:p-6">
+      <div className="mx-auto flex max-w-3xl items-center justify-between">
+        <Link href="/admin/posts" className="inline-flex min-h-9 items-center text-sm text-brand-muted hover:text-brand-text">
+          ← 文章管理
         </Link>
         <DeletePostButton postId={postId} postTitle={post.title} />
       </div>
-
-      <h1 className="text-2xl font-bold text-gray-900">編輯文章：{post.title}</h1>
-
+      <h1 className="sr-only">編輯文章：{post.title}</h1>
       <PostForm
         post={post}
         categories={categories}
         availableTags={tags}
+        allPosts={allPosts.map(({ id: refId, title }) => ({ id: refId, title }))}
         mode="edit"
+        siteUrl={getSiteUrl()}
       />
     </div>
   )

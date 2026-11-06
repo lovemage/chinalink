@@ -28,7 +28,7 @@ export function ImageGalleryBlock({ images, layout }: ImageGalleryBlockProps) {
         if (!media?.url) return null
 
         return (
-          <figure key={item.id || media.id} className="overflow-hidden rounded-xl">
+          <figure key={item.id || media.id} className="overflow-hidden ">
             <Image
               src={media.url}
               alt={media.alt || ''}

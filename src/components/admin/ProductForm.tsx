@@ -196,14 +196,14 @@ export default function ProductForm({ product, categories, tags, mode }: Product
   }
 
   const inputClass =
-    'w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+    'w-full px-3 py-2 text-sm border border-brand-rule focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent'
   const selectClass = inputClass
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 max-w-3xl">
       {/* Section 1: Basic Info */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-800 border-b border-gray-100 pb-2">基本資訊</h2>
+      <section className="bg-white p-4 md:p-6 space-y-4">
+        <h2 className="text-base font-semibold text-brand-text border-b border-brand-rule pb-2">基本資訊</h2>
 
         <AdminFormField label="產品名稱" name="title" required error={errors.title}>
           <input
@@ -265,24 +265,24 @@ export default function ProductForm({ product, categories, tags, mode }: Product
       </section>
 
       {/* Section 2: Cover Image */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-800 border-b border-gray-100 pb-2">封面圖片</h2>
+      <section className="bg-white p-4 md:p-6 space-y-4">
+        <h2 className="text-base font-semibold text-brand-text border-b border-brand-rule pb-2">封面圖片</h2>
         <AdminFormField label="封面圖片" name="coverImage">
           <ImageUploader images={coverImages} onChange={setCoverImages} single />
         </AdminFormField>
       </section>
 
       {/* Section 3: Additional Images */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-800 border-b border-gray-100 pb-2">附加圖片</h2>
+      <section className="bg-white p-4 md:p-6 space-y-4">
+        <h2 className="text-base font-semibold text-brand-text border-b border-brand-rule pb-2">附加圖片</h2>
         <AdminFormField label="產品圖片" name="additionalImages" description="可上傳多張產品展示圖">
           <ImageUploader images={additionalImages} onChange={setAdditionalImages} />
         </AdminFormField>
       </section>
 
       {/* Section 4: Description */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-800 border-b border-gray-100 pb-2">產品說明</h2>
+      <section className="bg-white p-4 md:p-6 space-y-4">
+        <h2 className="text-base font-semibold text-brand-text border-b border-brand-rule pb-2">產品說明</h2>
         <AdminFormField label="詳細說明" name="description">
           <TiptapEditor
             content={description}
@@ -293,8 +293,8 @@ export default function ProductForm({ product, categories, tags, mode }: Product
       </section>
 
       {/* Section 5: Variants */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-800 border-b border-gray-100 pb-2">
+      <section className="bg-white p-4 md:p-6 space-y-4">
+        <h2 className="text-base font-semibold text-brand-text border-b border-brand-rule pb-2">
           規格管理
           <span className="text-red-500 ml-1">*</span>
         </h2>
@@ -305,23 +305,23 @@ export default function ProductForm({ product, categories, tags, mode }: Product
       </section>
 
       {/* Section 6: Features */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-800 border-b border-gray-100 pb-2">產品特點</h2>
+      <section className="bg-white p-4 md:p-6 space-y-4">
+        <h2 className="text-base font-semibold text-brand-text border-b border-brand-rule pb-2">產品特點</h2>
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium text-gray-700">特點列表</span>
+            <span className="text-sm font-medium text-brand-muted">特點列表</span>
             <button
               type="button"
               onClick={addFeature}
-              className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+              className="text-xs text-brand-primary hover:text-brand-deep font-medium"
             >
               + 新增特點
             </button>
           </div>
 
           {features.length === 0 && (
-            <p className="text-sm text-gray-400">尚無產品特點</p>
+            <p className="text-sm text-brand-muted">尚無產品特點</p>
           )}
 
           {features.map((feature, i) => (
@@ -331,7 +331,7 @@ export default function ProductForm({ product, categories, tags, mode }: Product
                 value={feature.text}
                 onChange={(e) => updateFeature(i, e.target.value)}
                 placeholder={`特點 ${i + 1}`}
-                className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="flex-1 px-3 py-2 text-sm border border-brand-rule focus:outline-none focus:ring-1 focus:ring-brand-primary"
               />
               <button
                 type="button"
@@ -348,8 +348,8 @@ export default function ProductForm({ product, categories, tags, mode }: Product
 
       {/* Section 7: Tags */}
       {tags.length > 0 && (
-        <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-          <h2 className="text-base font-semibold text-gray-800 border-b border-gray-100 pb-2">標籤</h2>
+        <section className="bg-white p-4 md:p-6 space-y-4">
+          <h2 className="text-base font-semibold text-brand-text border-b border-brand-rule pb-2">標籤</h2>
           <div className="flex flex-wrap gap-2">
             {tags.map((tag) => {
               const selected = selectedTagIds.includes(tag.id)
@@ -358,10 +358,10 @@ export default function ProductForm({ product, categories, tags, mode }: Product
                   key={tag.id}
                   type="button"
                   onClick={() => toggleTag(tag.id)}
-                  className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+                  className={`px-3 py-1 text-xs border transition-colors ${
                     selected
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-blue-400'
+                      ? 'bg-brand-primary text-white border-brand-primary'
+                      : 'bg-white text-brand-muted border-brand-rule hover:border-brand-primary'
                   }`}
                 >
                   {tag.name}
@@ -373,8 +373,8 @@ export default function ProductForm({ product, categories, tags, mode }: Product
       )}
 
       {/* Section 8: Status & Visibility */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-800 border-b border-gray-100 pb-2">狀態與可見性</h2>
+      <section className="bg-white p-4 md:p-6 space-y-4">
+        <h2 className="text-base font-semibold text-brand-text border-b border-brand-rule pb-2">狀態與可見性</h2>
 
         <div className="grid grid-cols-2 gap-4">
           <AdminFormField label="發布狀態" name="status">
@@ -405,8 +405,8 @@ export default function ProductForm({ product, categories, tags, mode }: Product
       </section>
 
       {/* Section 9: SEO */}
-      <section className="bg-white rounded-xl shadow-sm p-6 space-y-4">
-        <h2 className="text-base font-semibold text-gray-800 border-b border-gray-100 pb-2">SEO 設定</h2>
+      <section className="bg-white p-4 md:p-6 space-y-4">
+        <h2 className="text-base font-semibold text-brand-text border-b border-brand-rule pb-2">SEO 設定</h2>
 
         <AdminFormField label="SEO 標題" name="seoTitle" description="留空則使用產品名稱">
           <input
@@ -436,14 +436,14 @@ export default function ProductForm({ product, categories, tags, mode }: Product
         <button
           type="submit"
           disabled={submitting}
-          className="px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="px-6 py-2.5 bg-brand-primary text-white text-sm font-medium hover:bg-brand-deep disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {submitting ? '儲存中...' : mode === 'create' ? '建立產品' : '儲存變更'}
         </button>
         <button
           type="button"
           onClick={() => router.push('/admin/products')}
-          className="px-6 py-2.5 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+          className="px-6 py-2.5 bg-white text-brand-muted text-sm font-medium border border-brand-rule hover:bg-brand-bg transition-colors"
         >
           取消
         </button>

@@ -81,10 +81,10 @@ function CheckoutSuccessContent() {
   const items = order?.items ?? []
 
   return (
-    <section className="mx-auto max-w-2xl px-4 py-16 pt-32">
-      <div className="rounded-2xl border border-brand-primary/10 bg-white p-8 text-center shadow-sm">
+    <section className="mx-auto max-w-2xl px-4 py-12">
+      <div className="border border-brand-primary/10 bg-brand-raised p-8 text-center ">
         {/* Success icon */}
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center bg-emerald-50">
           <svg className="h-8 w-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
@@ -96,7 +96,7 @@ function CheckoutSuccessContent() {
         {order && (
           <div className="mb-8 space-y-0 text-left">
             {/* Order info */}
-            <div className="divide-y divide-brand-primary/8 rounded-xl border border-brand-primary/8 bg-brand-bg">
+            <div className="divide-y divide-brand-primary/8 border border-brand-primary/8 bg-brand-bg">
               <div className="flex justify-between px-4 py-3">
                 <span className="text-sm text-brand-muted">訂單編號</span>
                 <span className="font-mono text-sm font-semibold tracking-wider">{order.orderNumber}</span>
@@ -119,7 +119,7 @@ function CheckoutSuccessContent() {
             {items.length > 0 && (
               <div className="mt-4">
                 <h2 className="mb-2 px-1 text-sm font-semibold text-brand-text">訂單明細</h2>
-                <ul className="divide-y divide-brand-primary/8 rounded-xl border border-brand-primary/8">
+                <ul className="divide-y divide-brand-primary/8 border border-brand-primary/8">
                   {items.map((item) => {
                     const isProduct = item.itemType === 'product'
                     const name = isProduct
@@ -128,7 +128,7 @@ function CheckoutSuccessContent() {
 
                     return (
                       <li key={item.id} className="flex items-center gap-3 px-4 py-3">
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-brand-primary/8">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center bg-brand-primary/8">
                           {isProduct ? (
                             <Package className="h-3.5 w-3.5 text-brand-primary" />
                           ) : (
@@ -150,7 +150,7 @@ function CheckoutSuccessContent() {
             )}
 
             {/* Total */}
-            <div className="mt-4 flex justify-between rounded-xl border border-brand-primary/8 bg-brand-bg px-4 py-3">
+            <div className="mt-4 flex justify-between border border-brand-primary/8 bg-brand-bg px-4 py-3">
               <span className="text-lg font-bold">付款金額</span>
               <span className="font-serif text-lg font-bold text-brand-primary">
                 {formatPrice(order.amount)}
@@ -165,7 +165,7 @@ function CheckoutSuccessContent() {
 
         <Link
           href="/"
-          className="inline-block rounded-2xl bg-brand-primary px-8 py-3 font-semibold text-white transition-colors hover:bg-brand-primary/90"
+          className="inline-block bg-brand-primary px-8 py-3 font-semibold text-white transition-colors hover:bg-brand-primary/90"
         >
           返回首頁
         </Link>

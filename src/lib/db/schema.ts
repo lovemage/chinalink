@@ -10,6 +10,23 @@ import {
 } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 
+export interface PostSource {
+  name: string
+  url: string
+}
+
+export interface PostFaqItem {
+  question: string
+  answer: string
+}
+
+export interface PostAiSource {
+  text: string
+  sourceUrl?: string
+  notes?: string
+  savedAt: string
+}
+
 // ---------------------------------------------------------------------------
 // admins
 // ---------------------------------------------------------------------------
@@ -46,6 +63,8 @@ export const categories = pgTable('categories', {
   id: serial('id').primaryKey(),
   name: text('name').notNull(),
   slug: text('slug').unique().notNull(),
+  description: text('description'),
+  sortOrder: integer('sort_order').notNull().default(0),
   createdAt: timestamp('created_at').defaultNow(),
 })
 
@@ -248,8 +267,64 @@ export const posts = pgTable('posts', {
   content: jsonb('content'),
   seoTitle: text('seo_title'),
   seoDescription: text('seo_description'),
+  section: text('section').notNull().default('opinion'),
+  coverImageAlt: text('cover_image_alt'),
+  focusKeyword: text('focus_keyword'),
+  ogTitle: text('og_title'),
+  ogDescription: text('og_description'),
+  ogImageUrl: text('og_image_url'),
+  sources: jsonb('sources').$type<PostSource[]>().notNull().default([]),
+  faq: jsonb('faq').$type<PostFaqItem[]>().notNull().default([]),
+  relatedPostIds: jsonb('related_post_ids').$type<number[]>().notNull().default([]),
+  noindex: boolean('noindex').notNull().default(false),
+  canonicalUrl: text('canonical_url'),
+  scheduledAt: timestamp('scheduled_at', { withTimezone: true }),
+  scheduleError: text('schedule_error'),
+  aiSource: jsonb('ai_source').$type<PostAiSource | null>(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
+})
+
+// ---------------------------------------------------------------------------
+// postSlugRedirects: old slug -> post, resolved to the post's current slug
+// ---------------------------------------------------------------------------
+export const postSlugRedirects = pgTable('post_slug_redirects', {
+  id: serial('id').primaryKey(),
+  oldSlug: text('old_slug').unique().notNull(),
+  postId: integer('post_id')
+    .references(() => posts.id, { onDelete: 'cascade' })
+    .notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+})
+
+// ---------------------------------------------------------------------------
+// siteFaqs: 問題與交流
+// ---------------------------------------------------------------------------
+export const siteFaqs = pgTable('site_faqs', {
+  id: serial('id').primaryKey(),
+  question: text('question').notNull(),
+  answer: text('answer').notNull(),
+  relatedPostId: integer('related_post_id').references(() => posts.id, {
+    onDelete: 'set null',
+  }),
+  status: text('status').notNull().default('published'),
+  sortOrder: integer('sort_order').notNull().default(0),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+})
+
+// ---------------------------------------------------------------------------
+// aiAssistantLogs: Admin AI 上架助手呼叫紀錄
+// ---------------------------------------------------------------------------
+export const aiAssistantLogs = pgTable('ai_assistant_logs', {
+  id: serial('id').primaryKey(),
+  username: text('username').notNull(),
+  action: text('action').notNull(),
+  model: text('model'),
+  status: text('status').notNull(),
+  error: text('error'),
+  durationMs: integer('duration_ms'),
+  createdAt: timestamp('created_at').defaultNow(),
 })
 
 // ---------------------------------------------------------------------------
@@ -574,6 +649,13 @@ export const postsRelations = relations(posts, ({ one, many }) => ({
   coverImage: one(media, {
     fields: [posts.coverImageId],
     references: [media.id],
+  }),
+}))
+
+export const siteFaqsRelations = relations(siteFaqs, ({ one }) => ({
+  relatedPost: one(posts, {
+    fields: [siteFaqs.relatedPostId],
+    references: [posts.id],
   }),
 }))
 

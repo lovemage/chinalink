@@ -8,8 +8,8 @@ test('blog article page supports both block arrays and tiptap JSON content', () 
   const articlePage = read('app/(frontend)/blog/[slug]/page.tsx')
 
   assert.match(articlePage, /Array\.isArray\(post\.content\)/)
-  assert.match(articlePage, /contentType === 'tiptap'/)
-  assert.match(articlePage, /<TiptapRenderer content=\{post\.content\} \/>/)
+  assert.match(articlePage, /isTiptapDoc\(post\.content\)/)
+  assert.match(articlePage, /<ArticleBody content=\{post\.content\} \/>/)
 })
 
 test('block renderer safely ignores non-array content payloads', () => {

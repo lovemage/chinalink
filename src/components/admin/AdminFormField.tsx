@@ -17,7 +17,7 @@ export default function AdminFormField({
 }: AdminFormFieldProps) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={name} className="text-sm font-medium text-gray-700">
+      <label htmlFor={name} className="text-sm font-medium text-brand-muted">
         {label}
         {required && <span className="ml-1 text-red-500">*</span>}
       </label>
@@ -25,7 +25,7 @@ export default function AdminFormField({
       {children}
 
       {description && !error && (
-        <p className="text-xs text-gray-400">{description}</p>
+        <p className="text-xs text-brand-muted">{description}</p>
       )}
 
       {error && (

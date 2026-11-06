@@ -21,7 +21,7 @@ export function FAQBlock({ items }: FAQBlockProps) {
   if (!items || items.length === 0) return null
 
   return (
-    <div className="my-6 divide-y divide-gray-200 rounded-xl border border-gray-200">
+    <div className="my-6 divide-y divide-gray-200 border border-gray-200">
       {items.map((item, index) => (
         <div key={item.id || index}>
           <button

@@ -117,14 +117,14 @@ export default function CheckoutPage() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center bg-emerald-50">
             <svg className="h-8 w-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
           <h1 className="mb-2 text-2xl font-bold text-green-600">此訂單已完成付款</h1>
           <p className="text-gray-600">訂單編號：{order.orderNumber}</p>
-          <Link href="/" className="mt-6 inline-block rounded-xl bg-brand-primary px-6 py-3 font-semibold text-white hover:bg-brand-primary/90">
+          <Link href="/" className="mt-6 inline-block bg-brand-primary px-6 py-3 font-semibold text-white hover:bg-brand-primary/90">
             返回首頁
           </Link>
         </div>
@@ -136,13 +136,13 @@ export default function CheckoutPage() {
   const addons = order.selectedAddons ?? []
 
   return (
-    <section className="mx-auto max-w-2xl px-4 py-16 pt-32">
+    <section className="mx-auto max-w-2xl px-4 py-12">
       <h1 className="mb-2 text-center font-serif text-3xl font-bold text-brand-text">確認訂單</h1>
       <p className="mb-8 text-center text-sm text-brand-muted">請確認以下訂單內容後前往付款</p>
 
-      <div className="rounded-2xl border border-brand-primary/10 bg-white p-6 shadow-sm">
+      <div className="border border-brand-primary/10 bg-brand-raised p-6 ">
         {/* Order number */}
-        <div className="mb-6 flex items-center justify-between rounded-xl bg-brand-bg px-4 py-3">
+        <div className="mb-6 flex items-center justify-between bg-brand-bg px-4 py-3">
           <span className="text-sm text-brand-muted">訂單編號</span>
           <span className="font-mono text-sm font-semibold tracking-wider text-brand-text">{order.orderNumber}</span>
         </div>
@@ -160,7 +160,7 @@ export default function CheckoutPage() {
 
                 return (
                   <li key={item.id} className="flex items-start gap-3 py-3">
-                    <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-primary/8">
+                    <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center bg-brand-primary/8">
                       {isProduct ? (
                         <Package className="h-4 w-4 text-brand-primary" />
                       ) : (
@@ -208,14 +208,14 @@ export default function CheckoutPage() {
 
         {/* Error message */}
         {error && (
-          <p className="mt-4 rounded-lg bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>
+          <p className="mt-4 bg-red-50 px-4 py-2 text-sm text-red-600">{error}</p>
         )}
 
         {/* Pay button */}
         <button
           onClick={handlePayment}
           disabled={submitting}
-          className="mt-6 w-full rounded-2xl bg-brand-cta px-6 py-4 text-lg font-semibold text-white shadow-lg shadow-brand-cta/20 transition-all hover:bg-brand-cta/90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-6 w-full bg-brand-cta px-6 py-4 text-lg font-semibold text-white transition-all hover:bg-brand-cta/90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {submitting ? '正在跳轉至綠界付款...' : '前往付款'}
         </button>

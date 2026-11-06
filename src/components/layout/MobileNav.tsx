@@ -2,81 +2,77 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { Menu } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
-import { Button } from '@/components/ui/button'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import { primaryNav, secondaryNav } from './Navbar'
 
-interface NavItem {
-  label: string
-  href: string
-}
-
-export function MobileNav({ navItems }: { navItems: NavItem[] }) {
+export function MobileNav() {
   const [open, setOpen] = useState(false)
+  const pathname = usePathname()
   const { data: session, status } = useSession()
   const isLoggedIn = status === 'authenticated' && !!session?.user
+
+  const close = () => setOpen(false)
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
-        render={<Button variant="ghost" size="icon-lg" aria-label="選單" />}
+        render={
+          <button type="button" aria-label="開啟選單" className="flex size-11 items-center justify-center text-brand-text" />
+        }
       >
-        <Menu className="size-5" />
+        <Menu className="size-6" aria-hidden="true" />
       </SheetTrigger>
-      <SheetContent side="right" className="w-72">
-        <SheetHeader>
-          <SheetTitle className="text-left text-lg font-bold text-brand-primary">
-            懂陸姐
-          </SheetTitle>
+      <SheetContent side="right" className="w-[86vw] max-w-sm gap-0 overflow-y-auto bg-brand-bg">
+        <SheetHeader className="border-b border-brand-rule">
+          <SheetTitle className="text-left font-serif text-xl font-bold text-brand-text">懂陸姐</SheetTitle>
         </SheetHeader>
-        <nav className="flex flex-col gap-2 px-4">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setOpen(false)}
-              className="rounded-lg px-3 py-3 text-sm font-medium text-brand-text transition-colors hover:bg-accent"
-            >
+        <nav aria-label="主要欄目" className="flex flex-col p-2">
+          {primaryNav.map((item) => {
+            const current = pathname === item.href || (item.href !== '/blog' && pathname.startsWith(`${item.href}/`))
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={close}
+                aria-current={current ? 'page' : undefined}
+                className={`px-4 py-3.5 font-serif text-lg font-medium ${current ? 'bg-brand-tint font-bold' : ''}`}
+              >
+                {item.label}
+              </Link>
+            )
+          })}
+        </nav>
+        <nav aria-label="其他頁面" className="flex flex-col border-t border-brand-rule p-2 text-[15px] text-brand-muted">
+          {secondaryNav.map((item) => (
+            <Link key={item.href} href={item.href} onClick={close} className="px-4 py-3">
               {item.label}
             </Link>
           ))}
-
+          <Link href="/service-cart" onClick={close} className="px-4 py-3">
+            購物車
+          </Link>
           {isLoggedIn ? (
             <>
-              <div className="mt-4 px-3 text-sm text-muted-foreground">
-                {session?.user?.name || session?.user?.email}
-              </div>
-              <Link
-                href="/account/orders"
-                onClick={() => setOpen(false)}
-                className="mt-2 rounded-lg px-3 py-3 text-sm font-medium text-brand-text transition-colors hover:bg-accent"
-              >
+              <Link href="/account/orders" onClick={close} className="px-4 py-3">
                 付款紀錄
               </Link>
               <button
+                type="button"
                 onClick={() => {
-                  setOpen(false)
+                  close()
                   signOut({ callbackUrl: '/' })
                 }}
-                className="mt-2 inline-flex h-11 items-center justify-center rounded-lg border border-border px-4 text-sm font-medium text-brand-text transition-colors hover:bg-accent"
+                className="px-4 py-3 text-left"
               >
-                登出
+                登出（{session?.user?.name || session?.user?.email}）
               </button>
             </>
           ) : (
-            <Link
-              href="/login"
-              onClick={() => setOpen(false)}
-              className="mt-4 inline-flex h-11 items-center justify-center rounded-lg bg-brand-cta px-4 text-white text-sm font-medium transition-colors hover:bg-brand-cta/90"
-            >
-              登入
+            <Link href="/login" onClick={close} className="px-4 py-3">
+              會員登入
             </Link>
           )}
         </nav>

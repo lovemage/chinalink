@@ -1,31 +1,29 @@
 import Link from 'next/link'
 import { getBlogCategories } from '@/lib/queries/categories'
+import { getPublishedPostRefs } from '@/lib/queries/posts'
 import { getPostTagsAll } from '@/lib/queries/post-tags'
+import { getSiteUrl } from '@/lib/posts/constants'
 import PostForm from '@/components/admin/PostForm'
 
 export default async function NewPostPage() {
-  const [categories, tags] = await Promise.all([
+  const [categories, tags, allPosts] = await Promise.all([
     getBlogCategories(),
     getPostTagsAll(),
+    getPublishedPostRefs(),
   ])
 
   return (
-    <div className="p-6 space-y-4">
-      <div className="flex items-center gap-3">
-        <Link
-          href="/admin/posts"
-          className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
-        >
-          ← 返回文章管理
-        </Link>
-      </div>
-
-      <h1 className="text-2xl font-bold text-gray-900">新增文章</h1>
-
+    <div className="space-y-3 p-3 md:p-6">
+      <Link href="/admin/posts" className="inline-flex min-h-9 items-center text-sm text-brand-muted hover:text-brand-text">
+        ← 文章管理
+      </Link>
+      <h1 className="sr-only">新增文章</h1>
       <PostForm
         categories={categories}
         availableTags={tags}
+        allPosts={allPosts.map(({ id, title }) => ({ id, title }))}
         mode="create"
+        siteUrl={getSiteUrl()}
       />
     </div>
   )

@@ -1,5 +1,6 @@
 'use server'
 
+import { getAdminFromCookies } from '@/lib/auth-admin'
 import { db } from '@/lib/db'
 import {
   products,
@@ -50,6 +51,7 @@ async function findOrCreateMedia(url: string): Promise<number> {
 export async function createProduct(
   formData: FormData
 ): Promise<{ success: true; id: number } | { error: string }> {
+  if (!(await getAdminFromCookies())) return { error: '登入已過期，請重新登入' }
   try {
     const title = (formData.get('title') as string)?.trim()
     if (!title) return { error: '產品名稱為必填' }
@@ -202,6 +204,7 @@ export async function createProduct(
 export async function updateProduct(
   formData: FormData
 ): Promise<{ success: true } | { error: string }> {
+  if (!(await getAdminFromCookies())) return { error: '登入已過期，請重新登入' }
   try {
     const idRaw = formData.get('id') as string
     if (!idRaw) return { error: '缺少產品 ID' }
@@ -364,6 +367,7 @@ export async function updateProduct(
 }
 
 export async function deleteProduct(id: number): Promise<{ success: true } | { error: string }> {
+  if (!(await getAdminFromCookies())) return { error: '登入已過期，請重新登入' }
   try {
     await db.delete(products).where(eq(products.id, id))
     revalidatePath('/admin/products')

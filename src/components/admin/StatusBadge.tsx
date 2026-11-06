@@ -6,14 +6,20 @@ interface StatusBadgeProps {
 function detectVariant(status: string): NonNullable<StatusBadgeProps['variant']> {
   const s = status.toLowerCase()
   if (['published', 'paid', 'completed', 'active'].includes(s)) return 'success'
-  if (['draft', 'pending'].includes(s)) return 'warning'
+  if (['draft', 'pending', 'scheduled'].includes(s)) return 'warning'
   if (['failed', 'expired', 'closed'].includes(s)) return 'danger'
   if (['new', 'contacted', 'quoted'].includes(s)) return 'info'
   return 'default'
 }
 
+const STATUS_LABELS: Record<string, string> = {
+  published: '已發布',
+  draft: '草稿',
+  scheduled: '已排程',
+}
+
 const variantClasses: Record<NonNullable<StatusBadgeProps['variant']>, string> = {
-  default: 'bg-gray-100 text-gray-600',
+  default: 'bg-gray-100 text-brand-muted',
   success: 'bg-green-100 text-green-700',
   warning: 'bg-yellow-100 text-yellow-700',
   danger: 'bg-red-100 text-red-700',
@@ -26,9 +32,9 @@ export default function StatusBadge({ status, variant }: StatusBadgeProps) {
 
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${classes}`}
+      className={`inline-flex items-center px-2.5 py-0.5 text-xs font-medium ${classes}`}
     >
-      {status}
+      {STATUS_LABELS[status.toLowerCase()] ?? status}
     </span>
   )
 }

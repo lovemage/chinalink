@@ -1,5 +1,6 @@
 'use server'
 
+import { getAdminFromCookies } from '@/lib/auth-admin'
 import { db } from '@/lib/db'
 import { orders } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -9,6 +10,7 @@ export async function updateOrderStatus(
   id: number,
   status: string
 ): Promise<{ success: true } | { error: string }> {
+  if (!(await getAdminFromCookies())) return { error: '登入已過期，請重新登入' }
   try {
     await db
       .update(orders)
@@ -27,6 +29,7 @@ export async function updatePaymentStatus(
   id: number,
   status: string
 ): Promise<{ success: true } | { error: string }> {
+  if (!(await getAdminFromCookies())) return { error: '登入已過期，請重新登入' }
   try {
     await db
       .update(orders)
@@ -45,6 +48,7 @@ export async function updateOrderNote(
   id: number,
   note: string
 ): Promise<{ success: true } | { error: string }> {
+  if (!(await getAdminFromCookies())) return { error: '登入已過期，請重新登入' }
   try {
     await db
       .update(orders)

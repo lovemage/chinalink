@@ -14,7 +14,9 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:backfill:post-content": "tsx src/scripts/backfill-post-content.ts"
+    "db:backfill:post-content": "tsx src/scripts/backfill-post-content.ts",
+    "db:migrate:redesign": "tsx src/scripts/apply-redesign-migration.ts",
+    "test": "find src -name '*.test.ts' | xargs tsx --test"
   },
   "dependencies": {
     "@base-ui/react": "^1.2.0",
@@ -39,6 +41,7 @@
     "lucide-react": "^0.577.0",
     "next": "15.4.11",
     "next-auth": "^5.0.0-beta.30",
+    "pinyin-pro": "^3.29.5",
     "postcss": "^8.5.8",
     "postgres": "^3.4.8",
     "react": "^19.0.0",

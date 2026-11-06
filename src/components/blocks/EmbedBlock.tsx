@@ -19,7 +19,7 @@ export function EmbedBlock({ url, caption }: EmbedBlockProps) {
 
   return (
     <figure className="my-6">
-      <div className="overflow-hidden rounded-xl">
+      <div className="overflow-hidden ">
         {youtubeId ? (
           <div className="relative aspect-video">
             <iframe

@@ -33,7 +33,7 @@ export function CalloutBlock({ type, content }: CalloutBlockProps) {
   const Icon = style.icon
 
   return (
-    <div className={`my-6 rounded-xl border-l-4 ${style.border} ${style.bg} p-5`}>
+    <div className={`my-6 border-l-4 ${style.border} ${style.bg} p-5`}>
       <div className="flex gap-3">
         <Icon className={`mt-0.5 h-5 w-5 flex-shrink-0 ${style.iconColor}`} />
         <div className="prose prose-sm max-w-none prose-headings:text-brand-text">

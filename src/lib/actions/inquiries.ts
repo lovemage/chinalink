@@ -1,5 +1,6 @@
 'use server'
 
+import { getAdminFromCookies } from '@/lib/auth-admin'
 import { db } from '@/lib/db'
 import { inquiries } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -9,6 +10,7 @@ export async function updateInquiryStatus(
   id: number,
   status: string
 ): Promise<{ success: true } | { error: string }> {
+  if (!(await getAdminFromCookies())) return { error: '登入已過期，請重新登入' }
   try {
     await db
       .update(inquiries)

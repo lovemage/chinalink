@@ -1,5 +1,6 @@
 'use server'
 
+import { getAdminFromCookies } from '@/lib/auth-admin'
 import { db } from '@/lib/db'
 import { categories, serviceCategories, productCategories } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -18,6 +19,7 @@ function generateSlug(name: string): string {
 }
 
 export async function createCategory(type: CategoryType, formData: FormData) {
+  if (!(await getAdminFromCookies())) throw new Error('Unauthorized')
   const name = formData.get('name') as string
   if (!name?.trim()) return
 
@@ -33,6 +35,7 @@ export async function updateCategory(
   type: CategoryType,
   formData: FormData
 ) {
+  if (!(await getAdminFromCookies())) throw new Error('Unauthorized')
   const name = formData.get('name') as string
   if (!name?.trim()) return
 
@@ -44,6 +47,7 @@ export async function updateCategory(
 }
 
 export async function deleteCategory(id: number, type: CategoryType) {
+  if (!(await getAdminFromCookies())) throw new Error('Unauthorized')
   const table = getTable(type)
   await db.delete(table).where(eq(table.id, id))
   revalidatePath('/admin/categories')

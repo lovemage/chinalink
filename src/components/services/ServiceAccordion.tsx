@@ -87,20 +87,20 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
         return (
           <div
             key={service.id}
-            className={`relative overflow-hidden rounded-2xl sm:rounded-[2rem] border transition-all duration-300 ${
+            className={`relative overflow-hidden border transition-all duration-300 ${
               isOpen
-                ? 'col-span-2 sm:col-span-1 border-brand-primary/20 bg-white shadow-xl shadow-brand-primary/5'
-                : 'border-border/70 bg-white hover:border-brand-primary/15 hover:shadow-md'
+                ? 'col-span-2 sm:col-span-1 border-brand-primary/20 bg-brand-raised '
+                : 'border-border/70 bg-brand-raised hover:border-brand-primary/15 '
             }`}
           >
             {/* Header — always visible */}
             <button
               type="button"
               onClick={() => toggle(service.id)}
-              className="group flex w-full items-center gap-3 sm:gap-5 px-4 py-4 sm:px-10 sm:py-7 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-brand-bg rounded-2xl sm:rounded-[2rem]"
+              className="group flex w-full items-center gap-3 sm:gap-5 px-4 py-4 sm:px-10 sm:py-7 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-brand-bg "
             >
               <div
-                className={`flex h-10 w-10 sm:h-14 sm:w-14 shrink-0 items-center justify-center rounded-xl sm:rounded-[1.25rem] ring-1 transition-all duration-300 ${
+                className={`flex h-10 w-10 sm:h-14 sm:w-14 shrink-0 items-center justify-center ring-1 transition-all duration-300 ${
                   isOpen
                     ? 'bg-brand-primary/10 text-brand-primary ring-brand-primary/15'
                     : 'bg-muted text-brand-muted ring-border/50 group-hover:ring-brand-primary/10'
@@ -117,7 +117,7 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
                   {service.title}
                 </h2>
                 {!isOpen && service.seoDescription && (
-                  <p className="mt-1 sm:mt-1.5 line-clamp-1 text-xs sm:text-sm font-light text-brand-muted hidden sm:block">
+                  <p className="mt-1 sm:mt-1.5 line-clamp-1 text-xs sm:text-sm text-brand-muted hidden sm:block">
                     {service.seoDescription}
                   </p>
                 )}
@@ -148,7 +148,7 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
                 <div className="border-t border-brand-primary/10 px-4 pt-6 pb-8 sm:px-10 sm:pt-8 sm:pb-10">
                   {/* Cover image */}
                   {cover?.url && (
-                    <div className="relative mb-8 sm:mb-10 aspect-[5/2] overflow-hidden rounded-xl sm:rounded-[1.5rem]">
+                    <div className="relative mb-8 sm:mb-10 aspect-[5/2] overflow-hidden ">
                       <Image
                         src={cover.heroUrl || cover.url}
                         alt={cover.alt || service.title}
@@ -165,7 +165,7 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
                     <div>
                       {/* Block content */}
                       {!!service.description && (
-                        <div className="prose prose-sm sm:prose-lg prose-stone max-w-none font-light leading-relaxed text-brand-muted prose-headings:font-serif prose-headings:font-medium prose-headings:text-brand-text prose-a:text-brand-primary prose-table:text-sm prose-table:border prose-table:border-border/50 prose-th:bg-brand-bg prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-medium prose-th:text-brand-text prose-td:px-3 prose-td:py-2 prose-td:border-t prose-td:border-border/30">
+                        <div className="prose prose-sm sm:prose-lg prose-stone max-w-none leading-relaxed text-brand-muted prose-headings:font-serif prose-headings:font-medium prose-headings:text-brand-text prose-a:text-brand-primary prose-table:text-sm prose-table:border prose-table:border-border/50 prose-th:bg-brand-bg prose-th:px-3 prose-th:py-2 prose-th:text-left prose-th:font-medium prose-th:text-brand-text prose-td:px-3 prose-td:py-2 prose-td:border-t prose-td:border-border/30">
                           <BlockRenderer
                             blocks={service.description as BlockRendererBlocks}
                           />
@@ -184,7 +184,7 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
                                 key={feature.id}
                                 className="flex items-start gap-2 sm:gap-3"
                               >
-                                <div className="mt-0.5 flex h-6 w-6 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-md sm:rounded-lg bg-brand-primary/8 text-brand-primary ring-1 ring-brand-primary/10">
+                                <div className="mt-0.5 flex h-6 w-6 sm:h-8 sm:w-8 shrink-0 items-center justify-center bg-brand-primary/8 text-brand-primary ring-1 ring-brand-primary/10">
                                   <MaterialSymbol
                                     name={
                                       service.iconName || defaultServiceIconName
@@ -192,7 +192,7 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
                                     className="text-[12px] sm:text-[16px]"
                                   />
                                 </div>
-                                <span className="text-xs sm:text-sm font-light leading-relaxed text-brand-muted">
+                                <span className="text-xs sm:text-sm leading-relaxed text-brand-muted">
                                   {feature.text}
                                 </span>
                               </li>
@@ -212,9 +212,6 @@ export function ServiceAccordion({ services, lineUrl }: ServiceAccordionProps) {
             </div>
 
             {/* Decorative number */}
-            <div className="pointer-events-none absolute -right-2 -bottom-2 text-[48px] sm:text-[72px] font-black leading-none text-black/[0.02]">
-              0{index + 1}
-            </div>
           </div>
         )
       })}

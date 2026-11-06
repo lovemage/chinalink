@@ -57,14 +57,14 @@ export default function ServicesTable({
       key: 'title',
       label: '服務名稱',
       render: (row: Record<string, unknown>) => (
-        <span className="font-medium text-gray-900">{row.title as string}</span>
+        <span className="font-medium text-brand-text">{row.title as string}</span>
       ),
     },
     {
       key: 'categoryName',
       label: '分類',
       render: (row: Record<string, unknown>) => (
-        <span className="text-gray-500">{(row.categoryName as string) ?? '—'}</span>
+        <span className="text-brand-muted">{(row.categoryName as string) ?? '—'}</span>
       ),
     },
     {
@@ -76,14 +76,14 @@ export default function ServicesTable({
       key: 'price',
       label: '價格',
       render: (row: Record<string, unknown>) => (
-        <span className="text-gray-600">{formatPrice(row as unknown as ServiceRow)}</span>
+        <span className="text-brand-muted">{formatPrice(row as unknown as ServiceRow)}</span>
       ),
     },
     {
       key: 'createdAt',
       label: '建立時間',
       render: (row: Record<string, unknown>) => (
-        <span className="text-gray-400 text-xs">
+        <span className="text-brand-muted text-xs">
           {row.createdAt
             ? new Date(row.createdAt as string).toLocaleDateString('zh-TW')
             : '—'}
@@ -109,10 +109,10 @@ export default function ServicesTable({
               if (initialStatus) params.set('status', initialStatus)
               router.push(`/admin/services?${params.toString()}`)
             }}
-            className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+            className={`px-3 py-1 text-xs border transition-colors ${
               !initialCategoryId
-                ? 'bg-blue-600 text-white border-blue-600'
-                : 'bg-white text-gray-600 border-gray-200 hover:border-blue-400'
+                ? 'bg-brand-primary text-white border-brand-primary'
+                : 'bg-white text-brand-muted border-brand-rule hover:border-brand-primary'
             }`}
           >
             全部
@@ -127,10 +127,10 @@ export default function ServicesTable({
                 if (initialStatus) params.set('status', initialStatus)
                 router.push(`/admin/services?${params.toString()}`)
               }}
-              className={`px-3 py-1 text-xs rounded-full border transition-colors ${
+              className={`px-3 py-1 text-xs border transition-colors ${
                 initialCategoryId === String(cat.id)
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-blue-400'
+                  ? 'bg-brand-primary text-white border-brand-primary'
+                  : 'bg-white text-brand-muted border-brand-rule hover:border-brand-primary'
               }`}
             >
               {cat.name}

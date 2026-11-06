@@ -106,7 +106,7 @@ export function LoginButtons() {
   return (
     <div className="flex flex-col gap-6">
       {error && (
-        <div className="rounded-md bg-destructive/15 p-3 text-sm text-destructive font-medium">
+        <div className="bg-destructive/15 p-3 text-sm text-destructive font-medium">
           {error}
         </div>
       )}
@@ -125,12 +125,12 @@ export function LoginButtons() {
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={isLoading}
-              className="h-12 rounded-xl"
+              className="h-12 "
             />
           </div>
           <Button
             type="submit"
-            className="w-full rounded-2xl h-12"
+            className="w-full h-12"
             disabled={isLoading || !email}
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -151,7 +151,7 @@ export function LoginButtons() {
               onChange={(e) => setCode(e.target.value)}
               required
               disabled={isLoading}
-              className="h-12 rounded-xl text-center text-lg tracking-widest"
+              className="h-12 text-center text-lg tracking-widest"
               maxLength={6}
             />
             <p className="text-sm text-muted-foreground text-center pt-2">
@@ -181,7 +181,7 @@ export function LoginButtons() {
           </div>
           <Button
             type="submit"
-            className="w-full rounded-2xl h-12"
+            className="w-full h-12"
             disabled={isLoading || code.length !== 6}
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -205,7 +205,7 @@ export function LoginButtons() {
         type="button"
         onClick={() => signIn('google', { callbackUrl })}
         variant="outline"
-        className="rounded-2xl h-12 w-full"
+        className="h-12 w-full"
         disabled={isLoading}
       >
         Google 登入

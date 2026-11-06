@@ -1,84 +1,101 @@
-import Link from 'next/link'
 import Image from 'next/image'
+import Link from 'next/link'
+import { formatDateline } from '@/lib/posts/time'
+import { POST_SECTIONS, isPostSection } from '@/lib/posts/constants'
+import type { PublishedPostCard } from '@/lib/queries/posts'
 
-export interface DrizzlePostForCard {
-  id: number
-  title: string
-  slug: string
-  excerpt: string | null
-  author: string | null
-  publishedAt: Date | null
-  createdAt: Date | null
-  categoryName: string | null
-  categorySlug: string | null
-  coverImageUrl: string | null
-  coverImageAlt: string | null
+export function postDate(post: Pick<PublishedPostCard, 'publishedAt' | 'createdAt'>) {
+  return formatDateline(post.publishedAt ?? post.createdAt)
 }
 
-interface PostCardProps {
-  post: DrizzlePostForCard
+export function coverAlt(post: Pick<PublishedPostCard, 'coverImageAlt' | 'mediaAlt' | 'title'>) {
+  return post.coverImageAlt || post.mediaAlt || post.title
 }
 
-function formatDate(date: Date): string {
-  return date.toLocaleDateString('zh-TW', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
-}
-
-export function PostCard({ post }: PostCardProps) {
-  const dateDisplay = post.publishedAt
-    ? formatDate(post.publishedAt)
-    : post.createdAt
-      ? formatDate(post.createdAt)
-      : null
-
+function Meta({ post, showSection }: { post: PublishedPostCard; showSection?: boolean }) {
+  const section = isPostSection(post.section) ? POST_SECTIONS[post.section].shortLabel : null
   return (
-    <Link
-      href={`/blog/${post.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm transition-shadow duration-300 hover:shadow-md hover:shadow-brand-primary/8 sm:rounded-[2rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background"
-    >
-      <div className="relative aspect-[16/10] overflow-hidden bg-brand-primary/10">
-        {post.coverImageUrl ? (
-          <Image
-            src={post.coverImageUrl}
-            alt={post.coverImageAlt || post.title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center">
-            <span className="text-4xl text-brand-primary/30">&#128221;</span>
+    <p className="dateline flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-brand-muted">
+      <time>{postDate(post)}</time>
+      {showSection && section && <span>{section}</span>}
+      {post.categoryName && <span>{post.categoryName}</span>}
+    </p>
+  )
+}
+
+/** The lead story of a list. Holds its shape when a post has no cover image. */
+export function LeadPost({ post, headingAs: Heading = 'h2' }: { post: PublishedPostCard; headingAs?: 'h2' | 'h3' }) {
+  return (
+    <article className="group">
+      <Link href={`/blog/${post.slug}`} className="block">
+        {post.coverImageUrl && (
+          <div className="relative mb-5 aspect-[16/9] overflow-hidden bg-brand-tint">
+            <Image
+              src={post.coverImageUrl}
+              alt={coverAlt(post)}
+              fill
+              sizes="(max-width: 1024px) 100vw, 700px"
+              className="object-cover"
+            />
           </div>
         )}
-      </div>
-
-      <div className="flex flex-1 flex-col p-3 sm:p-5">
-        {post.categoryName && (
-          <span className="mb-2 w-fit rounded-full bg-brand-primary/10 px-2.5 py-1 text-[11px] font-medium text-brand-primary sm:mb-3 sm:px-3 sm:text-xs">
-            {post.categoryName}
-          </span>
-        )}
-
-        <h3 className="text-base font-bold text-brand-text transition-colors group-hover:text-brand-primary sm:text-lg">
+        <Meta post={post} />
+        <Heading className="mt-3 font-serif text-[1.625rem] font-bold leading-snug text-brand-text text-balance transition-colors group-hover:text-brand-primary sm:text-[2rem]">
           {post.title}
-        </h3>
+        </Heading>
+        {post.excerpt && <p className="mt-4 line-clamp-3 max-w-[60ch] text-base leading-8 text-brand-muted">{post.excerpt}</p>}
+      </Link>
+    </article>
+  )
+}
 
-        {post.excerpt && (
-          <p className="mt-1.5 line-clamp-2 text-xs text-brand-muted sm:mt-2 sm:text-sm">
-            {post.excerpt}
-          </p>
+/** A compact row with an optional thumbnail, for the rail beside a lead story. */
+export function PostRow({ post, headingAs: Heading = 'h3' }: { post: PublishedPostCard; headingAs?: 'h2' | 'h3' }) {
+  return (
+    <article className="group border-b border-brand-rule py-5 first:pt-0 last:border-b-0 last:pb-0">
+      <Link href={`/blog/${post.slug}`} className="flex gap-4">
+        <div className="min-w-0 flex-1">
+          <Meta post={post} />
+          <Heading className="mt-2 line-clamp-3 font-serif text-[1.0625rem] font-medium leading-7 text-brand-text transition-colors group-hover:text-brand-primary">
+            {post.title}
+          </Heading>
+        </div>
+        {post.coverImageUrl && (
+          <div className="relative aspect-[4/3] w-24 shrink-0 overflow-hidden bg-brand-tint sm:w-28">
+            <Image src={post.coverImageUrl} alt="" fill sizes="112px" className="object-cover" />
+          </div>
         )}
+      </Link>
+    </article>
+  )
+}
 
-        <div className="mt-auto pt-4">
-          {dateDisplay && (
-            <time className="text-xs text-brand-muted">
-              {dateDisplay}
-            </time>
+/** Grid item for list pages. */
+export function PostCard({ post, showSection }: { post: PublishedPostCard; showSection?: boolean }) {
+  return (
+    <article className="group">
+      <Link href={`/blog/${post.slug}`} className="block">
+        <div className="relative mb-4 aspect-[16/10] overflow-hidden bg-brand-tint">
+          {post.coverImageUrl ? (
+            <Image
+              src={post.coverImageUrl}
+              alt={coverAlt(post)}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 380px"
+              className="object-cover"
+            />
+          ) : (
+            <span className="absolute inset-0 flex items-center justify-center font-serif text-lg text-brand-muted" aria-hidden="true">
+              懂陸姐
+            </span>
           )}
         </div>
-      </div>
-    </Link>
+        <Meta post={post} showSection={showSection} />
+        <h3 className="mt-2 line-clamp-3 font-serif text-lg font-medium leading-8 text-brand-text transition-colors group-hover:text-brand-primary">
+          {post.title}
+        </h3>
+        {post.excerpt && <p className="mt-2 line-clamp-2 text-[15px] leading-7 text-brand-muted">{post.excerpt}</p>}
+      </Link>
+    </article>
   )
 }

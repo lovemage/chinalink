@@ -6,17 +6,17 @@ export default async function NewServicePage() {
   const categories = await getServiceCategories()
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-4 md:p-6 space-y-4">
       <div className="flex items-center gap-3">
         <Link
           href="/admin/services"
-          className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+          className="text-sm text-brand-muted hover:text-brand-muted transition-colors"
         >
           ← 返回服務管理
         </Link>
       </div>
 
-      <h1 className="text-2xl font-bold text-gray-900">新增服務</h1>
+      <h1 className="text-2xl font-bold text-brand-text">新增服務</h1>
 
       <ServiceForm
         categories={categories}

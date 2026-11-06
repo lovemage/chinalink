@@ -191,6 +191,14 @@ export async function getPublishedPostRefs() {
     .orderBy(sql`${posts.publishedAt} desc nulls last`)
 }
 
+export async function getPublishedPostsBySlugs(slugs: string[]) {
+  if (slugs.length === 0) return []
+  return db
+    .select({ slug: posts.slug, title: posts.title })
+    .from(posts)
+    .where(and(eq(posts.status, 'published'), inArray(posts.slug, slugs)))
+}
+
 export async function getSlugRedirectTarget(slugCandidates: string[]) {
   if (slugCandidates.length === 0) return null
   const [row] = await db

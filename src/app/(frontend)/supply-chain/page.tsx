@@ -1,11 +1,14 @@
+export const dynamic = 'force-dynamic'
+
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { PageHeader } from '@/components/site/PageHeader'
+import { PartnerCases } from '@/components/supply-chain/PartnerCases'
 import { SihuiCasePreview } from '@/components/supply-chain/SihuiCasePreview'
 
 export const metadata: Metadata = {
   title: '供應鏈推薦｜懂陸姐 ChinaLink',
-  description: '從廣東四會翡翠供應鏈開始，認識懂陸姐實際接觸過的在地從業者、產業背景與合作關係。',
+  description: '從廣東四會翡翠供應鏈，到珠寶、台灣茶與水晶三個合作品牌，認識懂陸姐實際接觸過的從業者與產業關係。',
   alternates: { canonical: '/supply-chain' },
 }
 
@@ -18,6 +21,7 @@ export default function SupplyChainPage() {
       />
       <div className="mx-auto max-w-[1200px] px-4 py-10 pb-20 sm:px-6 lg:py-14">
         <SihuiCasePreview headingAs="h2" />
+        <PartnerCases />
         <div className="mt-12 flex flex-col gap-5 border-t border-brand-rule pt-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="max-w-2xl text-base leading-8 text-brand-muted">
             有正在尋找的貨源或加工需求，可以先和懂陸姐聊聊，再確認是否有合適的在地資源。

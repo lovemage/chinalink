@@ -6,6 +6,10 @@ import { checkPost, type PostCheckInput } from './checks'
 import { auditContent } from './tiptap'
 import { extractJsonObject, parseAssistantDraft, AssistantFormatError } from './ai-assistant'
 import { buildArticleJsonLd, serializeJsonLd } from './structured-data'
+import { markdownToTiptap, parseManuscript } from './markdown'
+import { readdirSync, readFileSync } from 'node:fs'
+import { partnerCases } from '../content/supply-chain'
+import { ARTICLE_CATEGORY_SLUGS } from './constants'
 
 const doc = (...content: object[]) => ({ type: 'doc', content })
 const para = (text: string) => ({ type: 'paragraph', content: [{ type: 'text', text }] })
@@ -170,4 +174,38 @@ test('structured data types follow the section and JSON-LD cannot break out of t
   assert.equal(opinion[1]['@type'], 'BreadcrumbList')
   assert.equal(opinion[2]['@type'], 'FAQPage')
   assert.ok(!serializeJsonLd(opinion).includes('</script>'))
+})
+
+test('markdown converts to the tiptap nodes the article page renders', () => {
+  const doc = markdownToTiptap('## 標題\n\n內文**粗體**與[連結](https://a.tw)\n\n- 一\n- 二\n\n| 甲 | 乙 |\n| --- | --- |\n| 1 | 2 |')
+  assert.deepEqual(doc.content?.map((node) => node.type), ['heading', 'paragraph', 'bulletList', 'table'])
+  assert.equal(doc.content?.[1].content?.[1].marks?.[0].type, 'bold')
+  assert.equal(doc.content?.[1].content?.[3].marks?.[0].attrs?.href, 'https://a.tw')
+  assert.equal(doc.content?.[3].content?.length, 2)
+})
+
+test('each manuscript is complete, passes the content checks and is tied to a partner case', () => {
+  const dir = new URL('../../../content/supply-chain-articles/', import.meta.url)
+  const files = readdirSync(dir).filter((name) => name.endsWith('.md'))
+  assert.equal(files.length, 9)
+  const slugs = partnerCases.flatMap((item) => item.articleSlugs)
+  for (const file of files) {
+    const { meta, body } = parseManuscript(readFileSync(new URL(file, dir), 'utf8'))
+    const m = meta as Record<string, never>
+    assert.ok(isValidSlug(m.slug), file)
+    assert.ok(slugs.includes(m.slug), `${file} not linked from a case`)
+    assert.ok((ARTICLE_CATEGORY_SLUGS as readonly string[]).includes(m.category), file)
+    const { required } = checkPost({
+      ...complete,
+      title: m.title,
+      slug: m.slug,
+      excerpt: m.excerpt,
+      content: markdownToTiptap(body),
+      section: 'observation',
+    })
+    assert.deepEqual(required, [], file)
+    assert.ok((m.sources as unknown[]).length >= 3, `${file} needs sources`)
+    assert.ok((m.faq as unknown[]).length >= 3, `${file} needs faq`)
+    assert.doesNotMatch(body, /[—–]/, `${file} has a dash`)
+  }
 })

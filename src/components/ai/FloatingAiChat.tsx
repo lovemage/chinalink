@@ -22,7 +22,7 @@ interface ChatConfig {
 
 const STORAGE_KEY = 'linkai-chat-session-messages'
 const OPEN_KEY = 'linkai-chat-open'
-const URL_REGEX = /(https?:\/\/[^\s，。、）」]+)/g
+const URL_REGEX = /(https?:\/\/[A-Za-z0-9\-._~:/?#@!$&*+;=%]+)/g
 const STARTER_QUESTIONS = [
   '懂陸姐提供哪些顧問服務？',
   '想找大陸貨源，要先準備什麼？',

@@ -45,7 +45,8 @@ export function sanitizeAssistantLinks(
   const base = normalizeUrl(siteUrl)
   const baseUrl = safeParseUrl(base)
   const baseHost = baseUrl?.host ?? ''
-  const urlRegex = /https?:\/\/[^\s<>"')]+/g
+  // ASCII only, so a URL followed directly by Chinese text or full-width punctuation ends where it should.
+  const urlRegex = /https?:\/\/[A-Za-z0-9\-._~:/?#@!$&*+;=%]+/g
 
   return content.replace(urlRegex, (raw) => {
     const trimmed = raw.replace(/[.,!?;:]+$/g, '')

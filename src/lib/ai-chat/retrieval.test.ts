@@ -53,3 +53,14 @@ test('system prompt keeps the core rules ahead of admin notes', () => {
   assert.match(prompt, /以上方規則為準/)
   assert.match(prompt, /【相關文章內容】[\s\S]*tai-wan-cha-su-yuan-ma/)
 })
+
+test('link sanitizer stops at Chinese text right after a URL', async () => {
+  const { buildAllowedLinks, sanitizeAssistantLinks } = await import('./sanitize')
+  const base = 'https://www.chinalink.tw'
+  const allow = buildAllowedLinks({ posts: [], services: [], products: [] }, {}, base)
+  assert.equal(
+    sanitizeAssistantLinks(`請到 ${base}/contact，或透過官方 LINE。`, allow, base),
+    `請到 ${base}/contact，或透過官方 LINE。`,
+  )
+  assert.equal(sanitizeAssistantLinks(`看 ${base}/blog/made-up。`, allow, base), `看 ${base}/blog。`)
+})

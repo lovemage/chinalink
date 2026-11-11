@@ -1,9 +1,21 @@
 import { and, desc, eq, inArray } from 'drizzle-orm'
 import { db } from '@/lib/db'
-import { memberAiChatMessages, posts, products, services } from '@/lib/db/schema'
+import {
+  categories,
+  memberAiChatMessages,
+  postTagRelations,
+  postTags,
+  posts,
+  products,
+  services,
+  type PostFaqItem,
+} from '@/lib/db/schema'
 import { keepNewestMessages } from '@/lib/ai-chat/history'
 import { getSettings } from '@/lib/queries/settings'
-import { homeFaqs } from '@/lib/content/faq'
+import { getPublishedSiteFaqs } from '@/lib/queries/site-faqs'
+import { POST_SECTIONS, getSiteUrl, isPostSection } from '@/lib/posts/constants'
+import { formatDateline } from '@/lib/posts/time'
+import { tiptapPlainText } from '@/lib/posts/tiptap'
 
 export interface AiChatMessage {
   id: number
@@ -84,136 +96,98 @@ export async function getAiServerConfig() {
   }
 }
 
-export async function getAiContextSnapshot() {
-  const [publishedProducts, publishedServices, publishedFaqPosts] = await Promise.all([
-    db
-      .select({
-        title: products.title,
-        slug: products.slug,
-        summary: products.summary,
-        description: products.description,
-      })
-      .from(products)
-      .where(and(eq(products.status, 'published'), eq(products.visibility, 'public')))
-      .orderBy(desc(products.createdAt))
-      .limit(40),
-    db
-      .select({
-        title: services.title,
-        slug: services.slug,
-        pricingMode: services.pricingMode,
-        price: services.price,
-        basePrice: services.basePrice,
-        description: services.description,
-      })
-      .from(services)
-      .where(and(eq(services.status, 'published'), eq(services.visibility, 'public')))
-      .orderBy(desc(services.createdAt))
-      .limit(40),
+export interface AiPostDoc {
+  id: number
+  title: string
+  url: string
+  section: string
+  category: string
+  date: string
+  excerpt: string
+  sources: string[]
+  /** Used for ranking only. */
+  summary: string
+  body: string
+  faq: PostFaqItem[]
+}
+
+export interface AiContextSnapshot {
+  posts: AiPostDoc[]
+  siteFaqs: Array<{ question: string; answer: string; relatedUrl: string | null }>
+  services: Array<{ title: string; url: string }>
+  products: Array<{ title: string; url: string }>
+}
+
+/** Everything the assistant may cite: published articles, 問題與交流, services and products. */
+export async function getAiContextSnapshot(): Promise<AiContextSnapshot> {
+  const base = getSiteUrl()
+  const [postRows, tagRows, faqRows, serviceRows, productRows] = await Promise.all([
     db
       .select({
         id: posts.id,
         title: posts.title,
         slug: posts.slug,
+        section: posts.section,
+        categoryName: categories.name,
+        excerpt: posts.excerpt,
+        focusKeyword: posts.focusKeyword,
+        publishedAt: posts.publishedAt,
         content: posts.content,
+        sources: posts.sources,
+        faq: posts.faq,
       })
       .from(posts)
-      .where(eq(posts.status, 'published'))
+      .leftJoin(categories, eq(posts.categoryId, categories.id))
+      .where(and(eq(posts.status, 'published'), eq(posts.noindex, false)))
       .orderBy(desc(posts.publishedAt))
-      .limit(20),
+      .limit(80),
+    db
+      .select({ postId: postTagRelations.postId, name: postTags.name })
+      .from(postTagRelations)
+      .innerJoin(postTags, eq(postTagRelations.tagId, postTags.id)),
+    getPublishedSiteFaqs(),
+    db
+      .select({ title: services.title, slug: services.slug })
+      .from(services)
+      .where(and(eq(services.status, 'published'), eq(services.visibility, 'public')))
+      .orderBy(desc(services.createdAt))
+      .limit(40),
+    db
+      .select({ title: products.title, slug: products.slug })
+      .from(products)
+      .where(and(eq(products.status, 'published'), eq(products.visibility, 'public')))
+      .orderBy(desc(products.createdAt))
+      .limit(40),
   ])
 
-  const productContext = publishedProducts.map((p) => ({
-    title: p.title,
-    slug: p.slug,
-    summary: p.summary,
-    description: shrinkJson(p.description),
-  }))
-
-  const serviceContext = publishedServices.map((s) => ({
-    title: s.title,
-    slug: s.slug,
-    pricingMode: s.pricingMode,
-    price: s.price,
-    basePrice: s.basePrice,
-    description: shrinkJson(s.description),
-  }))
-
-  const postFaqs = extractFaqsFromPosts(
-    publishedFaqPosts.map((p) => ({
-      title: p.title,
-      slug: p.slug,
-      content: p.content,
-    })),
-  )
+  const tagsByPost = new Map<number, string[]>()
+  for (const row of tagRows) tagsByPost.set(row.postId, [...(tagsByPost.get(row.postId) ?? []), row.name])
 
   return {
-    publishedProducts: productContext,
-    publishedServices: serviceContext,
-    homeFaqs,
-    postFaqs,
-  }
-}
-
-function shrinkJson(value: unknown, maxLen = 700): string {
-  if (!value) return ''
-  let text = ''
-  try {
-    text = JSON.stringify(value)
-  } catch {
-    return ''
-  }
-  return text.length > maxLen ? `${text.slice(0, maxLen)}...` : text
-}
-
-function extractFaqsFromPosts(
-  rows: Array<{ title: string; slug: string; content: unknown }>,
-): Array<{ source: string; question: string; answer: string }> {
-  const output: Array<{ source: string; question: string; answer: string }> = []
-
-  for (const row of rows) {
-    const content = row.content as
-      | { root?: { children?: unknown[] }; blocks?: unknown[] }
-      | null
-      | undefined
-    const blocks = Array.isArray(content?.blocks) ? content?.blocks : []
-    for (const rawBlock of blocks) {
-      const block = rawBlock as
-        | {
-            blockType?: string
-            items?: Array<{ question?: string; answer?: unknown }>
-          }
-        | undefined
-      if (block?.blockType !== 'faq' || !Array.isArray(block.items)) continue
-
-      for (const item of block.items) {
-        const question = String(item.question ?? '').trim()
-        if (!question) continue
-        const answer = extractLexicalText(item.answer).trim()
-        output.push({
-          source: `${row.title} (${row.slug})`,
-          question,
-          answer,
-        })
+    posts: postRows.map((row) => {
+      const section = isPostSection(row.section) ? POST_SECTIONS[row.section].label : ''
+      const tags = tagsByPost.get(row.id) ?? []
+      return {
+        id: row.id,
+        title: row.title,
+        url: `${base}/blog/${row.slug}`,
+        section,
+        category: row.categoryName ?? '',
+        date: formatDateline(row.publishedAt),
+        excerpt: row.excerpt ?? '',
+        sources: (row.sources ?? []).map((source) => source.name).filter(Boolean),
+        summary: [row.excerpt, row.focusKeyword, row.categoryName, section, ...tags].filter(Boolean).join(' '),
+        body: tiptapPlainText(row.content),
+        faq: row.faq ?? [],
       }
-    }
+    }),
+    siteFaqs: faqRows.map((row) => ({
+      question: row.question,
+      answer: row.answer,
+      relatedUrl:
+        row.relatedPostSlug && row.relatedPostStatus === 'published' ? `${base}/blog/${row.relatedPostSlug}` : null,
+    })),
+    services: serviceRows.map((row) => ({ title: row.title, url: `${base}/services/${row.slug}` })),
+    products: productRows.map((row) => ({ title: row.title, url: `${base}/products/${row.slug}` })),
   }
-
-  return output.slice(0, 80)
-}
-
-function extractLexicalText(node: unknown): string {
-  if (!node || typeof node !== 'object') return ''
-  const obj = node as { text?: unknown; children?: unknown[]; root?: { children?: unknown[] } }
-
-  const ownText = typeof obj.text === 'string' ? obj.text : ''
-  const childText = Array.isArray(obj.children)
-    ? obj.children.map((c) => extractLexicalText(c)).join(' ')
-    : ''
-  const rootText =
-    obj.root && Array.isArray(obj.root.children)
-      ? obj.root.children.map((c) => extractLexicalText(c)).join(' ')
-      : ''
-
-  return [ownText, childText, rootText].filter(Boolean).join(' ').replace(/\s+/g, ' ')
 }

@@ -153,7 +153,7 @@ export default function SettingsManager({
               <div>
                 <h2 className="text-sm font-semibold text-brand-text">AI 客服設定</h2>
                 <p className="mt-1 text-xs text-brand-muted">
-                  系統會強制限制 AI 只回答站內商品與服務相關問題。
+                  AI 會依站內已發布的文章、問題與交流和供應鏈推薦回答，網站定位與三種顧問角色已內建，不必在這裡重寫。
                 </p>
               </div>
 
@@ -207,14 +207,15 @@ export default function SettingsManager({
                   htmlFor="systemPrompt"
                   className="block text-sm font-medium text-brand-muted"
                 >
-                  系統 Prompt
+                  補充說明（語氣、近期公告等）
                 </label>
+                <p className="text-xs text-brand-muted">附加在內建規則之後，與內建規則衝突時以內建為準。</p>
                 <textarea
                   id="systemPrompt"
                   name="systemPrompt"
                   rows={6}
                   defaultValue={settings.systemPrompt ?? ''}
-                  placeholder="你是懂陸姐網站的 AI 客服..."
+                  placeholder="例：12 月 20 日至 1 月 3 日 Tina 在大陸出差，回覆會較慢。"
                   className="w-full px-3 py-2 text-sm border border-brand-rule focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 />
               </div>
@@ -224,14 +225,14 @@ export default function SettingsManager({
                   htmlFor="aiAgentPrompt"
                   className="block text-sm font-medium text-brand-muted"
                 >
-                  管理員額外 Prompt
+                  補充說明（其他）
                 </label>
                 <textarea
                   id="aiAgentPrompt"
                   name="aiAgentPrompt"
                   rows={5}
                   defaultValue={settings.aiAgentPrompt ?? ''}
-                  placeholder="你是懂陸姐站內客服..."
+                  placeholder="例：被問到合作提案時，請對方到聯絡頁寫下公司與需求。"
                   className="w-full px-3 py-2 text-sm border border-brand-rule focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 />
               </div>

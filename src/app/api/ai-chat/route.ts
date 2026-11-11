@@ -8,7 +8,8 @@ import {
   getMemberAiMessages,
   pruneMemberAiMessages,
 } from '@/lib/queries/ai-chat'
-import { askOpenRouter } from '@/lib/services/openrouter'
+import { askOpenRouter, sitePages } from '@/lib/services/openrouter'
+import { partnerCases } from '@/lib/content/supply-chain'
 import { buildAllowedLinks, sanitizeAssistantLinks } from '@/lib/ai-chat/sanitize'
 import { buildGuestResponseMessages, normalizeGuestHistory } from '@/lib/ai-chat/guest-history'
 
@@ -67,8 +68,7 @@ export async function POST(req: Request) {
     const reply = await askOpenRouter({
       apiKey: config.apiKey,
       model: config.model,
-      systemPrompt: config.systemPrompt,
-      adminPrompt: config.prompt,
+      adminNotes: [config.systemPrompt, config.prompt].filter((text) => text.trim()).join('\n\n'),
       userMessage: message,
       history,
       lineOfficialUrl: config.lineOfficialUrl,
@@ -82,6 +82,7 @@ export async function POST(req: Request) {
       {
         lineOfficialUrl: config.lineOfficialUrl,
         whatsappUrl: config.whatsappUrl,
+        extraUrls: [...sitePages(siteUrl).map((page) => page.url), ...partnerCases.map((item) => item.url)],
       },
       siteUrl,
     )

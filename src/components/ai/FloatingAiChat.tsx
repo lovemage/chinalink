@@ -22,13 +22,19 @@ interface ChatConfig {
 
 const STORAGE_KEY = 'linkai-chat-session-messages'
 const OPEN_KEY = 'linkai-chat-open'
-const URL_REGEX = /(https?:\/\/[^\s]+)/g
+const URL_REGEX = /(https?:\/\/[^\s，。、）」]+)/g
+const STARTER_QUESTIONS = [
+  '懂陸姐提供哪些顧問服務？',
+  '想找大陸貨源，要先準備什麼？',
+  '培育鑽批發價為什麼一直跌？',
+  '怎麼和懂陸姐聯繫合作？',
+]
 
 function LinkAiIcon() {
   return (
     <Image
       src="/linkai-floating.png"
-      alt="LinkAI 客服"
+      alt="懂陸姐 AI 助理"
       width={64}
       height={64}
       priority
@@ -192,15 +198,17 @@ export function FloatingAiChat() {
 
   function renderTextWithLinks(text: string) {
     const parts = text.split(URL_REGEX)
+    const siteOrigin = typeof window !== 'undefined' ? window.location.origin : ''
     return parts.map((part, idx) => {
       if (part.match(URL_REGEX)) {
+        const external = !part.startsWith(siteOrigin) && !part.startsWith('https://www.chinalink.tw')
         return (
           <a
             key={`${part}-${idx}`}
             href={part}
-            target="_blank"
-            rel="noreferrer"
-            className="underline break-all text-sky-700"
+            target={external ? '_blank' : undefined}
+            rel={external ? 'noreferrer' : undefined}
+            className="break-all text-brand-text underline decoration-brand-wood decoration-1 underline-offset-4 hover:decoration-2"
           >
             {part}
           </a>
@@ -210,12 +218,12 @@ export function FloatingAiChat() {
     })
   }
 
-  async function sendMessage() {
+  async function sendMessage(preset?: string) {
     if (sending) return
-    const text = input.trim()
+    const text = (preset ?? input).trim()
     if (!text) return
 
-    setInput('')
+    if (!preset) setInput('')
     setSending(true)
     setError('')
     try {
@@ -255,8 +263,8 @@ export function FloatingAiChat() {
   return (
     <>
       {!open ? (
-        <div className="fixed bottom-24 right-6 z-40 max-w-[min(80vw,320px)] rounded-full border border-brand-primary/30 bg-brand-text px-4 py-2 text-sm font-medium text-white shadow-lg">
-          24小時智能客服，即時回答您的需求～
+        <div className="fixed bottom-24 right-6 z-40 max-w-[min(80vw,320px)] bg-brand-deep px-4 py-2 text-sm text-white">
+          有問題可以問我：市場、貨源與顧問合作
         </div>
       ) : null}
       <button
@@ -265,15 +273,11 @@ export function FloatingAiChat() {
         onClick={() => {
           setOpen((v) => !v)
         }}
-        className={`fixed bottom-5 right-5 z-40 flex h-16 w-16 items-center justify-center rounded-full border border-brand-primary/25 bg-brand-bg shadow-lg transition-all duration-200 ${
-          open ? 'ring-4 ring-brand-primary/35' : ''
+        className={`fixed bottom-5 right-5 z-40 flex h-16 w-16 items-center justify-center rounded-full border bg-brand-bg transition-colors duration-200 ${
+          open ? 'border-brand-text' : 'border-brand-rule hover:border-brand-text'
         }`}
-        style={{
-          boxShadow: open
-            ? '0 0 28px rgba(194, 117, 74, 0.45), 0 12px 28px rgba(44, 38, 33, 0.22)'
-            : '0 0 18px rgba(194, 117, 74, 0.3), 0 10px 24px rgba(44, 38, 33, 0.2)',
-        }}
-        aria-label="LinkAI 客服"
+        aria-label={open ? '關閉懂陸姐 AI 助理' : '開啟懂陸姐 AI 助理'}
+        aria-expanded={open}
       >
         <LinkAiIcon />
       </button>
@@ -281,88 +285,98 @@ export function FloatingAiChat() {
       {open ? (
         <section
           ref={chatPanelRef}
-          className="fixed bottom-24 right-5 z-40 w-[min(92vw,380px)] overflow-hidden rounded-2xl border border-brand-primary/15 bg-brand-bg shadow-2xl"
+          aria-label="懂陸姐 AI 助理"
+          className="fixed bottom-24 right-4 z-40 flex w-[min(calc(100vw-2rem),400px)] flex-col border border-brand-text bg-brand-bg sm:right-5"
         >
-          <header className="border-b border-brand-primary/12 bg-brand-primary/8 px-4 py-3">
-            <p className="text-sm font-semibold text-brand-text">LinkAI 智能客服</p>
-            <p className="text-xs text-brand-muted">僅回答站內商品、服務與下單相關問題</p>
+          <header className="bg-brand-deep px-4 py-3 text-white">
+            <p className="font-serif text-[15px] font-bold">懂陸姐 AI 助理</p>
+            <p className="mt-0.5 text-xs text-brand-tint">依站內文章、供應鏈觀察與問題與交流回答</p>
           </header>
 
-          <div className="h-80 space-y-2 overflow-y-auto bg-brand-bg px-4 py-3">
-            {loading ? <p className="text-xs text-brand-muted">載入對話中...</p> : null}
-            {loading || sending ? (
-              <p className="text-xs text-brand-primary">
-                ai-在檢索中{'.'.repeat(dotCount)}
-              </p>
-            ) : null}
+          <div className="h-[min(55vh,360px)] space-y-3 overflow-y-auto px-4 py-4" aria-live="polite">
+            {loading ? <p className="text-xs text-brand-muted">載入對話中…</p> : null}
             {!messages.length && !loading ? (
-              <p className="text-xs text-brand-muted">
-                歡迎使用 LinkAI，請輸入您想了解的商品或服務問題。
-              </p>
+              <div>
+                <p className="text-sm leading-7 text-brand-text">
+                  我可以幫你找站內文章、說明產業帶與貨源的觀察，也可以介紹懂陸姐的企業、供應鏈與兩岸對接顧問。
+                </p>
+                <div className="mt-3 flex flex-col items-start gap-2">
+                  {STARTER_QUESTIONS.map((question) => (
+                    <button
+                      key={question}
+                      type="button"
+                      disabled={sending}
+                      onClick={() => void sendMessage(question)}
+                      className="border border-brand-rule bg-brand-raised px-3 py-2 text-left text-[13px] text-brand-text transition-colors hover:border-brand-text disabled:opacity-50"
+                    >
+                      {question}
+                    </button>
+                  ))}
+                </div>
+              </div>
             ) : null}
             {messages.map((m) => (
               <div
                 key={m.id}
-                className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
+                className={`max-w-[88%] px-3 py-2 text-sm leading-7 ${
                   m.role === 'user'
                     ? 'ml-auto bg-brand-primary text-white'
-                    : 'bg-white text-brand-text shadow-sm border border-brand-primary/10'
+                    : 'border border-brand-rule bg-brand-raised text-brand-text'
                 }`}
               >
                 <div className="whitespace-pre-wrap break-words">
-                  {renderTextWithLinks(
-                    m.id === typingMessageId && m.role === 'assistant'
-                      ? m.content.slice(0, typingLength)
-                      : m.content,
-                  )}
+                  {m.role === 'assistant'
+                    ? renderTextWithLinks(
+                        m.id === typingMessageId ? m.content.slice(0, typingLength) : m.content,
+                      )
+                    : m.content}
                 </div>
               </div>
             ))}
+            {sending ? (
+              <p className="text-xs text-brand-muted">
+                整理回覆中{'.'.repeat(dotCount)}
+              </p>
+            ) : null}
             <div ref={messagesEndRef} />
           </div>
 
-          <div className="space-y-2 border-t border-brand-primary/12 p-3">
-            {error ? <p className="text-xs text-brand-cta">{error}</p> : null}
-            <div className="flex gap-2">
+          <div className="space-y-2 border-t border-brand-rule p-3">
+            {error ? <p className="text-xs text-brand-alert">{error}</p> : null}
+            <div className="flex">
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
                     e.preventDefault()
                     void sendMessage()
                   }
                 }}
-                placeholder="請輸入商品或服務相關問題..."
-                className="flex-1 rounded-xl border border-brand-primary/20 bg-white px-3 py-2 text-sm text-brand-text outline-none focus:border-brand-primary"
+                placeholder="想問的市場、貨源或合作問題"
+                aria-label="輸入問題"
+                className="min-w-0 flex-1 border border-r-0 border-brand-rule bg-white px-3 py-2 text-base text-brand-text outline-none placeholder:text-brand-muted focus:border-brand-text sm:text-sm"
               />
               <button
                 type="button"
                 onClick={() => void sendMessage()}
                 disabled={sending}
-                className="rounded-xl bg-brand-primary px-4 py-2 text-sm font-medium text-white disabled:opacity-50 hover:bg-brand-primary/90 transition-colors"
+                className="bg-brand-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-deep disabled:opacity-50"
               >
-                {sending ? 'AI檢索中' : '送出'}
+                送出
               </button>
             </div>
-            <div className="flex gap-3 text-xs text-brand-muted">
+            <div className="flex gap-4 text-xs text-brand-muted">
+              <a href="/contact" className="text-link">
+                留下需求
+              </a>
               {config?.lineOfficialUrl ? (
-                <a
-                  href={config.lineOfficialUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-brand-primary underline"
-                >
+                <a href={config.lineOfficialUrl} target="_blank" rel="noreferrer" className="text-link">
                   官方 LINE
                 </a>
               ) : null}
               {config?.whatsappUrl ? (
-                <a
-                  href={config.whatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-brand-primary underline"
-                >
+                <a href={config.whatsappUrl} target="_blank" rel="noreferrer" className="text-link">
                   官方 WhatsApp
                 </a>
               ) : null}

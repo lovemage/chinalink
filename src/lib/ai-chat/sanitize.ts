@@ -1,19 +1,14 @@
-interface ContextProduct {
-  slug: string
-}
-
-interface ContextService {
-  slug: string
-}
-
 interface LinkContext {
-  publishedProducts: ContextProduct[]
-  publishedServices: ContextService[]
+  posts: Array<{ url: string }>
+  services: Array<{ url: string }>
+  products: Array<{ url: string }>
 }
 
 interface LinkConfig {
   lineOfficialUrl?: string
   whatsappUrl?: string
+  /** Site pages and partner sites the prompt lists. */
+  extraUrls?: string[]
 }
 
 function normalizeUrl(url: string): string {
@@ -34,24 +29,11 @@ export function buildAllowedLinks(
   siteUrl: string,
 ): Set<string> {
   const base = normalizeUrl(siteUrl)
-  const allow = new Set<string>([
-    `${base}`,
-    `${base}/products`,
-    `${base}/services`,
-    `${base}/blog`,
-    `${base}/contact`,
-  ])
-
-  for (const row of context.publishedProducts) {
-    if (row.slug) allow.add(`${base}/products/${row.slug}`)
-  }
-  for (const row of context.publishedServices) {
-    if (row.slug) allow.add(`${base}/services/${row.slug}`)
-  }
-
+  const allow = new Set<string>([base, `${base}/products`, `${base}/services`, `${base}/blog`, `${base}/contact`])
+  for (const row of [...context.posts, ...context.services, ...context.products]) allow.add(normalizeUrl(row.url))
+  for (const url of config.extraUrls ?? []) allow.add(normalizeUrl(url))
   if (config.lineOfficialUrl) allow.add(normalizeUrl(config.lineOfficialUrl))
   if (config.whatsappUrl) allow.add(normalizeUrl(config.whatsappUrl))
-
   return allow
 }
 
@@ -76,6 +58,7 @@ export function sanitizeAssistantLinks(
     if (parsed.host === baseHost) {
       if (parsed.pathname.startsWith('/products/')) return `${base}/products`
       if (parsed.pathname.startsWith('/services/')) return `${base}/services`
+      if (parsed.pathname.startsWith('/blog/')) return `${base}/blog`
       return base
     }
 

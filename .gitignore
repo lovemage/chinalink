@@ -57,3 +57,7 @@ docs/
 .claude/
 .windsurf/
 .aider*
+
+# 文件／草稿／截圖（不納入版控）
+/output/
+/網站修改提案/
